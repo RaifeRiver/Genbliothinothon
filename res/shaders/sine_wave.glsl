@@ -9,12 +9,26 @@ float sine_wave(int sample, int Hz, float vol){
     return (vol*sin(2.0 * 3.1415926535897932384626433832795 * t * Hz));
 }
 
-float saw_wave(int sample, int Hz, float vol, int depth) {
+float ramp_up(int sample, int Hz, float vol, int depth = 80) {
     float t = sample / 96000.0;
     float x=0;
     for (int n = 1; n < depth; n++){
-        x+=((pow(-1, n-1))/(n))*(vol * sin(2.0 * 3.1415926535897932384626433832795 * t * Hz * n));
+        x+=((1.0-2.0*((n+1)&1))/(n))*(vol * sin(2.0 * 3.1415926535897932384626433832795 * t * Hz * n));
     }
     return x;
 }
+
+float ramp_down(int sample, int Hz, float vol, int depth = 80) {
+    float t = sample / 96000.0;
+float x=0;
+for (int n = 1; n < depth; n++){
+x+=((-1*(1.0-2.0*(n&1)))/(n))*(vol * sin(2.0 * 3.1415926535897932384626433832795 * t * Hz * n));
+}
+return x;
+}
+
+
+
+
+
 
