@@ -1,13 +1,11 @@
 #pragma once
 
-#include <cstddef>
-
 #include "glad/glad.h"
 
 namespace genbliothinothon::render {
 	class Buffer {
 	public:
-		Buffer(const void* bufferData, size_t bufferSize);
+		Buffer(const void* bufferData, GLsizeiptr bufferSize);
 
 		[[nodiscard]] GLuint getBuffer() const {
 			return mBuffer;
@@ -16,6 +14,6 @@ namespace genbliothinothon::render {
 		~Buffer();
 
 	private:
-		GLuint mBuffer;
+		GLuint mBuffer = 0;
 	};
 }
