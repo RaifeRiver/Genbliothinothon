@@ -30,7 +30,7 @@ namespace genbliothinothon::render {
 			int infoLogLength;
 			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
 			std::vector<char> infoLog(infoLogLength);
-			glGetShaderInfoLog(shader, infoLogLength, nullptr, infoLog.data());
+			glGetShaderInfoLog(shader, infoLogLength, &infoLogLength, infoLog.data());
 			throw std::runtime_error("Shader compilation failed: " + std::string(infoLog.begin(), infoLog.end()));
 		}
 
@@ -54,7 +54,7 @@ namespace genbliothinothon::render {
 			int infoLogLength;
 			glGetProgramiv(mShaderProgram, GL_INFO_LOG_LENGTH, &infoLogLength);
 			std::vector<char> infoLog(infoLogLength);
-			glGetProgramInfoLog(mShaderProgram, infoLogLength, nullptr, infoLog.data());
+			glGetProgramInfoLog(mShaderProgram, infoLogLength, &infoLogLength, infoLog.data());
 			throw std::runtime_error("Shader linking failed: " + std::string(infoLog.begin(), infoLog.end()));
 		}
 
