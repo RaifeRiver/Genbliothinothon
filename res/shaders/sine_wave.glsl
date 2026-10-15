@@ -37,7 +37,14 @@ x+=((-1*(1.0-2.0*(n&1)))/(n))*(vol * sin(2.0 * PI * t * Hz * n));
 return x;
 }
 
-
+float square(int sample, int Hz, float vol, int depth = 200) {
+    float t = sample / 96000.0;
+float x=0;
+for (int n = 1; n < depth; n++){
+x+=((2.0*(n&1))/n*PI)*(vol * 0.7 * sin(2.0 * PI * t * Hz * n));
+}
+return x;
+}
 
 
 

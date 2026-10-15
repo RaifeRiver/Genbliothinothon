@@ -16,11 +16,12 @@ void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uin
 	float* output = static_cast<float*>(pOutput);
 //================================================================
 	for (ma_uint32 i = 0; i < frameCount; i++) {
-		output[i] = triangle(sample++, 440, 0.05);//sine_wave(sample++, 440, 0.05);
+		output[i] = ramp_up(sample++, 440, 0.05) + ramp_up(sample++, 440, 0.05);
 	}
 }
 
 int main() {
+	genbliothinothon::Genbliothinothon genbliothinothon;
 	ma_device_config config = ma_device_config_init(ma_device_type_playback);
 	config.playback.format = ma_format_f32;
 	config.playback.channels = 1;
@@ -36,5 +37,6 @@ int main() {
 	std::this_thread::sleep_for(std::chrono::seconds(3));
 
 	ma_device_uninit(&device);
+	genbliothinothon.run();
 	return 0;
 }
