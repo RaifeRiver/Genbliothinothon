@@ -18,6 +18,6 @@ namespace genbliothinothon::render {
 		~VAO();
 
 	private:
-		GLuint mVAO;
+		GLuint mVAO = 0;
 	};
 }
