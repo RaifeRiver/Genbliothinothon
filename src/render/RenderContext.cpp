@@ -20,6 +20,14 @@ namespace genbliothinothon::render {
 		}
 
 		glfwMakeContextCurrent(mWindow);
+		if (!gladLoadGL()) {
+			throw std::runtime_error("Failed to initialize OpenGL");
+		}
+	}
+
+	void RenderContext::clearColour(const float r, const float g, const float b, const float a) {
+		glClearColor(r, g, b, a);
+		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 	void RenderContext::swapBuffers() const {

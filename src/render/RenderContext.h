@@ -8,6 +8,8 @@ namespace genbliothinothon::render {
 	public:
 		RenderContext();
 
+		void clearColour(float r, float g, float b, float a = 1.0f);
+
 		void swapBuffers() const;
 
 		[[nodiscard]] bool shouldClose() const;

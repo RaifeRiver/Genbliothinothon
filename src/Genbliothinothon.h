@@ -7,7 +7,7 @@ namespace genbliothinothon {
 	public:
 		Genbliothinothon();
 
-		void run() const;
+		void run();
 
 	private:
 		render::RenderContext mRenderContext;

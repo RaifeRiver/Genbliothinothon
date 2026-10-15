@@ -5,8 +5,10 @@ namespace genbliothinothon {
 
 	}
 
-	void Genbliothinothon::run() const {
+	void Genbliothinothon::run() {
 		while (!mRenderContext.shouldClose()) {
+			mRenderContext.clearColour(0.05f, 0.05f, 0.1f);
+
 			mRenderContext.swapBuffers();
 		}
 	}
