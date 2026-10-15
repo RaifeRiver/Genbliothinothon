@@ -10,6 +10,8 @@ namespace genbliothinothon::render {
 
 		void clearColour(float r, float g, float b, float a = 1.0f);
 
+		void drawArrays(GLenum mode, GLint first, GLsizei count);
+
 		void swapBuffers() const;
 
 		[[nodiscard]] bool shouldClose() const;

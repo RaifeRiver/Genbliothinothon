@@ -13,6 +13,8 @@ namespace genbliothinothon::render {
 	public:
 		Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
 
+		void bind() const;
+
 		~Shader();
 
 	private:

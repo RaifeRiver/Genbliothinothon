@@ -62,6 +62,10 @@ namespace genbliothinothon::render {
 		glDeleteShader(fragmentShader);
 	}
 
+	void Shader::bind() const {
+		glUseProgram(mShaderProgram);
+	}
+
 	Shader::~Shader() {
 		glDeleteProgram(mShaderProgram);
 	}
