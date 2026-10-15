@@ -11,9 +11,10 @@ float sine_wave(int sample, int Hz, float vol){
 
 float saw_wave(int sample, int Hz, float vol, int depth) {
     float t = sample / 96000.0;
-    for (int n = 0; n < depth; n++){
-        ((pow(1, n))/(n))*(vol * sin(2.0 * 3.1415926535897932384626433832795 * t * Hz * n));
+    float x=0;
+    for (int n = 1; n < depth; n++){
+        x+=((pow(-1, n-1))/(n))*(vol * sin(2.0 * 3.1415926535897932384626433832795 * t * Hz * n));
     }
-    return x
+    return x;
 }
 
