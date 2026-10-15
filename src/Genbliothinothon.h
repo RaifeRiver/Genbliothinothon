@@ -10,7 +10,8 @@ namespace genbliothinothon {
 	public:
 		Genbliothinothon();
 
-		void run();
+		bool shouldClose() const;
+		void renderFrame();
 
 	private:
 		render::RenderContext mRenderContext;

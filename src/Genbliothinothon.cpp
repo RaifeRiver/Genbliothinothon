@@ -11,15 +11,18 @@ namespace genbliothinothon {
 		mVAO.setAttribute(0, mVertexBuffer, 3, GL_FLOAT);
 	}
 
-	void Genbliothinothon::run() {
-		while (!mRenderContext.shouldClose()) {
-			mRenderContext.clearColour(0.05f, 0.05f, 0.1f);
+	bool Genbliothinothon::shouldClose() const {
+		return !mRenderContext.shouldClose();
+	}
 
-			mVAO.bind();
-			mShader.bind();
-			mRenderContext.drawArrays(GL_TRIANGLES, 0, 3);
 
-			mRenderContext.swapBuffers();
-		}
+	void Genbliothinothon::renderFrame() {
+		mRenderContext.clearColour(0.05f, 0.05f, 0.1f);
+
+		mVAO.bind();
+		mShader.bind();
+		mRenderContext.drawArrays(GL_TRIANGLES, 0, 3);
+
+		mRenderContext.swapBuffers();
 	}
 }
