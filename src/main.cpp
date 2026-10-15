@@ -16,7 +16,7 @@ void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uin
 	float* output = static_cast<float*>(pOutput);
 //================================================================
 	for (ma_uint32 i = 0; i < frameCount; i++) {
-		output[i] = ramp_up(sample++, 440, 0.05);//sine_wave(sample++, 440, 0.05);
+		output[i] = triangle(sample++, 440, 0.05);//sine_wave(sample++, 440, 0.05);
 	}
 }
 
