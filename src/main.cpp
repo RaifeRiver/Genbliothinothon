@@ -1,5 +1,6 @@
-#include <iostream>
+#include "Genbliothinothon.h"
 
 int main() {
-	std::cout << "Hello, World!" << std::endl;
+	genbliothinothon::Genbliothinothon genbliothinothon;
+	genbliothinothon.run();
 }
