@@ -3,8 +3,10 @@
 #include <thread>
 #include <chrono>
 #include <iostream>
-
-#include "~/CLionProjects/Genbliothinothon/res/shaders/sine_wave.glsl"
+//      |
+//      |
+//HELP "\/"
+#include "/Users/shared/CLionProjects/Genbliothinothon/res/shaders/sine_wave.glsl"
 #include "Genbliothinothon.h"
 
 
