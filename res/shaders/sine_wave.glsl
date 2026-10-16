@@ -6,8 +6,14 @@
 #define PI 3.1415926535897932384626433832795
 
 int sine_wave(int sample, int Hz, float vol){
-    float t = sample / 96000.0;
-    return (vol*MAX_INT*sin(2.0 * PI * t * Hz));
+    //float t = sample / 96000.0;
+    return (vol*MAX_INT*sin(2.0*PI*Hz*sample/96000.0));
+}
+
+int white(int sample, float vol) {
+    int s=(sample<<13)^sample;
+    s=s*(s*s*15731+789221)+1376312589;
+    return int((float(s&0x7fffffff)/1073741824.0-1.0)*vol*1073741823.5);
 }
 
 int triangle(int sample, int Hz, float vol, int depth = 10) {
