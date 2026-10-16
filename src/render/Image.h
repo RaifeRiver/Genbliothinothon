@@ -10,9 +10,15 @@ namespace genbliothinothon::render {
 	public:
 		explicit Image(const std::string& path);
 
+		Image(glm::uvec2 size, GLenum format);
+
 		void bind(uint32_t slot) const;
 
-		[[nodiscard]] glm::vec2 getSize() const {
+		[[nodiscard]] GLuint getTexture() const {
+			return mTexture;
+		}
+
+		[[nodiscard]] glm::uvec2 getSize() const {
 			return mSize;
 		}
 
@@ -20,6 +26,6 @@ namespace genbliothinothon::render {
 
 	private:
 		GLuint mTexture = 0;
-		glm::vec2 mSize = {};
+		glm::uvec2 mSize = {};
 	};
 }

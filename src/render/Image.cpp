@@ -24,6 +24,12 @@ namespace genbliothinothon::render {
 		mSize = {width, height};
 	}
 
+	Image::Image(const glm::uvec2 size, const GLenum format) : mSize(size) {
+		glGenTextures(1, &mTexture);
+		glBindTexture(GL_TEXTURE_2D, mTexture);
+		glTexStorage2D(GL_TEXTURE_2D, 1, format, static_cast<GLint>(size.x), static_cast<GLint>(size.y));
+	}
+
 	void Image::bind(const uint32_t slot) const {
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, mTexture);

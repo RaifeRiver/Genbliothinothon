@@ -5,9 +5,9 @@
 namespace genbliothinothon::render {
 	class Buffer {
 	public:
-		explicit Buffer(uint32_t bufferSize);
+		Buffer(uint32_t bufferSize, GLenum mode = GL_STATIC_DRAW);
 
-		Buffer(const void* bufferData, uint32_t bufferSize);
+		Buffer(const void* bufferData, uint32_t bufferSize, GLenum mode = GL_STATIC_DRAW);
 
 		[[nodiscard]] void* map() const;
 

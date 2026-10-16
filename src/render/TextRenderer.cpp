@@ -11,9 +11,9 @@ namespace genbliothinothon::render {
 		mShader = std::make_unique<Shader>("../res/shaders/text.vert", "../res/shaders/text.frag");
 		mShader->setUniform("uFontAtlas", 0);
 
-		mPositionBuffer = std::make_unique<Buffer>(12 * MAX_TEXT_VERTICES);
-		mUVBuffer = std::make_unique<Buffer>(8 * MAX_TEXT_VERTICES);
-		mColourBuffer = std::make_unique<Buffer>(16 * MAX_TEXT_VERTICES);
+		mPositionBuffer = std::make_unique<Buffer>(12 * MAX_TEXT_VERTICES, GL_DYNAMIC_DRAW);
+		mUVBuffer = std::make_unique<Buffer>(8 * MAX_TEXT_VERTICES, GL_DYNAMIC_DRAW);
+		mColourBuffer = std::make_unique<Buffer>(16 * MAX_TEXT_VERTICES, GL_DYNAMIC_DRAW);
 
 		mVAO.setAttribute(0, *mPositionBuffer, 3, GL_FLOAT);
 		mVAO.setAttribute(1, *mUVBuffer, 2, GL_FLOAT);

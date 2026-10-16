@@ -1,16 +1,16 @@
 #include "Buffer.h"
 
 namespace genbliothinothon::render {
-	Buffer::Buffer(const uint32_t bufferSize) : mSize(bufferSize) {
+	Buffer::Buffer(const uint32_t bufferSize, const GLenum mode) : mSize(bufferSize) {
 		glGenBuffers(1, &mBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, mBuffer);
-		glBufferData(GL_ARRAY_BUFFER, bufferSize, nullptr, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, bufferSize, nullptr, mode);
 	}
 
-	Buffer::Buffer(const void* bufferData, const uint32_t bufferSize) : mSize(bufferSize) {
+	Buffer::Buffer(const void* bufferData, const uint32_t bufferSize, const GLenum mode) : mSize(bufferSize) {
 		glGenBuffers(1, &mBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, mBuffer);
-		glBufferData(GL_ARRAY_BUFFER, bufferSize, bufferData, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, bufferSize, bufferData, mode);
 	}
 
 	void* Buffer::map() const {

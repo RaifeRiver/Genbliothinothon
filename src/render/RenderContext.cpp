@@ -1,5 +1,6 @@
 #include "RenderContext.h"
 
+#include <cstring>
 #include <iostream>
 #include <stdexcept>
 
@@ -29,12 +30,44 @@ namespace genbliothinothon::render {
 			glViewport(0, 0, width, height);
 		});
 
+		glEnable(GL_DEBUG_OUTPUT);
+		glDebugMessageCallback([](GLenum, GLenum, const GLuint id, const GLenum severity, GLsizei, const GLchar* message, const void*) {
+			const size_t messageLength = strlen(message);
+			const std::string_view trimmedMessage(message, message[messageLength - 1] == '\n'? messageLength - 1 : messageLength);
+			switch (severity) {
+				case GL_DEBUG_SEVERITY_LOW:
+				case GL_DEBUG_SEVERITY_MEDIUM:
+					std::cout << "OpenGL Warning: id: " << id  << ", message: "<< trimmedMessage << std::endl;
+					break;
+				case GL_DEBUG_SEVERITY_HIGH:
+					std::cerr << "OpenGL Error: id: " << id  << ", message: "<< trimmedMessage << std::endl;
+					break;
+				default:
+					if (id == 131185) {
+						break;
+					}
+					std::cout << "OpenGL Message: id: " << id  << ", message: "<< trimmedMessage << std::endl;
+					break;
+			}
+		}, nullptr);
+
 		mTextRenderer = std::make_unique<TextRenderer>();
+
+		glGenFramebuffers(1, &mFBO);
 	}
 
 	void RenderContext::clearColour(const float r, const float g, const float b, const float a) {
 		glClearColor(r, g, b, a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	void RenderContext::setFBO(const Image& image) const {
+		glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, image.getTexture(), 0);
+	}
+
+	void RenderContext::clearFBO() {
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	void RenderContext::drawArrays(const GLenum mode, const GLint first, const GLsizei count) {

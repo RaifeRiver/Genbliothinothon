@@ -11,6 +11,10 @@ namespace genbliothinothon::render {
 
 		void clearColour(float r, float g, float b, float a = 1.0f);
 
+		void setFBO(const Image& image) const;
+
+		void clearFBO();
+
 		void drawArrays(GLenum mode, GLint first, GLsizei count);
 
 		[[nodiscard]] TextRenderer& getTextRenderer() const {
@@ -26,5 +30,6 @@ namespace genbliothinothon::render {
 	private:
 		GLFWwindow* mWindow;
 		std::unique_ptr<TextRenderer> mTextRenderer;
+		GLuint mFBO = 0;
 	};
 }
