@@ -66,6 +66,11 @@ namespace genbliothinothon::render {
 		glUseProgram(mShaderProgram);
 	}
 
+	void Shader::setUniform(const std::string& name, const int32_t v) const {
+		bind();
+		glUniform1i(glGetUniformLocation(mShaderProgram, name.c_str()), v);
+	}
+
 	Shader::~Shader() {
 		glDeleteProgram(mShaderProgram);
 	}

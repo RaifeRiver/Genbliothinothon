@@ -28,6 +28,8 @@ namespace genbliothinothon::render {
 		glfwSetWindowSizeCallback(mWindow, [](GLFWwindow*, const int width, const int height) {
 			glViewport(0, 0, width, height);
 		});
+
+		mTextRenderer = std::make_unique<TextRenderer>();
 	}
 
 	void RenderContext::clearColour(const float r, const float g, const float b, const float a) {

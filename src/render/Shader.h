@@ -15,6 +15,8 @@ namespace genbliothinothon::render {
 
 		void bind() const;
 
+		void setUniform(const std::string& name, int32_t v) const;
+
 		~Shader();
 
 	private:

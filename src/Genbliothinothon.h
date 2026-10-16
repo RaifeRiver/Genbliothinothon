@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "render/Buffer.h"
 #include "render/RenderContext.h"
 #include "render/Shader.h"
@@ -15,7 +17,7 @@ namespace genbliothinothon {
 	private:
 		render::RenderContext mRenderContext;
 		render::VAO mVAO;
-		render::Buffer mVertexBuffer;
-		render::Shader mShader;
+		std::unique_ptr<render::Shader> mShader;
+		std::unique_ptr<render::Buffer> mVertexBuffer;
 	};
 }

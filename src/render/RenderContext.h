@@ -1,5 +1,6 @@
 #pragma once
 
+#include "TextRenderer.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
@@ -12,6 +13,10 @@ namespace genbliothinothon::render {
 
 		void drawArrays(GLenum mode, GLint first, GLsizei count);
 
+		[[nodiscard]] TextRenderer& getTextRenderer() const {
+			return *mTextRenderer;
+		}
+
 		void swapBuffers() const;
 
 		[[nodiscard]] bool shouldClose() const;
@@ -20,5 +25,6 @@ namespace genbliothinothon::render {
 
 	private:
 		GLFWwindow* mWindow;
+		std::unique_ptr<TextRenderer> mTextRenderer;
 	};
 }
