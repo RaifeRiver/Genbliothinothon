@@ -47,7 +47,6 @@ namespace genbliothinothon::audio {
 			}
 			glDeleteSync(mFence);
 			unsigned char data[131072];
-			std::cout << std::to_string(data[0]) << std::endl;
 			glBindTexture(GL_TEXTURE_2D, mOutputImage->getTexture());
 			glGetTexImage(GL_TEXTURE_2D, 0, GL_RG_INTEGER, GL_INT, data);
 			Pa_WriteStream(mStream, data, 16384);
@@ -55,6 +54,9 @@ namespace genbliothinothon::audio {
 
 		mVAO.bind();
 		mShader->bind();
+
+		mShader->setUniform("uSampleBase", mNextSampleBase);
+		mNextSampleBase += 16384;
 
 		renderContext.setFBO(*mOutputImage);
 		renderContext.drawArrays(GL_TRIANGLE_STRIP, 0, 4);

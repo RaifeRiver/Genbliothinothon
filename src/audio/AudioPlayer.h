@@ -23,5 +23,6 @@ namespace genbliothinothon::audio {
 		GLsync mFence = nullptr;
 		bool mFirst = true;
 		PaStream* mStream = nullptr;
+		uint32_t mNextSampleBase = 0;
 	};
 }
