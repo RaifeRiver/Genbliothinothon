@@ -1,7 +1,7 @@
 #define MAX_INT 2147483647
 #define PI 3.141592653589793238462643383279502884197169399375105820974944592
 
-double audio_audio_sin(double x) {
+double audio_sin(double x) {
     double TWO_PI = 2.0 * PI;
     double HALF_PI = 0.5 * PI;
 
@@ -26,7 +26,7 @@ double audio_audio_sin(double x) {
     return sign * x * (1.0 - x2 * p);
 }
 
-int audio_sine_wave(uint sample, int Hz, float vol){
+int sine_wave(uint sample, int Hz, float vol){
     return (vol*MAX_INT*audio_sin(PI*Hz*sample/48000.0));
 }
 
