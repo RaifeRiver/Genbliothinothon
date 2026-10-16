@@ -30,26 +30,33 @@ namespace genbliothinothon::render {
 			glViewport(0, 0, width, height);
 		});
 
-		glEnable(GL_DEBUG_OUTPUT);
-		glDebugMessageCallback([](GLenum, GLenum, const GLuint id, const GLenum severity, GLsizei, const GLchar* message, const void*) {
-			const size_t messageLength = strlen(message);
-			const std::string_view trimmedMessage(message, message[messageLength - 1] == '\n'? messageLength - 1 : messageLength);
-			switch (severity) {
-				case GL_DEBUG_SEVERITY_LOW:
-				case GL_DEBUG_SEVERITY_MEDIUM:
-					std::cout << "OpenGL Warning: id: " << id  << ", message: "<< trimmedMessage << std::endl;
-					break;
-				case GL_DEBUG_SEVERITY_HIGH:
-					std::cerr << "OpenGL Error: id: " << id  << ", message: "<< trimmedMessage << std::endl;
-					break;
-				default:
-					if (id == 131185) {
+		int majorVersion = 0;
+		int minorVersion = 0;
+		glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
+		glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
+
+		if (majorVersion >= 4 && minorVersion >= 3) {
+			glEnable(GL_DEBUG_OUTPUT);
+			glDebugMessageCallback([](GLenum, GLenum, const GLuint id, const GLenum severity, GLsizei, const GLchar* message, const void*) {
+				const size_t messageLength = strlen(message);
+				const std::string_view trimmedMessage(message, message[messageLength - 1] == '\n'? messageLength - 1 : messageLength);
+				switch (severity) {
+					case GL_DEBUG_SEVERITY_LOW:
+					case GL_DEBUG_SEVERITY_MEDIUM:
+						std::cout << "OpenGL Warning: id: " << id  << ", message: "<< trimmedMessage << std::endl;
 						break;
-					}
-					std::cout << "OpenGL Message: id: " << id  << ", message: "<< trimmedMessage << std::endl;
-					break;
-			}
-		}, nullptr);
+					case GL_DEBUG_SEVERITY_HIGH:
+						std::cerr << "OpenGL Error: id: " << id  << ", message: "<< trimmedMessage << std::endl;
+						break;
+					default:
+						if (id == 131185) {
+							break;
+						}
+						std::cout << "OpenGL Message: id: " << id  << ", message: "<< trimmedMessage << std::endl;
+						break;
+				}
+			}, nullptr);
+		}
 
 		mTextRenderer = std::make_unique<TextRenderer>();
 
