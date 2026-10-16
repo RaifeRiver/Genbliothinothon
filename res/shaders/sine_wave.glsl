@@ -45,7 +45,7 @@ x+=MAX_INT*((2.0*(n&1))/n*PI)*(vol * 0.7 * sin(2.0 * PI * t * Hz * n));
 }
 return x;
 }
-
+// below here things are ints from sin so it could make problems.
 int Msine_wave(int sample, int Hz, float vol){
     float t = sample / 96000.0;
 return (vol*sin(2.0 * PI * t * Hz));
