@@ -27,7 +27,7 @@ namespace genbliothinothon::render {
 	Image::Image(const glm::uvec2 size, const GLenum format) : mSize(size) {
 		glGenTextures(1, &mTexture);
 		glBindTexture(GL_TEXTURE_2D, mTexture);
-		glTexStorage2D(GL_TEXTURE_2D, 1, format, static_cast<GLint>(size.x), static_cast<GLint>(size.y));
+		glTexImage2D(GL_TEXTURE_2D, 0, format, static_cast<GLint>(size.x), static_cast<GLint>(size.y), 0, format == GL_RG32I ? GL_RG_INTEGER : GL_RGBA, format == GL_RG32I ? GL_INT : GL_FLOAT, nullptr);
 	}
 
 	void Image::bind(const uint32_t slot) const {
