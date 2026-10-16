@@ -23,7 +23,7 @@ int ramp_up(int sample, int Hz, float vol, int depth = 80) {
     float t = sample / 96000.0;
     int x=0;
     for (int n = 1; n < depth; n++){
-        x+=MAX_INT((1.0-2.0*((n+1)&1))/(n))*(vol * sin(2.0 * PI * t * Hz * n));
+        x+=MAX_INT*((1.0-2.0*((n+1)&1))/(n))*(vol * sin(2.0 * PI * t * Hz * n));
     }
     return x;
 }
