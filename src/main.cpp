@@ -36,9 +36,7 @@ int main() {
 
 	ma_device_start(&device);
 
-	while (genbliothinothon.shouldClose()) {
-		genbliothinothon.renderFrame();
-	}
+	genbliothinothon.run();
 
 	ma_device_uninit(&device);
 	return 0;
