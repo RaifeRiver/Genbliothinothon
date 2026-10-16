@@ -12,8 +12,7 @@ FetchContent_Declare(glfw GIT_REPOSITORY https://github.com/glfw/glfw.git GIT_TA
 FetchContent_MakeAvailable(glfw)
 
 file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS src/*.cpp lib/*.c)
-add_executable(Genbliothinothon ${SRC_FILES}
-        res/shaders/test-openal.txt)
+add_executable(Genbliothinothon ${SRC_FILES})
 
 target_include_directories(Genbliothinothon PUBLIC lib)
 target_include_directories(Genbliothinothon PUBLIC src)
