@@ -5,43 +5,43 @@
 #define MAX_INT 2147483647
 #define PI 3.1415926535897932384626433832795
 
-float sine_wave(int sample, int Hz, float vol){
-    float t = sample / 96000.0;
+int sine_wave(int sample, int Hz, float vol){
+    int t = sample / 96000.0;
     return (vol*sin(2.0 * PI * t * Hz));
 }
 
-float triangle(int sample, int Hz, float vol, int depth = 10) {
+int triangle(int sample, int Hz, float vol, int depth = 10) {
     float t = sample / 96000.0;
-float x=0;
+int x=0;
 for (int n = 1; n < depth; n++){
-x+=((sin(0.5f*(PI-((n<<1)-1)*PI*x))/(((n<<1)-1)*((n<<1)-1)))*vol*sin(2.0 * PI * t * Hz * n));
+x+=MAX_INT*((sin(0.5f*(PI-((n<<1)-1)*PI*x))/(((n<<1)-1)*((n<<1)-1)))*vol*sin(2.0 * PI * t * Hz * n));
 }
 return x;
 }
 
-float ramp_up(int sample, int Hz, float vol, int depth = 80) {
+int ramp_up(int sample, int Hz, float vol, int depth = 80) {
     float t = sample / 96000.0;
-    float x=0;
+    int x=0;
     for (int n = 1; n < depth; n++){
-        x+=((1.0-2.0*((n+1)&1))/(n))*(vol * sin(2.0 * PI * t * Hz * n));
+        x+=MAX_INT((1.0-2.0*((n+1)&1))/(n))*(vol * sin(2.0 * PI * t * Hz * n));
     }
     return x;
 }
 
-float ramp_down(int sample, int Hz, float vol, int depth = 80) {
+int ramp_down(int sample, int Hz, float vol, int depth = 80) {
     float t = sample / 96000.0;
-float x=0;
+int x=0;
 for (int n = 1; n < depth; n++){
-x+=((-1*(1.0-2.0*(n&1)))/(n))*(vol * sin(2.0 * PI * t * Hz * n));
+x+=MAX_INT*((-1*(1.0-2.0*(n&1)))/(n))*(vol * sin(2.0 * PI * t * Hz * n));
 }
 return x;
 }
 
-float square(int sample, int Hz, float vol, int depth = 200) {
+int square(int sample, int Hz, float vol, int depth = 200) {
     float t = sample / 96000.0;
-float x=0;
+int x=0;
 for (int n = 1; n < depth; n++){
-x+=((2.0*(n&1))/n*PI)*(vol * 0.7 * sin(2.0 * PI * t * Hz * n));
+x+=MAX_INT*((2.0*(n&1))/n*PI)*(vol * 0.7 * sin(2.0 * PI * t * Hz * n));
 }
 return x;
 }
