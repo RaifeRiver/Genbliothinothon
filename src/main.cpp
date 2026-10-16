@@ -16,8 +16,9 @@ void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uin
 	int32_t* pOutputS32 = static_cast<int32_t*>(pOutput);
 //================================================================
 	for (ma_uint32 i = 0; i < frameCount; i++) {
-		float OAN = sine_wave(sample++, 23.0, 57.0)+300.0;
-		pOutputS32[i] = triangle(sample, OAN, 0.05f);
+		//float OAN = sine_wave(sample++, 23.0, 57.0)+300.0;
+		//pOutputS32[i] = triangle(sample, OAN, 0.05f);
+		pOutputS32[i] = sine_wave(sample++, 500, 1);
 	}
 }
 
