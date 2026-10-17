@@ -90,6 +90,10 @@ float note(int n, int octave) {
 //=====================================================================================================================
 //=====================================================================================================================
 
+// ==========================================
+// AUDIO FILTER & MULTI-VOICE SYSTEM
+// ==========================================
+
 // Filter Type Definitions
 #define FILTER_LOWPASS    0
 #define FILTER_HIGHPASS   1
@@ -97,7 +101,7 @@ float note(int n, int octave) {
 #define FILTER_HIGHSHELF  3
 #define FILTER_NOTCH      4
 
-// Biquad implementation
+// Robust Biquad filter core implementing Robert Bristow-Johnson formulas
 void applyBiquad(inout float buffer[1024], int type, float hz, float q, float gain) {
     float w0 = 2.0 * PI * clamp(hz, 20.0, FS * 0.49) / FS;
     float cosW0 = cos(w0);
@@ -146,27 +150,41 @@ void applyBiquad(inout float buffer[1024], int type, float hz, float q, float ga
 
     for (int i = 0; i < 1024; i++) {
         float inSample = buffer[i];
-    float outSample = (b0 * inSample) + (b1 * prevIn[0]) + (b2 * prevIn[1])
-    - (a1 * prevOut[0]) - (a2 * prevOut[1]);
-    prevIn[1] = prevIn[0]; prevIn[0] = inSample;
-    prevOut[1] = prevOut[0]; prevOut[0] = outSample;
-    buffer[i] = outSample;
+        float outSample = (b0 * inSample) + (b1 * prevIn[0]) + (b2 * prevIn[1])
+                        - (a1 * prevOut[0]) - (a2 * prevOut[1]);
+        prevIn[1] = prevIn[0]; prevIn[0] = inSample;
+        prevOut[1] = prevOut[0]; prevOut[0] = outSample;
+        buffer[i] = outSample;
     }
 }
 
-//Voice Macro (Handles buffer generation & filtering automatically)
-#define MAKE_VOICE(outVar, wavExpr, type, hz, q, gain) \
+// ==========================================
+// VOICE MACROS & CHAINING UTILITIES
+// ==========================================
+
+#define VOICE_BEGIN(wavExpr) \
 { \
     float _buf[1024]; \
     for (int _i = 0; _i < 1024; _i++) { \
         uint sampleI = baseSampleI + uint(_i); \
         _buf[_i] = (wavExpr); \
-    } \
-    applyBiquad(_buf, type, hz, q, gain); \
+    }
+
+#define VOICE_FILTER(type, hz, q, gain) \
+    applyBiquad(_buf, type, hz, q, gain);
+
+#define VOICE_END(outVar) \
     outVar = _buf[1023]; \
 }
 
-//=====================================================================================================================
+#define MAKE_VOICE(outVar, wavExpr, type, hz, q, gain) \
+    VOICE_BEGIN(wavExpr) \
+    VOICE_FILTER(type, hz, q, gain) \
+    VOICE_END(outVar)
+
+// ==========================================
+// MAIN SHADER ENTRY
+// ==========================================
 
 void main() {
     uvec2 sampleVec = uvec2(gl_FragCoord.xy);
@@ -174,11 +192,16 @@ void main() {
 
     float voice1, voice2;
 
-    // Define multiple voices cleanly in one line each with independent filters!
+    // Voice 1: Single-filter setup (Lowpass)
     MAKE_VOICE(voice1, Tramp_up(sampleI, note(4, 1), 0.7f), FILTER_LOWPASS, 300.0, 1.0, 0.0);
-    MAKE_VOICE(voice2, Tramp_up(sampleI, note(3, 1), 0.5f), FILTER_HIGHPASS, 800.0, 0.7, 0.0);
 
-    // Mix them cleanly together and assign directly to audioOut
+    // Voice 2: Chained multi-filter setup (800Hz HPF + 2kHz HPF)
+    VOICE_BEGIN(Tramp_up(sampleI, note(3, 1), 0.5f))
+        VOICE_FILTER(FILTER_HIGHPASS, 800.0, 0.7, 0.0)
+        VOICE_FILTER(FILTER_LOWPASS, 2000.0, 0.7, 0.0)
+    VOICE_END(voice2)
+
+    // Mix voices together safely and output directly to audioOut
     float finalMix = (voice1 + voice2) * 0.5f;
     audioOut = vec4(finalMix, finalMix, 0.0f, 0.0f);
 }
