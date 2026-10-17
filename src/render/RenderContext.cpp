@@ -26,8 +26,11 @@ namespace genbliothinothon::render {
 			throw std::runtime_error("Failed to initialize OpenGL");
 		}
 
-		glfwSetWindowSizeCallback(mWindow, [](GLFWwindow*, const int width, const int height) {
+		glfwSetWindowUserPointer(mWindow, this);
+		glfwSetWindowSizeCallback(mWindow, [](GLFWwindow* window, const int width, const int height) {
+			auto* renderContext = static_cast<RenderContext*>(glfwGetWindowUserPointer(window));
 			glViewport(0, 0, width, height);
+			renderContext->mWindowSize = glm::uvec2(width, height);
 		});
 
 		int majorVersion = 0;

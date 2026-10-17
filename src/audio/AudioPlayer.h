@@ -20,6 +20,7 @@ namespace genbliothinothon::audio {
 		std::unique_ptr<render::Shader> mShader;
 		std::unique_ptr<render::Buffer> mVertexBuffer;
 		std::unique_ptr<render::Image> mOutputImage;
+		std::unique_ptr<render::Shader> mOscilloscopeShader;
 		GLsync mFence = nullptr;
 		bool mFirst = true;
 		PaStream* mStream = nullptr;

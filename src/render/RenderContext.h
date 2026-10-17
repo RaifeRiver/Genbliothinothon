@@ -21,6 +21,10 @@ namespace genbliothinothon::render {
 			return *mTextRenderer;
 		}
 
+		[[nodiscard]] glm::uvec2 getWindowSize() const {
+			return mWindowSize;
+		}
+
 		void swapBuffers() const;
 
 		[[nodiscard]] bool shouldClose() const;
@@ -31,5 +35,6 @@ namespace genbliothinothon::render {
 		GLFWwindow* mWindow;
 		std::unique_ptr<TextRenderer> mTextRenderer;
 		GLuint mFBO = 0;
+		glm::uvec2 mWindowSize = {640, 480};
 	};
 }

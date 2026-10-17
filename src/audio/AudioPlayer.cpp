@@ -34,9 +34,17 @@ namespace genbliothinothon::audio {
 		if (Pa_StartStream(mStream) != paNoError) {
 			throw std::runtime_error("Failed to start audio output stream");
 		}
+
+		mOscilloscopeShader = std::make_unique<render::Shader>("../res/shaders/audio/oscilloscope.vert", "../res/shaders/audio/oscilloscope.frag");
 	}
 
 	void AudioPlayer::update(render::RenderContext& renderContext) {
+		mVAO.bind();
+
+		mOscilloscopeShader->bind();
+		mOscilloscopeShader->setUniform("uScreenSize", renderContext.getWindowSize());
+		renderContext.drawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
 		if (Pa_GetStreamWriteAvailable(mStream) < 16384) {
 			return;
 		}
@@ -46,13 +54,22 @@ namespace genbliothinothon::audio {
 				return;
 			}
 			glDeleteSync(mFence);
-			unsigned char data[131072];
+			float data[32768];
 			glBindTexture(GL_TEXTURE_2D, mOutputImage->getTexture());
 			glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, GL_FLOAT, data);
-			Pa_WriteStream(mStream, data, 16384);
+			//Pa_WriteStream(mStream, data, 16384);
+			static bool oscilloscopeSet = false;
+			if (!oscilloscopeSet) {
+				std::vector<float> oscilloscopeData;
+				oscilloscopeData.reserve(512);
+				for (int i = 0; i < 1024; i += 2) {
+					oscilloscopeData.push_back(data[i]);
+				}
+				mOscilloscopeShader->setUniform("uFrequencies", oscilloscopeData);
+				oscilloscopeSet = true;
+			}
 		}
 
-		mVAO.bind();
 		mShader->bind();
 
 		mShader->setUniform("uSampleBase", mNextSampleBase);
