@@ -93,16 +93,19 @@ float note(int n, int octave) {
 // ==========================================
 // AUDIO FILTER & MULTI-VOICE SYSTEM
 // ==========================================
+// ==========================================
+// LIGHTNING-FAST 4-SAMPLE BIQUAD SYSTEM
+// ==========================================
 
-// Filter Type Definitions
 #define FILTER_LOWPASS    0
 #define FILTER_HIGHPASS   1
 #define FILTER_LOWSHELF   2
 #define FILTER_HIGHSHELF  3
 #define FILTER_NOTCH      4
 
-// Robust Biquad filter core implementing Robert Bristow-Johnson formulas
-void applyBiquad(inout float buffer[1024], int type, float hz, float q, float gain) {
+#define AUDIO_BUF_SIZE 4
+
+void applyBiquad(inout float buffer[AUDIO_BUF_SIZE], int type, float hz, float q, float gain) {
     float w0 = 2.0 * PI * clamp(hz, 20.0, FS * 0.49) / FS;
     float cosW0 = cos(w0);
     float sinW0 = sin(w0);
@@ -148,7 +151,7 @@ void applyBiquad(inout float buffer[1024], int type, float hz, float q, float ga
     float prevIn[2] = float[2](0.0, 0.0);
     float prevOut[2] = float[2](0.0, 0.0);
 
-    for (int i = 0; i < 1024; i++) {
+    for (int i = 0; i < AUDIO_BUF_SIZE; i++) {
         float inSample = buffer[i];
         float outSample = (b0 * inSample) + (b1 * prevIn[0]) + (b2 * prevIn[1])
                         - (a1 * prevOut[0]) - (a2 * prevOut[1]);
@@ -164,8 +167,8 @@ void applyBiquad(inout float buffer[1024], int type, float hz, float q, float ga
 
 #define VOICE_BEGIN(wavExpr) \
 { \
-    float _buf[1024]; \
-    for (int _i = 0; _i < 1024; _i++) { \
+    float _buf[AUDIO_BUF_SIZE]; \
+    for (int _i = 0; _i < AUDIO_BUF_SIZE; _i++) { \
         uint sampleI = baseSampleI + uint(_i); \
         _buf[_i] = (wavExpr); \
     }
@@ -174,7 +177,7 @@ void applyBiquad(inout float buffer[1024], int type, float hz, float q, float ga
     applyBiquad(_buf, type, hz, q, gain);
 
 #define VOICE_END(outVar) \
-    outVar = _buf[1023]; \
+    outVar = _buf[AUDIO_BUF_SIZE - 1]; \
 }
 
 #define MAKE_VOICE(outVar, wavExpr, type, hz, q, gain) \
@@ -192,16 +195,16 @@ void main() {
 
     float voice1, voice2;
 
-    // Voice 1: Single-filter setup (Lowpass)
+    // Voice 1: Lowpass Filter
     MAKE_VOICE(voice1, Tramp_up(sampleI, note(4, 1), 0.7f), FILTER_LOWPASS, 300.0, 1.0, 0.0);
 
-    // Voice 2: Chained multi-filter setup (800Hz HPF + 2kHz HPF)
+    // Voice 2: Chained high/lowpass Filters (800Hz + 2kHz)
     VOICE_BEGIN(Tramp_up(sampleI, note(3, 1), 0.5f))
         VOICE_FILTER(FILTER_HIGHPASS, 800.0, 0.7, 0.0)
         VOICE_FILTER(FILTER_LOWPASS, 2000.0, 0.7, 0.0)
     VOICE_END(voice2)
 
-    // Mix voices together safely and output directly to audioOut
+    // Mix and output
     float finalMix = (voice1 + voice2) * 0.5f;
     audioOut = vec4(finalMix, finalMix, 0.0f, 0.0f);
 }
