@@ -57,7 +57,7 @@ namespace genbliothinothon::audio {
 			float data[32768];
 			glBindTexture(GL_TEXTURE_2D, mOutputImage->getTexture());
 			glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, GL_FLOAT, data);
-			//Pa_WriteStream(mStream, data, 16384);
+			Pa_WriteStream(mStream, data, 16384);
 			static bool oscilloscopeSet = false;
 			if (!oscilloscopeSet) {
 				std::vector<float> oscilloscopeData;
