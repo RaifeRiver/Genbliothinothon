@@ -7,6 +7,8 @@
 #include "render/VAO.h"
 
 namespace genbliothinothon::audio {
+	static constexpr bool ENABLE_SCOPE = false;
+
 	class AudioPlayer {
 	public:
 		AudioPlayer();
