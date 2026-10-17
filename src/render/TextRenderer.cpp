@@ -11,16 +11,15 @@ namespace genbliothinothon::render {
 		mShader = std::make_unique<Shader>("../res/shaders/text.vert", "../res/shaders/text.frag");
 		mShader->setUniform("uFontAtlas", 0);
 
-		mPositionBuffer = std::make_unique<Buffer>(12 * MAX_TEXT_VERTICES, GL_DYNAMIC_DRAW);
+		mPositionBuffer = std::make_unique<Buffer>(8 * MAX_TEXT_VERTICES, GL_DYNAMIC_DRAW);
 		mUVBuffer = std::make_unique<Buffer>(8 * MAX_TEXT_VERTICES, GL_DYNAMIC_DRAW);
 		mColourBuffer = std::make_unique<Buffer>(16 * MAX_TEXT_VERTICES, GL_DYNAMIC_DRAW);
 
-		mVAO.setAttribute(0, *mPositionBuffer, 3, GL_FLOAT);
+		mVAO.setAttribute(0, *mPositionBuffer, 2, GL_FLOAT);
 		mVAO.setAttribute(1, *mUVBuffer, 2, GL_FLOAT);
 		mVAO.setAttribute(2, *mColourBuffer, 4, GL_FLOAT);
 
 		mFontAtlas = std::make_unique<Image>("../res/textures/font.png");
-		mFontAtlas->bind(0);
 
 		std::ifstream file("../res/textures/font.csv");
 		std::string line;
@@ -47,7 +46,7 @@ namespace genbliothinothon::render {
 	}
 
 	void TextRenderer::render(RenderContext& context) {
-		const auto positionBuffer = static_cast<glm::vec3*>(mPositionBuffer->map());
+		const auto positionBuffer = static_cast<glm::vec2*>(mPositionBuffer->map());
 		const auto uvBuffer = static_cast<glm::vec2*>(mUVBuffer->map());
 		const auto colourBuffer = static_cast<glm::vec4*>(mColourBuffer->map());
 		int32_t vertexCount = 0;
@@ -62,7 +61,7 @@ namespace genbliothinothon::render {
 						continue;
 					}
 				}
-				const auto&[advance, atlasBounds, planeBounds] = it->second;
+				const auto& [advance, atlasBounds, planeBounds] = it->second;
 
 				const float x0 = cursor.x + planeBounds.x * size;
 				const float y0 = cursor.y - planeBounds.w * size;
@@ -74,12 +73,12 @@ namespace genbliothinothon::render {
 				const float u1 = atlasBounds.z / atlasSize.x;
 				const float v1 = 1.0f - atlasBounds.y / atlasSize.y;
 
-				positionBuffer[vertexCount] = glm::vec3{x0, y0, 0.0f};
-				positionBuffer[vertexCount + 1] = glm::vec3{x1, y0, 0.0f};
-				positionBuffer[vertexCount + 2] = glm::vec3{x1, y1, 0.0f};
-				positionBuffer[vertexCount + 3] = glm::vec3{x1, y1, 0.0f};
-				positionBuffer[vertexCount + 4] = glm::vec3{x0, y1, 0.0f};
-				positionBuffer[vertexCount + 5] = glm::vec3{x0, y0, 0.0f};
+				positionBuffer[vertexCount] = glm::vec2{x0, y0};
+				positionBuffer[vertexCount + 1] = glm::vec2{x1, y0};
+				positionBuffer[vertexCount + 2] = glm::vec2{x1, y1};
+				positionBuffer[vertexCount + 3] = glm::vec2{x1, y1};
+				positionBuffer[vertexCount + 4] = glm::vec2{x0, y1};
+				positionBuffer[vertexCount + 5] = glm::vec2{x0, y0};
 
 				uvBuffer[vertexCount] = glm::vec2{u0, v0};
 				uvBuffer[vertexCount + 1] = glm::vec2{u1, v0};
@@ -96,7 +95,7 @@ namespace genbliothinothon::render {
 				colourBuffer[vertexCount + 5] = colour;
 
 				vertexCount += 6;
-				cursor.x += advance;
+				cursor.x += advance * size;
 			}
 		}
 		mPositionBuffer->unmap();
@@ -106,6 +105,9 @@ namespace genbliothinothon::render {
 
 		mVAO.bind();
 		mShader->bind();
+		mFontAtlas->bind(0);
+
+		mShader->setUniform("uScreenSize", context.getWindowSize());
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
