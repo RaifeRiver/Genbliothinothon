@@ -27,7 +27,7 @@ float audio_sin(float x) {
     return sign * x * (1.0 - x2 * p);
 }
 float white(uint samp,float vol){
-    int s=((samp)<<13)^(samp);
+    uint s=((samp)<<13)^(samp);
     s=s*(s*s*15731+789221)+1376312589;
     return (float(s&0x7fffffff)/1073741824.0*2.0-1.0)*vol;
 }
@@ -35,27 +35,27 @@ float sine_wave(uint samp, int Hz, float vol){
     return (vol*audio_sin(PI*Hz*samp/48000.0));
 }
 float triangle(uint samp, int Hz, float vol, int depth=10){
-    x=0.0;
+    float x=0.0;
     for (int n = 1; n < depth; n++){
         x+=((audio_sin(0.5f*(PI-((n<<1)-1)*PI*x))/(((n<<1)-1)*((n<<1)-1)))*vol*audio_sin(n*PI*Hz*samp/48000.0));
     }
 }
 float ramp_up(uint samp, int Hz, float vol, int depth=80){
-    x=0.0;
+    float x=0.0;
     for (int n = 1; n < depth; n++){
         x+=((1.0-2.0*((n+1)&1))/(n))*(vol * audio_sin(n*PI*Hz*samp/48000.0));
     }
 return x;
 }
 float ramp_down(uint samp, int Hz, float vol, int depth = 80){
-    x=0.0;
+    float x=0.0;
     for (int n = 1; n < depth; n++){
         x+=((-1*(1.0-2.0*(n&1)))/(n))*(vol * audio_sin(n*PI*Hz*samp/48000.0));
     }
     return x;
 }
 float square(uint samp, int Hz, float vol, int depth = 200){
-    x=0.0;
+    float x=0.0;
     for (int n = 1; n < depth; n++){
         x+=((2.0*(n&1))/n*PI)*(vol * 0.7 * audio_sin(n*PI*Hz*samp/48000.0));
     }
@@ -64,5 +64,11 @@ return x;
 
 float Tramp_down(uint samp, int Hz, float vol){
     float p=96000.0/Hz;
-    return(((2*samp/p+h)%2)*-1+1);
+    return(vol*(mod((2*samp/p+h),2)*-1+1));
 }
+
+float Tramp_up(uint samp, int Hz, float vol){
+    float p=96000.0/Hz;
+    return(vol*(mod((2*samp/p),2)+1));
+}
+
