@@ -81,7 +81,9 @@ float Tsquare(uint samp, float Hz, float vol){
 float Ttriangle(uint samp, float Hz, float vol){
     return(vol*(1.0-2.0*abs(2.0*fract(samp/(96000.0/Hz))-1.0)));
 }
-
+float note(int n, int octave) {
+    return 27.5 * pow(2.0, float(n - 1 + octave * 12) / 12.0);
+}
 void main() {
     float leftAudio = 0;
     float rightAudio = 0;
