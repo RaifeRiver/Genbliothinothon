@@ -1,8 +1,10 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "glad/glad.h"
+#include "glm/vec2.hpp"
 
 namespace genbliothinothon::render {
 	std::string loadShaderSource(const std::string& shaderPath);
@@ -18,6 +20,10 @@ namespace genbliothinothon::render {
 		void setUniform(const std::string& name, int32_t v) const;
 
 		void setUniform(const std::string& name, uint32_t v) const;
+
+		void setUniform(const std::string& name, const std::vector<float>& v) const;
+
+		void setUniform(const std::string& name, glm::uvec2 v) const;
 
 		~Shader();
 
