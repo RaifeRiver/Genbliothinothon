@@ -25,7 +25,15 @@ namespace genbliothinothon::render {
 			return mWindowSize;
 		}
 
-		void swapBuffers() const;
+		[[nodiscard]] glm::vec2 getMouseMovement() const {
+			return mMouseMovement;
+		}
+
+		[[nodiscard]] glm::vec2 getMousePos() const;
+
+		[[nodiscard]] bool isButtonPressed(int button) const;
+
+		void swapBuffers();
 
 		[[nodiscard]] bool shouldClose() const;
 
@@ -36,5 +44,6 @@ namespace genbliothinothon::render {
 		std::unique_ptr<UIRenderer> mUIRenderer;
 		GLuint mFBO = 0;
 		glm::uvec2 mWindowSize = {640, 480};
+		glm::vec2 mMouseMovement = {0.0f, 0.0f};
 	};
 }

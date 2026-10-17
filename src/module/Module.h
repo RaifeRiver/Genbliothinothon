@@ -8,7 +8,7 @@
 namespace genbliothinothon::module {
 	class Module {
 	public:
-		explicit Module(glm::vec2 pos);
+		explicit Module(glm::vec2 pos, glm::vec2 size);
 
 		part::Part& addPart(std::unique_ptr<part::Part> part);
 
@@ -22,6 +22,20 @@ namespace genbliothinothon::module {
 
 		void setPos(glm::vec2 pos);
 
+		[[nodiscard]] glm::vec2 getSize() const {
+			return mSize;
+		}
+
+		void setSize(glm::vec2 size);
+
+		[[nodiscard]] bool isDragged() const {
+			return mDragged;
+		}
+
+		void setDragged(const bool dragged) {
+			mDragged = dragged;
+		}
+
 		void render(glm::vec2 pos, render::RenderContext& context) const;
 
 		virtual ~Module() = default;
@@ -29,5 +43,7 @@ namespace genbliothinothon::module {
 	private:
 		std::vector<std::unique_ptr<part::Part>> mParts;
 		glm::vec2 mPos;
+		glm::vec2 mSize;
+		bool mDragged = false;
 	};
 }

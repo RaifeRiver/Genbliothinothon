@@ -41,6 +41,7 @@ namespace genbliothinothon::render {
 					.atlasBounds = {std::stof(row[6]), std::stof(row[7]), std::stof(row[8]), std::stof(row[9])},
 					.planeBounds = {std::stof(row[2]), std::stof(row[3]), std::stof(row[4]), std::stof(row[5])}
 				});
+				mFontAscent = std::max(mFontAscent, mFontGlyphs[unicode].planeBounds.w);
 			}
 		}
 		std::ifstream uiFile("../res/textures/ui.csv");
@@ -65,6 +66,7 @@ namespace genbliothinothon::render {
 
 	void UIRenderer::text(const glm::vec2 pos, const float size, const std::string& text, const glm::vec4 colour) {
 		glm::vec2 cursor = pos;
+		cursor.y += mFontAscent * size;
 		const glm::vec2 atlasSize = mFontAtlas->getSize();
 		for (const char c : text) {
 			auto it = mFontGlyphs.find(c);
@@ -98,7 +100,11 @@ namespace genbliothinothon::render {
 	}
 
 	void UIRenderer::rect(glm::vec2 pos, const glm::vec2 size, glm::vec4 colour, const std::string& texture) {
-		auto& [atlasPos, atlasSize] = mUITextures[texture];
+		auto it = mUITextures.find(texture);
+		if (it == mUITextures.end()) {
+			it = mUITextures.find("white");
+		}
+		auto& [atlasPos, atlasSize] = it->second;
 		mVertices.emplace_back(pos, atlasPos, colour, 1);
 		mVertices.emplace_back(pos + glm::vec2{size.x, 0.0f}, atlasPos + glm::vec2{atlasSize.x, 0.0f}, colour, 1);
 		mVertices.emplace_back(pos + glm::vec2{size.x, size.y}, atlasPos + glm::vec2{atlasSize.x, atlasSize.y}, colour, 1);

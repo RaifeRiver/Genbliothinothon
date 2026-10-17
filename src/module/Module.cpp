@@ -1,7 +1,7 @@
 #include "Module.h"
 
 namespace genbliothinothon::module {
-	Module::Module(const glm::vec2 pos) : mPos(pos) {}
+	Module::Module(const glm::vec2 pos, const glm::vec2 size) : mPos(pos), mSize(size) {}
 
 	part::Part& Module::addPart(std::unique_ptr<part::Part> part) {
 		mParts.push_back(std::move(part));
@@ -10,6 +10,10 @@ namespace genbliothinothon::module {
 
 	void Module::setPos(const glm::vec2 pos) {
 		mPos = pos;
+	}
+
+	void Module::setSize(const glm::vec2 size) {
+		mSize = size;
 	}
 
 	void Module::render(glm::vec2 pos, render::RenderContext& context) const {

@@ -1,8 +1,12 @@
 #include "Genbliothinothon.h"
 
+#include <iostream>
+
+#include "module/WaveGenerator.h"
+
 namespace genbliothinothon {
 	Genbliothinothon::Genbliothinothon() {
-
+		mModules.emplace_back(std::make_unique<module::WaveGenerator>(glm::vec2{100.0f, 100.0f}));
 	}
 
 	void Genbliothinothon::run() {
@@ -11,10 +15,21 @@ namespace genbliothinothon {
 
 			render::UIRenderer& uiRenderer = mRenderContext.getUIRenderer();
 
-			mAudioPlayer.update(mRenderContext);
+			const glm::vec2 mousePos = mRenderContext.getMousePos();
+			bool pressed = mRenderContext.isButtonPressed(GLFW_MOUSE_BUTTON_LEFT);
+			for (const std::unique_ptr<module::Module>& module: mModules) {
+				glm::vec2 modulePos = module->getPos();
+				if (!pressed) {
+					module->setDragged(false);
+				}
+				if (const glm::vec2 moduleSize = module->getSize(); module->isDragged() || mousePos.x >= modulePos.x && mousePos.x <= modulePos.x + moduleSize.x && mousePos.y >= modulePos.y && mousePos.y <= modulePos.y + moduleSize.y && pressed) {
+					module->setDragged(true);
+					module->setPos(modulePos + mRenderContext.getMouseMovement());
+				}
+				module->render({0.0f, 0.0f}, mRenderContext);
+			}
 
-			uiRenderer.text({100.0f, 100.0f}, 100.0f, "Hello World!", {1.0f, 1.0f, 1.0f, 1.0f});
-			uiRenderer.rect({100.0f, 200.0f}, {100.0f, 100.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, "button");
+			mAudioPlayer.update(mRenderContext);
 
 			uiRenderer.render(mRenderContext);
 			mRenderContext.swapBuffers();

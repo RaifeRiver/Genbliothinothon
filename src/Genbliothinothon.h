@@ -1,6 +1,7 @@
 #pragma once
 
 #include "audio/AudioPlayer.h"
+#include "module/Module.h"
 #include "render/RenderContext.h"
 
 namespace genbliothinothon {
@@ -13,5 +14,6 @@ namespace genbliothinothon {
 	private:
 		render::RenderContext mRenderContext;
 		audio::AudioPlayer mAudioPlayer;
+		std::vector<std::unique_ptr<module::Module>> mModules;
 	};
 }

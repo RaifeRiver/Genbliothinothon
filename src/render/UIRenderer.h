@@ -54,6 +54,7 @@ namespace genbliothinothon::render {
 		std::unique_ptr<Image> mFontAtlas;
 		std::unique_ptr<Image> mUIAtlas;
 		std::unordered_map<uint32_t, FontGlyph> mFontGlyphs;
+		float mFontAscent = 0.0f;
 		std::unordered_map<std::string, UITexture> mUITextures;
 	};
 }
