@@ -7,7 +7,7 @@ uniform uint uSampleBase;
 #define MAX_INT 2147483647
 #define PI 3.141592653589793238462643383279502884197169399375105820974944592
 
-float audio_sin(float x) {
+float audio_sin(float x) {return sin(x);
     float TWO_PI = 2.0 * PI;
     float HALF_PI = 0.5 * PI;
 
@@ -36,43 +36,51 @@ float white(uint samp,float vol){
     s=s*(s*s*15731u+789221u)+1376312589u;
     return (float(s&0x7fffffffu)/1073741824.0*2.0-1.0)*vol;
 }
-float sine_wave(uint samp, int Hz, float vol){
-    return (vol*sin(PI*Hz*samp/48000.0));
+float sine_wave(uint samp, float Hz, float vol){
+    return (vol*audio_sin(PI*Hz*samp/48000.0));
 }
-float triangle(uint samp, int Hz, float vol, int depth){
+float triangle(uint samp, float Hz, float vol, int depth){
     float x=0.0;
     for (int n = 1; n < depth; n++){
         x+=((audio_sin(0.5f*(PI-((n<<1)-1)*PI*x))/(((n<<1)-1)*((n<<1)-1)))*vol*audio_sin(n*PI*Hz*samp/48000.0));
     }
     return x;
 }
-float ramp_up(uint samp, int Hz, float vol, int depth){
+float ramp_up(uint samp, float Hz, float vol, int depth){
     float x=0.0;
     for (int n = 1; n < depth; n++){
         x+=((1.0-2.0*((n+1)&1))/(n))*(vol * audio_sin(n*PI*Hz*samp/48000.0));
     }
     return x;
 }
-float ramp_down(uint samp, int Hz, float vol, int depth){
+float ramp_down(uint samp, float Hz, float vol, int depth){
     float x=0.0;
     for (int n = 1; n < depth; n++){
         x+=((-1*(1.0-2.0*(n&1)))/(n))*(vol * audio_sin(n*PI*Hz*samp/48000.0));
     }
     return x;
 }
-float square(uint samp, int Hz, float vol, int depth){
+float square(uint samp, float Hz, float vol, int depth){
     float x=0.0;
     for (int n = 1; n < depth; n++){
         x+=((2.0*(n&1))/n*PI)*(vol * 0.7 * audio_sin(n*PI*Hz*samp/48000.0));
     }
     return x;
 }
-
-float Tramp_down(uint samp, int Hz, float vol){
+float Tramp_down(uint samp, float Hz, float vol){
     float p=96000.0/Hz;
-    return((mod(2u*samp/p+Hz,2.0f))*-1+1)*vol;
+    return(vol*(mod((2u*samp/p+Hz),2)*-1+1));
 }
-
+float Tramp_up(uint samp, float Hz, float vol){
+    float p=96000.0/Hz;
+    return(vol*(mod((2u*samp/p),2)+1));
+}
+float Tsquare(uint samp, float Hz, float vol){
+    return(vol*(2.0*(uint(samp/(96000.0/Hz))&1u)-1.0));
+}
+float Ttriangle(uint samp, float Hz, float vol){
+    return(vol*(1.0-2.0*abs(2.0*fract(samp/(96000.0/Hz))-1.0)));
+}
 
 void main() {
     float leftAudio = 0;
@@ -81,7 +89,7 @@ void main() {
     uvec2 sampleVec = uvec2(gl_FragCoord.xy);
     uint sampleI = sampleVec.x + sampleVec.y * 128u + uSampleBase;
 
-    leftAudio = sine_wave(sampleI, 440, 0.7f);
+    leftAudio = Ttriangle(sampleI, 440, 0.7f);
     rightAudio = leftAudio;
 
     audioOut = vec4(leftAudio, rightAudio, 0.0f, 0.0f);
