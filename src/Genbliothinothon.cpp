@@ -1,6 +1,7 @@
 #include "Genbliothinothon.h"
 
 #include "module/WaveGenerator.h"
+#include "module/part/Background.h"
 
 namespace genbliothinothon {
 	Genbliothinothon::Genbliothinothon() {
@@ -19,17 +20,20 @@ namespace genbliothinothon {
 			render::UIRenderer& uiRenderer = mRenderContext.getUIRenderer();
 
 			const glm::vec2 mousePos = mRenderContext.getMousePos();
+			const glm::vec2 mouseMovement = mRenderContext.getMouseMovement();
 			const bool pressed = mRenderContext.isButtonPressed(GLFW_MOUSE_BUTTON_LEFT);
+			bool moduleFound = false;
+			bool dragging = false;
 			for (const std::unique_ptr<module::Module>& module: mModules) {
-				glm::vec2 modulePos = module->getPos();
+				glm::vec2 modulePos = module->getPos() + mCameraPos;
 				if (!pressed) {
 					module->setDragged(false);
 				}
-				if (const glm::vec2 moduleSize = module->getSize(); module->isDragged() || mousePos.x >= modulePos.x && mousePos.x <= modulePos.x + moduleSize.x && mousePos.y >= modulePos.y && mousePos.y <= modulePos.y + moduleSize.y && pressed) {
-					module->setDragged(true);
-					module->setPos(modulePos + mRenderContext.getMouseMovement());
-				}
-				if (pressed && !lastPressed) {
+				const glm::vec2 moduleSize = module->getSize();
+				const bool moduleHovered = mousePos.x >= modulePos.x && mousePos.x <= modulePos.x + moduleSize.x && mousePos.y >= modulePos.y && mousePos.y <= modulePos.y + moduleSize.y;
+				const bool dragged = module->isDragged();
+				moduleFound |= moduleHovered && dragged;
+				if (!dragged && pressed && !lastPressed) {
 					for (const std::unique_ptr<module::part::Part>& part : module->getParts()) {
 						const glm::vec2 partPos = part->getPos() + modulePos;
 						if (const glm::vec2 partSize = part->getSize(); mousePos.x >= partPos.x && mousePos.x <= partPos.x + partSize.x && mousePos.y >= partPos.y && mousePos.y <= partPos.y + partSize.y) {
@@ -40,9 +44,17 @@ namespace genbliothinothon {
 						}
 					}
 				}
-				module->render({0.0f, 0.0f}, mRenderContext);
+				if (dragged || moduleHovered && pressed && !dragging) {
+					module->setDragged(true);
+					module->setPos(modulePos + mouseMovement - mCameraPos);
+					dragging = true;
+				}
+				module->render(mCameraPos, mRenderContext);
 			}
 			lastPressed = pressed;
+			if (!moduleFound && pressed) {
+				mCameraPos += mouseMovement;
+			}
 
 			mAudioPlayer.update(mRenderContext);
 
