@@ -196,12 +196,14 @@ void main() {
     float voice1, voice2;
 
     // Voice 1: Lowpass Filter
-    MAKE_VOICE(voice1, Tramp_up(sampleI, note(4, 1), 0.7f), FILTER_LOWPASS, 300.0, 1.0, 0.0);
+    VOICE_BEGIN(Tsquare(sampleI, note(4, 1), 100.0f))
+        VOICE_FILTER(FILTER_LOWPASS, 200.0, 100.0, 0.0)
+    VOICE_END(voice1)
 
     // Voice 2: Chained high/lowpass Filters (800Hz + 2kHz)
-    VOICE_BEGIN(Tramp_up(sampleI, note(3, 1), 0.5f))
-        VOICE_FILTER(FILTER_HIGHPASS, 800.0, 0.7, 0.0)
-        VOICE_FILTER(FILTER_LOWPASS, 2000.0, 0.7, 0.0)
+    VOICE_BEGIN(white(sampleI, 1.0f))
+        VOICE_FILTER(FILTER_HIGHPASS, 1500.0, 0.7, 0.0)
+        VOICE_FILTER(FILTER_LOWPASS, 1600.0, 0.05, 0.0)
     VOICE_END(voice2)
 
     // Mix and output
