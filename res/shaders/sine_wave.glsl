@@ -53,3 +53,4 @@ float Ttriangle(uint samp, float Hz, float vol){
     return(vol*(1.0-2.0*abs(2.0*fract(samp/(96000.0/Hz))-1.0)));
 }
 
+
