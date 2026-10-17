@@ -39,6 +39,14 @@ namespace genbliothinothon::module {
 			mDragged = dragged;
 		}
 
+		[[nodiscard]] bool hasInput() const {
+			return mHasInput;
+		}
+
+		void setHasInput(const bool hasInput) {
+			mHasInput = hasInput;
+		}
+
 		void render(glm::vec2 pos, render::RenderContext& context) const;
 
 		virtual ~Module() = default;
@@ -48,5 +56,6 @@ namespace genbliothinothon::module {
 		glm::vec2 mPos;
 		glm::vec2 mSize;
 		bool mDragged = false;
+		bool mHasInput = false;
 	};
 }
