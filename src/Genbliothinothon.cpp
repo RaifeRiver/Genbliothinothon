@@ -1,14 +1,17 @@
 #include "Genbliothinothon.h"
 
+#include "module/Output.h"
 #include "module/WaveGenerator.h"
 #include "module/part/Background.h"
 
 namespace genbliothinothon {
 	Genbliothinothon::Genbliothinothon() {
+		sInstance = this;
+
 		mModules.emplace_back(std::make_unique<module::WaveGenerator>(glm::vec2{100.0f, 100.0f}));
 		mModules.emplace_back(std::make_unique<module::WaveGenerator>(glm::vec2{500.0f, 200.0f}));
 		mModules.emplace_back(std::make_unique<module::WaveGenerator>(glm::vec2{800.0f, 100.0f}));
-		mModules.emplace_back(std::make_unique<module::WaveGenerator>(glm::vec2{300.0f, 500.0f}));
+		mModules.emplace_back(std::make_unique<module::Output>(glm::vec2{300.0f, 500.0f}));
 	}
 
 	void Genbliothinothon::run() {
