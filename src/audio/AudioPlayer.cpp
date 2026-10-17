@@ -14,7 +14,7 @@ namespace genbliothinothon::audio {
 		};
 		mVertexBuffer = std::make_unique<render::Buffer>(bufferData, sizeof(bufferData));
 
-		mOutputImage = std::make_unique<render::Image>(glm::uvec2{128, 128}, GL_RG32I);
+		mOutputImage = std::make_unique<render::Image>(glm::uvec2{128, 128}, GL_RG32F);
 
 		mVAO.setAttribute(0, *mVertexBuffer, 2, GL_FLOAT);
 
@@ -25,7 +25,7 @@ namespace genbliothinothon::audio {
 		PaStreamParameters outputParameters;
 		outputParameters.device = Pa_GetDefaultOutputDevice();
 		outputParameters.channelCount = 2;
-		outputParameters.sampleFormat = paInt32;
+		outputParameters.sampleFormat = paFloat32;
 		outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultHighOutputLatency;
 		outputParameters.hostApiSpecificStreamInfo = nullptr;
 		if (Pa_OpenStream(&mStream, nullptr, &outputParameters, 96000, 16384, paClipOff, nullptr, nullptr) != paNoError) {
@@ -48,7 +48,7 @@ namespace genbliothinothon::audio {
 			glDeleteSync(mFence);
 			unsigned char data[131072];
 			glBindTexture(GL_TEXTURE_2D, mOutputImage->getTexture());
-			glGetTexImage(GL_TEXTURE_2D, 0, GL_RG_INTEGER, GL_INT, data);
+			glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, GL_FLOAT, data);
 			Pa_WriteStream(mStream, data, 16384);
 		}
 

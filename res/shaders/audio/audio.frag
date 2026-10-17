@@ -1,24 +1,24 @@
 #version 330
 
-#define MAX_INT 2147483647
 #define PI 3.1415926535897932384626433832795
 
-out ivec4 audioOut;
+out vec4 audioOut;
 
 uniform uint uSampleBase;
 
-int sine_wave(uint sample, int Hz, float vol){
-    return int(vol*MAX_INT*sin(2.0*PI*Hz*sample/96000.0));
+float sine_wave(uint s, float frequency, float volume) {
+    return volume * sin(2.0f * PI * frequency * s / 96000.0f);
 }
 
 void main() {
-    int leftAudio = 0;
-    int rightAudio = 0;
+    float leftAudio = 0;
+    float rightAudio = 0;
 
     uvec2 sampleVec = uvec2(gl_FragCoord.xy);
     uint sampleI = sampleVec.x + sampleVec.y * 128u + uSampleBase;
 
-    leftAudio = sine_wave(sampleI, 440, 0.3);
+    leftAudio = sine_wave(sampleI, 440.0f, 0.3f);
+    rightAudio = leftAudio;
 
-    audioOut = ivec4(leftAudio, rightAudio, 0, 0);
+    audioOut = vec4(leftAudio, rightAudio, 0.0f, 0.0f);
 }
