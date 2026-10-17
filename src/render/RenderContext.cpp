@@ -61,7 +61,7 @@ namespace genbliothinothon::render {
 			}, nullptr);
 		}
 
-		mTextRenderer = std::make_unique<TextRenderer>();
+		mUIRenderer = std::make_unique<UIRenderer>();
 
 		glGenFramebuffers(1, &mFBO);
 	}

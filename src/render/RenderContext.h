@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TextRenderer.h"
+#include "UIRenderer.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
@@ -17,8 +17,8 @@ namespace genbliothinothon::render {
 
 		void drawArrays(GLenum mode, GLint first, GLsizei count);
 
-		[[nodiscard]] TextRenderer& getTextRenderer() const {
-			return *mTextRenderer;
+		[[nodiscard]] UIRenderer& getUIRenderer() const {
+			return *mUIRenderer;
 		}
 
 		[[nodiscard]] glm::uvec2 getWindowSize() const {
@@ -33,7 +33,7 @@ namespace genbliothinothon::render {
 
 	private:
 		GLFWwindow* mWindow;
-		std::unique_ptr<TextRenderer> mTextRenderer;
+		std::unique_ptr<UIRenderer> mUIRenderer;
 		GLuint mFBO = 0;
 		glm::uvec2 mWindowSize = {640, 480};
 	};

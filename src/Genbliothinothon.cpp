@@ -9,13 +9,14 @@ namespace genbliothinothon {
 		while (!mRenderContext.shouldClose()) {
 			mRenderContext.clearColour(0.05f, 0.05f, 0.1f);
 
-			render::TextRenderer& textRenderer = mRenderContext.getTextRenderer();
+			render::UIRenderer& uiRenderer = mRenderContext.getUIRenderer();
 
 			mAudioPlayer.update(mRenderContext);
 
-			textRenderer.text({100.0f, 100.0f}, 100.0f, "Hello World!", {1.0f, 1.0f, 1.0f, 1.0f});
+			uiRenderer.text({100.0f, 100.0f}, 100.0f, "Hello World!", {1.0f, 1.0f, 1.0f, 1.0f});
+			uiRenderer.rect({100.0f, 200.0f}, {100.0f, 100.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, "button");
 
-			textRenderer.render(mRenderContext);
+			uiRenderer.render(mRenderContext);
 			mRenderContext.swapBuffers();
 		}
 	}
