@@ -13,7 +13,7 @@ namespace genbliothinothon {
 
 			mAudioPlayer.update(mRenderContext);
 
-			textRenderer.text({100.0f, 100.0f}, 20.0f, "Hello World", {0.0f, 0.0f, 1.0f, 1.0f});
+			textRenderer.text({100.0f, 100.0f}, 100.0f, "Hello World!", {1.0f, 1.0f, 1.0f, 1.0f});
 
 			textRenderer.render(mRenderContext);
 			mRenderContext.swapBuffers();
