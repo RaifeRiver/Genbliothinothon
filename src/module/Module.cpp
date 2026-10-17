@@ -3,11 +3,6 @@
 namespace genbliothinothon::module {
 	Module::Module(const glm::vec2 pos, const glm::vec2 size) : mPos(pos), mSize(size) {}
 
-	part::Part& Module::addPart(std::unique_ptr<part::Part> part) {
-		mParts.push_back(std::move(part));
-		return *mParts.back();
-	}
-
 	void Module::setPos(const glm::vec2 pos) {
 		mPos = pos;
 	}

@@ -10,7 +10,10 @@ namespace genbliothinothon::module {
 	public:
 		explicit Module(glm::vec2 pos, glm::vec2 size);
 
-		part::Part& addPart(std::unique_ptr<part::Part> part);
+		template <std::derived_from<part::Part> T> T& addPart(std::unique_ptr<T> part) {
+			mParts.push_back(std::move(part));
+			return static_cast<T&>(*mParts.back());
+		}
 
 		[[nodiscard]] std::vector<std::unique_ptr<part::Part>>& getParts() {
 			return mParts;

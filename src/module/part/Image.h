@@ -11,7 +11,6 @@ namespace genbliothinothon::module::part {
 		void render_(glm::vec2 pos, render::RenderContext& context) override;
 
 	private:
-		glm::vec2 mSize;
 		std::string mTexture;
 		glm::vec4 mTint;
 	};
