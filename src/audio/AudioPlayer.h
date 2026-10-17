@@ -2,6 +2,7 @@
 
 #include "portaudio.h"
 
+#include "module/Module.h"
 #include "render/Image.h"
 #include "render/RenderContext.h"
 #include "render/VAO.h"
@@ -12,6 +13,8 @@ namespace genbliothinothon::audio {
 	class AudioPlayer {
 	public:
 		AudioPlayer();
+
+		void rebuildShader(const std::vector<std::unique_ptr<module::Module>>& modules);
 
 		void update(render::RenderContext& renderContext);
 

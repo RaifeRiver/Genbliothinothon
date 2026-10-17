@@ -11,6 +11,21 @@ namespace genbliothinothon::module {
 		mSize = size;
 	}
 
+	bool Module::isDirty() const {
+		for (const std::unique_ptr<part::Part>& part: mParts) {
+			if (part->isDirty()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void Module::clearDirty() const {
+		for (const std::unique_ptr<part::Part>& part: mParts) {
+			part->setDirty(false);
+		}
+	}
+
 	void Module::render(glm::vec2 pos, render::RenderContext& context) const {
 		pos += mPos;
 		for (const std::unique_ptr<part::Part>& part: mParts) {

@@ -13,6 +13,7 @@ namespace genbliothinothon::module::part {
 	void Send::click(glm::vec2) {
 		mSelecting = !mSelecting;
 		mSendTarget = nullptr;
+		setDirty(true);
 	}
 
 	void Send::clickOff(glm::vec2) {
@@ -25,6 +26,7 @@ namespace genbliothinothon::module::part {
 			const glm::vec2 modulePos = module->getPos();
 			if (const glm::vec2 moduleSize = module->getSize(); module->hasInput() && worldPos.x >= modulePos.x && worldPos.x <= modulePos.x + moduleSize.x && worldPos.y >= modulePos.y && worldPos.y <= modulePos.y + moduleSize.y) {
 				mSendTarget = module.get();
+				setDirty(true);
 				break;
 			}
 		}

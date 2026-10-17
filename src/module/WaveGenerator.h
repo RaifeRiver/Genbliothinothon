@@ -8,6 +8,8 @@ namespace genbliothinothon::module {
 	public:
 		explicit WaveGenerator(glm::vec2 pos);
 
+		std::string generateGLSL(const std::string& inputName) override;
+
 	private:
 		part::Dropdown* mWaveType;
 	};

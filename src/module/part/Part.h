@@ -17,6 +17,14 @@ namespace genbliothinothon::module::part {
 			return mSize;
 		}
 
+		[[nodiscard]] bool isDirty() const {
+			return mDirty;
+		}
+
+		void setDirty(const bool dirty) {
+			mDirty = dirty;
+		}
+
 		virtual void click(glm::vec2 pos);
 
 		virtual void clickOff(glm::vec2 pos);
@@ -29,5 +37,6 @@ namespace genbliothinothon::module::part {
 	private:
 		glm::vec2 mPos;
 		glm::vec2 mSize;
+		bool mDirty = false;
 	};
 }

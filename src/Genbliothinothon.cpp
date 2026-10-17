@@ -27,6 +27,7 @@ namespace genbliothinothon {
 			const bool pressed = mRenderContext.isButtonPressed(GLFW_MOUSE_BUTTON_LEFT);
 			bool moduleFound = false;
 			bool dragging = false;
+			bool dirty = false;
 			for (const std::unique_ptr<module::Module>& module: mModules) {
 				glm::vec2 modulePos = module->getPos() + mCameraPos;
 				if (!pressed) {
@@ -53,10 +54,18 @@ namespace genbliothinothon {
 					dragging = true;
 				}
 				module->render(mCameraPos, mRenderContext);
+				if (module->isDirty()) {
+					module->clearDirty();
+					dirty = true;
+				}
 			}
 			lastPressed = pressed;
 			if (!moduleFound && pressed) {
 				mCameraPos += mouseMovement;
+			}
+
+			if (dirty) {
+				mAudioPlayer.rebuildShader(mModules);
 			}
 
 			mAudioPlayer.update(mRenderContext);

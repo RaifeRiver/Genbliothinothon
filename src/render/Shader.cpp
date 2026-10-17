@@ -37,10 +37,8 @@ namespace genbliothinothon::render {
 		return shader;
 	}
 
-	Shader::Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) {
-		const std::string vertexShaderSource = loadShaderSource(vertexShaderPath);
+	Shader::Shader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource) {
 		const GLuint vertexShader = compileShader(vertexShaderSource, GL_VERTEX_SHADER);
-		const std::string fragmentShaderSource = loadShaderSource(fragmentShaderPath);
 		const GLuint fragmentShader = compileShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
 
 		mShaderProgram = glCreateProgram();
@@ -88,5 +86,9 @@ namespace genbliothinothon::render {
 
 	Shader::~Shader() {
 		glDeleteProgram(mShaderProgram);
+	}
+
+	std::unique_ptr<Shader> Shader::loadFromFiles(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) {
+		return std::make_unique<Shader>(loadShaderSource(vertexShaderPath), loadShaderSource(fragmentShaderPath));
 	}
 }

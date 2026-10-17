@@ -15,6 +15,7 @@ namespace genbliothinothon::module::part {
 		if (mSelectedOption >= mOptions.size()) {
 			mSelectedOption = 0;
 		}
+		setDirty(true);
 	}
 
 	void Dropdown::click(glm::vec2) {
@@ -25,6 +26,7 @@ namespace genbliothinothon::module::part {
 		if (mOpen) {
 			if (const glm::vec2 size = getSize(); pos.y > size.y && pos.y <= size.y * static_cast<float>(mOptions.size() + 1)) {
 				mSelectedOption = static_cast<uint32_t>((pos.y - size.y) / size.y);
+				setDirty(true);
 			}
 			mOpen = false;
 		}

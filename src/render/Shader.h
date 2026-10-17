@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,7 @@ namespace genbliothinothon::render {
 
 	class Shader {
 	public:
-		Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+		Shader(const std::string& vertexShaderSource, const std::string& fragmentShaderSource);
 
 		void bind() const;
 
@@ -26,6 +27,8 @@ namespace genbliothinothon::render {
 		void setUniform(const std::string& name, glm::uvec2 v) const;
 
 		~Shader();
+
+		static std::unique_ptr<Shader> loadFromFiles(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
 
 	private:
 		GLuint mShaderProgram;

@@ -8,7 +8,7 @@
 
 namespace genbliothinothon::render {
 	UIRenderer::UIRenderer() {
-		mShader = std::make_unique<Shader>("../res/shaders/ui.vert", "../res/shaders/ui.frag");
+		mShader = Shader::loadFromFiles("../res/shaders/ui.vert", "../res/shaders/ui.frag");
 		mShader->setUniform("uFontAtlas", 0);
 		mShader->setUniform("uUIAtlas", 1);
 
