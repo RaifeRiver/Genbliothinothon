@@ -11,15 +11,15 @@
 #include "VAO.h"
 
 namespace genbliothinothon::render {
-	static constexpr uint32_t MAX_TEXT_VERTICES = 16384;
+	static constexpr uint32_t MAX_VERTICES = 16384;
 
 	class RenderContext;
 
-	struct Text {
+	struct Vertex {
 		glm::vec2 pos;
-		float size;
-		std::string text;
+		glm::vec2 uv;
 		glm::vec4 colour;
+		uint32_t type;
 	};
 
 	struct FontGlyph {
@@ -28,11 +28,18 @@ namespace genbliothinothon::render {
 		glm::vec4 planeBounds;
 	};
 
-	class TextRenderer {
+	struct UITexture {
+		glm::vec2 pos;
+		glm::vec2 size;
+	};
+
+	class UIRenderer {
 	public:
-		TextRenderer();
+		UIRenderer();
 
 		void text(glm::vec2 pos, float size, const std::string& text, glm::vec4 colour);
+
+		void rect(glm::vec2 pos, glm::vec2 size, glm::vec4 colour, const std::string& texture = "white");
 
 		void render(RenderContext& context);
 
@@ -42,8 +49,12 @@ namespace genbliothinothon::render {
 		std::unique_ptr<Buffer> mPositionBuffer;
 		std::unique_ptr<Buffer> mUVBuffer;
 		std::unique_ptr<Buffer> mColourBuffer;
-		std::vector<Text> mText;
+		std::unique_ptr<Buffer> mTypeBuffer;
+		std::vector<Vertex> mVertices;
 		std::unique_ptr<Image> mFontAtlas;
+		std::unique_ptr<Image> mUIAtlas;
 		std::unordered_map<uint32_t, FontGlyph> mFontGlyphs;
+		float mFontAscent = 0.0f;
+		std::unordered_map<std::string, UITexture> mUITextures;
 	};
 }

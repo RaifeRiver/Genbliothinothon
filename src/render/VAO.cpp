@@ -13,7 +13,12 @@ namespace genbliothinothon::render {
 		bind();
 		glEnableVertexAttribArray(index);
 		glBindBuffer(GL_ARRAY_BUFFER, buffer.getBuffer());
-		glVertexAttribPointer(index, size, type, false, 0, nullptr);
+		if (type == GL_FLOAT) {
+			glVertexAttribPointer(index, size, type, false, 0, nullptr);
+		}
+		else if (type == GL_UNSIGNED_INT || type == GL_INT) {
+			glVertexAttribIPointer(index, size, type, 0, nullptr);
+		}
 	}
 
 	void VAO::removeAttribute(const GLuint index) const {

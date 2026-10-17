@@ -32,6 +32,13 @@ namespace genbliothinothon::render {
 			glViewport(0, 0, width, height);
 			renderContext->mWindowSize = glm::uvec2(width, height);
 		});
+		glfwSetCursorPosCallback(mWindow, [](GLFWwindow* window, const double x, const double y) {
+			auto* renderContext = static_cast<RenderContext*>(glfwGetWindowUserPointer(window));
+			static glm::vec2 lastPos = {0.0f, 0.0f};
+			const glm::vec2 pos = {x, y};
+			renderContext->mMouseMovement += pos - lastPos;
+			lastPos = pos;
+		});
 
 		int majorVersion = 0;
 		int minorVersion = 0;
@@ -61,7 +68,7 @@ namespace genbliothinothon::render {
 			}, nullptr);
 		}
 
-		mTextRenderer = std::make_unique<TextRenderer>();
+		mUIRenderer = std::make_unique<UIRenderer>();
 
 		glGenFramebuffers(1, &mFBO);
 	}
@@ -84,7 +91,19 @@ namespace genbliothinothon::render {
 		glDrawArrays(mode, first, count);
 	}
 
-	void RenderContext::swapBuffers() const {
+	glm::vec2 RenderContext::getMousePos() const {
+		double x;
+		double y;
+		glfwGetCursorPos(mWindow, &x, &y);
+		return glm::vec2{x, y};
+	}
+
+	bool RenderContext::isButtonPressed(const int button) const {
+		return glfwGetMouseButton(mWindow, button) == GLFW_PRESS;
+	}
+
+	void RenderContext::swapBuffers() {
+		mMouseMovement = glm::vec2{0.0f, 0.0f};
 		glfwSwapBuffers(mWindow);
 		glfwPollEvents();
 	}
