@@ -14,7 +14,7 @@ namespace genbliothinothon::audio {
 		};
 		mVertexBuffer = std::make_unique<render::Buffer>(bufferData, sizeof(bufferData));
 
-		mOutputImage = std::make_unique<render::Image>(glm::uvec2{128, 128}, GL_RG);
+		mOutputImage = std::make_unique<render::Image>(glm::uvec2{128, 128}, GL_RG32F);
 
 		mVAO.setAttribute(0, *mVertexBuffer, 2, GL_FLOAT);
 
