@@ -1,7 +1,5 @@
 #include "Genbliothinothon.h"
 
-#include <iostream>
-
 #include "module/WaveGenerator.h"
 
 namespace genbliothinothon {
