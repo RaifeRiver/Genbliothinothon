@@ -24,7 +24,6 @@ namespace genbliothinothon::module {
 				frequency = frequencyIt->second;
 			}
 			else {
-				// 27.5f * std::pow(2.0f, (std::round(getValue()) - 1.0f) / 12.0f)
 				frequency = std::string("27.5f*pow(2.0f,(12.0f*log2(") + frequencyIt->second + "/27.5f)+" + std::to_string(semitoneOffset) + ")/12.0f)";
 			}
 		}
@@ -34,22 +33,22 @@ namespace genbliothinothon::module {
 		const std::string indexStr = std::to_string(index);
 		switch (mWaveType->getSelectedOption()) {
 			case 0:
-				return "float Audio" + indexStr + "=sine(sample0, " + frequency + ", " + volume + ");";
+				return "float Audio" + indexStr + "=sine(sample0," + frequency + "," + volume + ");";
 				break;
 			case 1:
-				return "float Audio" + indexStr + "=saw(sample0, " + frequency + ", " + volume + ");";
+				return "float Audio" + indexStr + "=saw(sample0," + frequency + "," + volume + ");";
 				break;
 			case 2:
-				return "float Audio" + indexStr + "=Isaw(sample0, " + frequency + ", " + volume + ");";
+				return "float Audio" + indexStr + "=Isaw(sample0," + frequency + "," + volume + ");";
 				break;
 			case 3:
-				return "float Audio" + indexStr + "=tri(sample0, " + frequency + ", " + volume + ");";
+				return "float Audio" + indexStr + "=tri(sample0," + frequency + "," + volume + ");";
 				break;
 			case 4:
-				return "float Audio" + indexStr + "=sq(sample0, " + frequency + ", " + volume + ");";
+				return "float Audio" + indexStr + "=sq(sample0," + frequency + "," + volume + ");";
 				break;
 			case 5:
-				return "float Audio" + indexStr + "=white(sample0, " + volume + ");";
+				return "float Audio" + indexStr + "=white(sample0," + volume + ");";
 				break;
 			default:
 				throw std::runtime_error("Invalid wave type");
