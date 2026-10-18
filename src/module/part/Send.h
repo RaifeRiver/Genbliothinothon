@@ -6,13 +6,17 @@
 namespace genbliothinothon::module::part {
 	class Send : public Part {
 	public:
-		Send(Module* parent, const glm::vec2& pos, const glm::vec2& size);
+		Send(Module* parent, const glm::vec2& pos, const glm::vec2& size, std::string name);
 
 		[[nodiscard]] SendTarget* getSendTarget() const {
 			return mSendTarget;
 		}
 
 		void setSendTarget(SendTarget* target);
+
+		[[nodiscard]] std::string getName() const {
+			return mName;
+		}
 
 		void click(glm::vec2 pos) override;
 
@@ -24,5 +28,6 @@ namespace genbliothinothon::module::part {
 	private:
 		SendTarget* mSendTarget = nullptr;
 		bool mSelecting = false;
+		std::string mName;
 	};
 }

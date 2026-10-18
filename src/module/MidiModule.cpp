@@ -7,10 +7,10 @@
 #include "part/Send.h"
 
 namespace genbliothinothon::module {
-	MidiModule::MidiModule(const glm::vec2 pos) : Module(pos, glm::vec2{200.0f, 50.0f}) {
-		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 50.0f}, "Midi player"));
-		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}));
-		//addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 69.0f}, glm::vec2{194.0f, 20.0f}));
+	MidiModule::MidiModule(const glm::vec2 pos) : Module(pos, glm::vec2{200.0f, 70.0f}) {
+		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 70.0f}, "Midi player"));
+		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}, "Frequency"));
+		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 47.0f}, glm::vec2{194.0f, 20.0f}, "Volume"));
 	}
 
 	void MidiModule::setInputCSV(const std::string& inputCSV) {
@@ -66,7 +66,7 @@ namespace genbliothinothon::module {
 						throw std::runtime_error("Invalid note");
 				}
 				const float frequency = 27.5f * std::pow(2.0f, (static_cast<float>(semitone) + static_cast<float>(std::stoi(row[3])) * 12.0f - 1.0f) / 12.0f);
-				functions += "if(s>=" + std::to_string(start * beatLength) + " && s<" + std::to_string((start + length) * beatLength) + ")return vec2(" + std::to_string(frequency) + "," + std::to_string(std::stoi(row[6])) + ");\n";
+				functions += "if(s>=" + std::to_string(start * beatLength) + " && s<" + std::to_string((start + length) * beatLength) + ")return vec2(" + std::to_string(frequency) + "," + std::to_string(std::stof(row[6])) + ");\n";
 				mLength = (start + length) * beatLength;
 			}
 		}
@@ -74,7 +74,8 @@ namespace genbliothinothon::module {
 		return functions;
 	}
 
-	std::string MidiModule::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>& inputValues) {
-		return "midiGetNote" + std::to_string(index) + "(sample0%" + std::to_string(static_cast<uint32_t>(mLength)) + "u)[0]";
+	std::string MidiModule::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>&) {
+		const std::string indexStr = std::to_string(index);
+		return "vec2 Data" + indexStr + "=midiGetNote" + indexStr + "(sample0%" + std::to_string(static_cast<uint32_t>(mLength)) + "u);\nfloat Frequency" + indexStr + "=Data" + indexStr + "[0];\nfloat Volume" + indexStr + "=Data" + indexStr + "[1];";
 	}
 }

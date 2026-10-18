@@ -58,7 +58,6 @@ namespace genbliothinothon::audio {
 				throw std::runtime_error("Recursive part generation");
 			}
 			generatingModules[module] = true;
-			const bool output = dynamic_cast<module::Output*>(modules[module].get());
 
 			const std::vector<std::unique_ptr<module::part::Part>>& parts = modules[module]->getParts();
 			std::unordered_map<std::string, std::string> inputStrings;
@@ -71,7 +70,7 @@ namespace genbliothinothon::audio {
 						for (uint32_t parentIndex = 0; parentIndex < modules.size(); parentIndex++) {
 							if (parent == modules[parentIndex].get()) {
 								generateModule(parentIndex);
-								inputString += "a" + std::to_string(parentIndex) + "+";
+								inputString += input->getName() + std::to_string(parentIndex) + "+";
 								inputCount++;
 							}
 						}
@@ -88,12 +87,7 @@ namespace genbliothinothon::audio {
 			}
 			generatedFunctions += modules[module]->generateFunctions(module);
 
-			if (!output) {
-				generatedCode += "float a" + std::to_string(module) + " = " + modules[module]->generateGLSL(module, inputStrings) + ";\n";
-			}
-			else {
-				generatedCode += modules[module]->generateGLSL(module, inputStrings);
-			}
+			generatedCode += modules[module]->generateGLSL(module, inputStrings) + "\n";
 
 			generatedModules[module] = true;
 		};

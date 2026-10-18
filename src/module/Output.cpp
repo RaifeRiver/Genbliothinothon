@@ -10,7 +10,7 @@ namespace genbliothinothon::module {
 		addPart(std::make_unique<part::Output>(this, glm::vec2{75.0f, 25.0f}, glm::vec2{50.0f, 50.0f}, "Right"));
 	}
 
-	std::string Output::generateGLSL(uint32_t index, std::unordered_map<std::string, std::string>& inputValues) {
+	std::string Output::generateGLSL(uint32_t, std::unordered_map<std::string, std::string>& inputValues) {
 		return "float leftAudio=" + inputValues["Left"] + ";\nfloat rightAudio=" + inputValues["Right"] + ";\n";
 	}
 }
