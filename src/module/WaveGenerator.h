@@ -3,6 +3,7 @@
 #include "Module.h"
 #include "part/Dial.h"
 #include "part/Dropdown.h"
+#include "part/NoteDial.h"
 
 namespace genbliothinothon::module {
 	class WaveGenerator : public Module {
@@ -13,7 +14,7 @@ namespace genbliothinothon::module {
 
 	private:
 		part::Dropdown* mWaveType;
-		part::Dial* mFrequency;
+		part::NoteDial* mFrequency;
 		part::Dial* mVolume;
 	};
 }

@@ -1,7 +1,8 @@
 #include "WaveGenerator.h"
 
+#include <cmath>
+
 #include "part/Background.h"
-#include "part/NoteDial.h"
 #include "part/Send.h"
 
 namespace genbliothinothon::module {
@@ -19,7 +20,13 @@ namespace genbliothinothon::module {
 		std::string frequency = mFrequency->getDefaultValueString();
 		std::string volume = mVolume->getDefaultValueString();
 		if (frequencyIt != inputValues.end()) {
-			frequency = frequencyIt->second;
+			if (const auto semitoneOffset = static_cast<int32_t>(std::round(mFrequency->getValue())) - 60; semitoneOffset == 0) {
+				frequency = frequencyIt->second;
+			}
+			else {
+				// 27.5f * std::pow(2.0f, (std::round(getValue()) - 1.0f) / 12.0f)
+				frequency = std::string("27.5f*pow(2.0f,(12.0f*log2(") + frequencyIt->second + "/27.5f)+" + std::to_string(semitoneOffset) + ")/12.0f)";
+			}
 		}
 		if (volumeIt != inputValues.end()) {
 			volume += "*(" + volumeIt->second + ")";
