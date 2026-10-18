@@ -58,6 +58,9 @@ namespace genbliothinothon::module::part {
 		else if (mSelecting) {
 			sendText = "Click to select...";
 		}
+		if (sendText.size() > 23) {
+			sendText = sendText.substr(0, std::min<size_t>(sendText.size(), 20)) + "...";
+		}
 		renderer.text(pos + glm::vec2{2.0f, textHeight}, 14.0f, sendText, glm::vec4{1.0f, 1.0f, 1.0f, 1.0f});
 	}
 }
