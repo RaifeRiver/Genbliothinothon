@@ -19,5 +19,6 @@ namespace genbliothinothon::module {
 
 	private:
 		std::string mInputCSV;
+		float mLength = 0.0f;
 	};
 }

@@ -19,6 +19,7 @@ namespace genbliothinothon::module {
 	}
 
 	std::string MidiModule::generateFunctions(const uint32_t index) {
+		mLength = 0.0f;
 		std::string functions = "vec2 midiGetNote" + std::to_string(index) + "(uint s) {";
 		std::string line;
 		constexpr float beatLength = 60.0f * 96000.0f / 112.0f;
@@ -66,6 +67,7 @@ namespace genbliothinothon::module {
 				}
 				const float frequency = 27.5f * std::pow(2.0f, (static_cast<float>(semitone) + static_cast<float>(std::stoi(row[3])) * 12.0f - 1.0f) / 12.0f);
 				functions += "if(s>=" + std::to_string(start * beatLength) + " && s<" + std::to_string((start + length) * beatLength) + ")return vec2(" + std::to_string(frequency) + "," + std::to_string(std::stoi(row[6])) + ");\n";
+				mLength = (start + length) * beatLength;
 			}
 		}
 		functions += "return vec2(0.0f,0.0f);}";
@@ -73,6 +75,6 @@ namespace genbliothinothon::module {
 	}
 
 	std::string MidiModule::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>& inputValues) {
-		return "midiGetNote" + std::to_string(index) + "(sample0)[0]";
+		return "midiGetNote" + std::to_string(index) + "(sample0%" + std::to_string(static_cast<uint32_t>(mLength)) + "u)[0]";
 	}
 }
