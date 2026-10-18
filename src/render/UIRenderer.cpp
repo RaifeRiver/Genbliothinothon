@@ -3,8 +3,11 @@
 #include <fstream>
 #include <sstream>
 
-#include "RenderContext.h"
+#include "glm/mat4x4.hpp"
 #include "glm/vec3.hpp"
+#include "glm/gtx/transform.hpp"
+
+#include "RenderContext.h"
 
 namespace genbliothinothon::render {
 	UIRenderer::UIRenderer() {
@@ -111,6 +114,23 @@ namespace genbliothinothon::render {
 		mVertices.emplace_back(pos + glm::vec2{size.x, size.y}, atlasPos + glm::vec2{atlasSize.x, atlasSize.y}, colour, 1);
 		mVertices.emplace_back(pos + glm::vec2{0.0f, size.y}, atlasPos + glm::vec2{0.0f, atlasSize.y}, colour, 1);
 		mVertices.emplace_back(pos, atlasPos, colour, 1);
+	}
+
+	void UIRenderer::rotatedRect(const glm::vec2 pos, const float angle, const glm::vec2 size, glm::vec4 colour, const std::string& texture) {
+		auto it = mUITextures.find(texture);
+		if (it == mUITextures.end()) {
+			it = mUITextures.find("white");
+		}
+		auto& [atlasPos, atlasSize] = it->second;
+		const glm::vec2 halfSize = size / 2.0f;
+		const glm::vec2 centre = pos + halfSize;
+		const glm::mat4 model = glm::rotate(glm::translate(glm::vec3(centre, 0.0f)), glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
+		mVertices.emplace_back(glm::vec2(model * glm::vec4(-halfSize, 0.0f, 1.0f)), atlasPos, colour, 1);
+		mVertices.emplace_back(glm::vec2(model * glm::vec4(glm::vec2{halfSize.x, -halfSize.y}, 0.0f, 1.0f)), atlasPos + glm::vec2{atlasSize.x, 0.0f}, colour, 1);
+		mVertices.emplace_back(glm::vec2(model * glm::vec4(halfSize, 0.0f, 1.0f)), atlasPos + glm::vec2{atlasSize.x, atlasSize.y}, colour, 1);
+		mVertices.emplace_back(glm::vec2(model * glm::vec4(halfSize, 0.0f, 1.0f)), atlasPos + glm::vec2{atlasSize.x, atlasSize.y}, colour, 1);
+		mVertices.emplace_back(glm::vec2(model * glm::vec4(glm::vec2{-halfSize.x, halfSize.y}, 0.0f, 1.0f)), atlasPos + glm::vec2{0.0f, atlasSize.y}, colour, 1);
+		mVertices.emplace_back(glm::vec2(model * glm::vec4(-halfSize, 0.0f, 1.0f)), atlasPos, colour, 1);
 	}
 
 	void UIRenderer::render(RenderContext& context) {

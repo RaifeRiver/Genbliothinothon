@@ -14,5 +14,6 @@ namespace genbliothinothon::module {
 	private:
 		part::Dropdown* mWaveType;
 		part::Dial* mFrequency;
+		part::Dial* mVolume;
 	};
 }

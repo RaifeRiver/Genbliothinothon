@@ -12,7 +12,7 @@ namespace genbliothinothon::module::part {
 	}
 
 	bool Dial::drag(const glm::vec2 distance) {
-		mValue -= (distance.y - distance.x) * (mMax - mMin) * 0.0001f;
+		mValue -= (distance.y - distance.x) * (mMax - mMin) * 0.001f;
 		mValue = std::clamp(mValue, mMin, mMax);
 		return true;
 	}
@@ -24,6 +24,6 @@ namespace genbliothinothon::module::part {
 	void Dial::render_(const glm::vec2 pos, render::RenderContext& context) {
 		render::UIRenderer& renderer = context.getUIRenderer();
 		const glm::vec2 size = getSize();
-		renderer.rect(pos, size, glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}, "dial");
+		renderer.rotatedRect(pos, (mValue - mMin) / (mMax - mMin) * 300.0f - 150.0f, size, glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}, "dial");
 	}
 }

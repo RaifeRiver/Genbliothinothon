@@ -41,6 +41,8 @@ namespace genbliothinothon::render {
 
 		void rect(glm::vec2 pos, glm::vec2 size, glm::vec4 colour, const std::string& texture = "white");
 
+		void rotatedRect(glm::vec2 pos, float angle, glm::vec2 size, glm::vec4 colour, const std::string& texture = "white");
+
 		void render(RenderContext& context);
 
 	private:

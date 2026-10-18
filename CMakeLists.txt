@@ -18,6 +18,8 @@ FetchContent_MakeAvailable(portaudio)
 file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS src/*.cpp lib/*.c)
 add_executable(Genbliothinothon ${SRC_FILES})
 
+target_compile_definitions(Genbliothinothon PUBLIC GLM_ENABLE_EXPERIMENTAL)
+
 target_include_directories(Genbliothinothon PUBLIC lib)
 target_include_directories(Genbliothinothon PUBLIC src)
 
