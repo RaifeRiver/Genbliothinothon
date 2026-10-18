@@ -1,34 +1,35 @@
 #include "MidiModule.h"
 
 #include <cmath>
-#include <sstream>
+#include <fstream>
 
 #include "part/Background.h"
 #include "part/RemoveButton.h"
 #include "part/Send.h"
-#include "part/TextInput.h"
 
 namespace genbliothinothon::module {
 	MidiModule::MidiModule(const glm::vec2 pos) : Module(pos, glm::vec2{200.0f, 93.0f}) {
 		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 93.0f}, "Midi player"));
 		addPart(std::make_unique<part::RemoveButton>(this));
-		addPart(std::make_unique<part::TextInput>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}));
+		mTextInput = &addPart(std::make_unique<part::TextInput>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}));
 		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 47.0f}, glm::vec2{194.0f, 20.0f}, "Frequency"));
 		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 70.0f}, glm::vec2{194.0f, 20.0f}, "Volume"));
 	}
 
-	void MidiModule::setInputCSV(const std::string& inputCSV) {
-		mInputCSV = inputCSV;
-		setDirty();
-	}
-
 	std::string MidiModule::generateFunctions(const uint32_t index) {
+		std::ifstream midiFile(mTextInput->getText());
+		if (!midiFile.is_open()) {
+			mLength = 1.0f;
+			return "vec2 midiGetNote"+ std::to_string(index) + "(uint s) {return vec2(0.0f,0.0f);}";
+		}
 		mLength = 0.0f;
 		std::string functions = "vec2 midiGetNote" + std::to_string(index) + "(uint s) {";
 		std::string line;
 		constexpr float beatLength = 60.0f * 96000.0f / 112.0f;
-		std::istringstream input(mInputCSV);
-		while (std::getline(input, line)) {
+		std::stringstream midiStream;
+		midiStream << midiFile.rdbuf();
+		midiFile.close();
+		while (std::getline(midiStream, line)) {
 			if (line.starts_with("//")) {
 				continue;
 			}

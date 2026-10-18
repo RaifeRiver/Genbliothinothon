@@ -1,7 +1,6 @@
 #include "Genbliothinothon.h"
 
 #include <fstream>
-#include <sstream>
 
 #include "module/MidiModule.h"
 #include "module/Output.h"
@@ -14,19 +13,11 @@ namespace genbliothinothon {
 	Genbliothinothon::Genbliothinothon() {
 		sInstance = this;
 
-		std::ifstream midiFile("../res/songs/song_1_voice1.csv");
-		std::stringstream midiStream;
-		midiStream << midiFile.rdbuf();
-		std::string midiCSV = midiStream.str();
 		mModules.emplace_back(std::make_unique<module::MidiModule>(glm::vec2{100.0f, 100.0f}));
-		dynamic_cast<module::MidiModule*>(mModules.back().get())->setInputCSV(midiCSV);
+		dynamic_cast<module::MidiModule*>(mModules.back().get())->getTextInput()->setText("../res/songs/song_1_voice1.csv");
 
-		std::ifstream midiFile2("../res/songs/song_1_voice2.csv");
-		std::stringstream midiStream2;
-		midiStream2 << midiFile2.rdbuf();
-		std::string midiCSV2 = midiStream2.str();
 		mModules.emplace_back(std::make_unique<module::MidiModule>(glm::vec2{100.0f, 250.0f}));
-		dynamic_cast<module::MidiModule*>(mModules.back().get())->setInputCSV(midiCSV2);
+		dynamic_cast<module::MidiModule*>(mModules.back().get())->getTextInput()->setText("../res/songs/song_1_voice2.csv");
 
 		mModules.emplace_back(std::make_unique<module::WaveGenerator>(glm::vec2{310.0f, 100.0f}));
 		mModules.emplace_back(std::make_unique<module::WaveGenerator>(glm::vec2{310.0f, 250.0f}));
@@ -34,6 +25,9 @@ namespace genbliothinothon {
 
 		mModuleTypes.emplace_back("Wave generator", [](const glm::vec2 pos) {
 			return std::make_unique<module::WaveGenerator>(pos);
+		});
+		mModuleTypes.emplace_back("MIDI Sequencer", [](const glm::vec2 pos) {
+			return std::make_unique<module::MidiModule>(pos);
 		});
 	}
 

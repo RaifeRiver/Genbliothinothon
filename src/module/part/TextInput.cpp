@@ -14,6 +14,7 @@ namespace genbliothinothon::module::part {
 
 	void TextInput::clickOff(glm::vec2) {
 		mSelected = false;
+		setDirty(true);
 	}
 
 	void TextInput::charPressed(const char key) {
@@ -26,6 +27,10 @@ namespace genbliothinothon::module::part {
 		if (mSelected) {
 			if (key == GLFW_KEY_BACKSPACE && !mText.empty()) {
 				mText.pop_back();
+			}
+			else if (key == GLFW_KEY_ENTER) {
+				mSelected = false;
+				setDirty(true);
 			}
 		}
 	}
