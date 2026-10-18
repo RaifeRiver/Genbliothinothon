@@ -122,6 +122,7 @@ namespace genbliothinothon::audio {
 			generatedCode += ")*" + std::to_string(1.0f / static_cast<float>(rightOutputs.size())) + "f;";
 		}
 
+		std::cout << generatedFunctions << std::endl;
 		std::cout << generatedCode << std::endl;
 
 		fragmentShader.replace(fragmentShader.find("// insert functions here"), 24, generatedFunctions);

@@ -1,5 +1,9 @@
 #include "Genbliothinothon.h"
 
+#include <fstream>
+#include <sstream>
+
+#include "module/MidiModule.h"
 #include "module/Output.h"
 #include "module/WaveGenerator.h"
 #include "module/part/Background.h"
@@ -8,7 +12,12 @@ namespace genbliothinothon {
 	Genbliothinothon::Genbliothinothon() {
 		sInstance = this;
 
-		mModules.emplace_back(std::make_unique<module::WaveGenerator>(glm::vec2{100.0f, 100.0f}));
+		std::ifstream midiFile("../res/songs/song_1.csv");
+		std::stringstream midiStream;
+		midiStream << midiFile.rdbuf();
+		std::string midiCSV = midiStream.str();
+		mModules.emplace_back(std::make_unique<module::MidiModule>(glm::vec2{100.0f, 100.0f}));
+		dynamic_cast<module::MidiModule*>(mModules.back().get())->setInputCSV(midiCSV);
 		mModules.emplace_back(std::make_unique<module::WaveGenerator>(glm::vec2{500.0f, 200.0f}));
 		mModules.emplace_back(std::make_unique<module::WaveGenerator>(glm::vec2{800.0f, 100.0f}));
 		mModules.emplace_back(std::make_unique<module::Output>(glm::vec2{300.0f, 500.0f}));

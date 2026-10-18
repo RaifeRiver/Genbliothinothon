@@ -13,7 +13,7 @@ namespace genbliothinothon::module {
 		mWaveType = &addPart(std::make_unique<part::Dropdown>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}, std::vector<std::string>{"Sine", "Saw", "Inv Saw", "Triangle", "Square", "White noise"}));
 	}
 
-	std::string WaveGenerator::generateGLSL(uint32_t index, std::unordered_map<std::string, std::string>& inputValues) {
+	std::string WaveGenerator::generateGLSL(uint32_t, std::unordered_map<std::string, std::string>& inputValues) {
 		const std::string frequency = inputValues["Frequency"];
 		const std::string volume = inputValues["Volume"];
 		switch (mWaveType->getSelectedOption()) {

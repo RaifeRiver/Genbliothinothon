@@ -14,6 +14,9 @@ namespace genbliothinothon::module {
 	}
 
 	bool Module::isDirty() const {
+		if (mDirty) {
+			return true;
+		}
 		for (const std::unique_ptr<part::Part>& part: mParts) {
 			if (part->isDirty()) {
 				return true;
@@ -22,10 +25,15 @@ namespace genbliothinothon::module {
 		return false;
 	}
 
-	void Module::clearDirty() const {
+	void Module::clearDirty() {
 		for (const std::unique_ptr<part::Part>& part: mParts) {
 			part->setDirty(false);
 		}
+		mDirty = false;
+	}
+
+	void Module::setDirty() {
+		mDirty = true;
 	}
 
 	void Module::drag(const glm::vec2 distance) {

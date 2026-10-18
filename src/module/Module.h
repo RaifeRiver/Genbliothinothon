@@ -42,7 +42,9 @@ namespace genbliothinothon::module {
 
 		[[nodiscard]] bool isDirty() const;
 
-		void clearDirty() const;
+		void clearDirty();
+
+		void setDirty();
 
 		void drag(glm::vec2 distance);
 
@@ -61,5 +63,6 @@ namespace genbliothinothon::module {
 		glm::vec2 mPos;
 		glm::vec2 mSize;
 		bool mDragged = false;
+		bool mDirty = false;
 	};
 }
