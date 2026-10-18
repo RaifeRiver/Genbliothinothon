@@ -1,5 +1,7 @@
 #include "Send.h"
 
+#include <algorithm>
+
 #include "Background.h"
 #include "Genbliothinothon.h"
 
@@ -12,7 +14,11 @@ namespace genbliothinothon::module::part {
 
 	void Send::click(glm::vec2) {
 		mSelecting = !mSelecting;
-		mSendTarget = nullptr;
+		if (mSendTarget) {
+			std::vector<Send*>& sends = mSendTarget->getInputs();
+			sends.erase(std::ranges::find(sends, this));
+			mSendTarget = nullptr;
+		}
 		setDirty(true);
 	}
 
