@@ -6,13 +6,15 @@
 #include "part/Background.h"
 #include "part/RemoveButton.h"
 #include "part/Send.h"
+#include "part/TextInput.h"
 
 namespace genbliothinothon::module {
-	MidiModule::MidiModule(const glm::vec2 pos) : Module(pos, glm::vec2{200.0f, 70.0f}) {
-		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 70.0f}, "Midi player"));
+	MidiModule::MidiModule(const glm::vec2 pos) : Module(pos, glm::vec2{200.0f, 93.0f}) {
+		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 93.0f}, "Midi player"));
 		addPart(std::make_unique<part::RemoveButton>(this));
-		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}, "Frequency"));
-		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 47.0f}, glm::vec2{194.0f, 20.0f}, "Volume"));
+		addPart(std::make_unique<part::TextInput>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}));
+		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 47.0f}, glm::vec2{194.0f, 20.0f}, "Frequency"));
+		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 70.0f}, glm::vec2{194.0f, 20.0f}, "Volume"));
 	}
 
 	void MidiModule::setInputCSV(const std::string& inputCSV) {

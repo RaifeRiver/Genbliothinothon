@@ -16,4 +16,8 @@ namespace genbliothinothon::module::part {
 	}
 
 	void Part::endDrag() {}
+
+	void Part::charPressed(char) {}
+
+	void Part::keyPressed(int) {}
 }

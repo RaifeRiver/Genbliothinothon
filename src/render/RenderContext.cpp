@@ -4,6 +4,8 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "Genbliothinothon.h"
+
 namespace genbliothinothon::render {
 	RenderContext::RenderContext() {
 		glfwInit();
@@ -38,6 +40,23 @@ namespace genbliothinothon::render {
 			const glm::vec2 pos = {x, y};
 			renderContext->mMouseMovement += pos - lastPos;
 			lastPos = pos;
+		});
+		glfwSetCharCallback(mWindow, [](GLFWwindow*, const unsigned int c) {
+			for (Genbliothinothon* genbliothinothon = Genbliothinothon::getInstance(); const std::unique_ptr<module::Module>& module : genbliothinothon->getModules()) {
+				for (const std::unique_ptr<module::part::Part>& part : module->getParts()) {
+					part->charPressed(static_cast<char>(c));
+				}
+			}
+		});
+		glfwSetKeyCallback(mWindow, [](GLFWwindow*, const int key, int, const int action, int) {
+			if (action == GLFW_RELEASE) {
+				return;
+			}
+			for (Genbliothinothon* genbliothinothon = Genbliothinothon::getInstance(); const std::unique_ptr<module::Module>& module : genbliothinothon->getModules()) {
+				for (const std::unique_ptr<module::part::Part>& part : module->getParts()) {
+					part->keyPressed(key);
+				}
+			}
 		});
 
 		int majorVersion = 0;

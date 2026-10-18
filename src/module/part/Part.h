@@ -49,6 +49,10 @@ namespace genbliothinothon::module::part {
 
 		virtual void endDrag();
 
+		virtual void charPressed(char key);
+
+		virtual void keyPressed(int key);
+
 		virtual ~Part() = default;
 
 	protected:

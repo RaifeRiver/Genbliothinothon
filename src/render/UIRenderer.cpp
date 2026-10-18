@@ -67,6 +67,21 @@ namespace genbliothinothon::render {
 		}
 	}
 
+	float UIRenderer::getTextWidth(const float size, const std::string& text) {
+		float width = 0.0f;
+		for (const char c : text) {
+			auto it = mFontGlyphs.find(c);
+			if (it == mFontGlyphs.end()) {
+				it = mFontGlyphs.find('?');
+				if (it == mFontGlyphs.end()) {
+					continue;
+				}
+			}
+			width += it->second.advance * size;
+		}
+		return width;
+	}
+
 	void UIRenderer::text(const glm::vec2 pos, const float size, const std::string& text, const glm::vec4 colour) {
 		glm::vec2 cursor = pos;
 		cursor.y += mFontAscent * size;
@@ -103,18 +118,7 @@ namespace genbliothinothon::render {
 	}
 
 	void UIRenderer::centredText(glm::vec2 pos, const float size, const std::string& t, const glm::vec4 colour) {
-		float width = 0.0f;
-		for (const char c : t) {
-			auto it = mFontGlyphs.find(c);
-			if (it == mFontGlyphs.end()) {
-				it = mFontGlyphs.find('?');
-				if (it == mFontGlyphs.end()) {
-					continue;
-				}
-			}
-			width += it->second.advance * size;
-		}
-		pos.x -= width * 0.5f;
+		pos.x -= getTextWidth(size, t) * 0.5f;
 		text(pos, size, t, colour);
 	}
 
