@@ -4,7 +4,7 @@
 #include "Genbliothinothon.h"
 
 namespace genbliothinothon::module::part {
-	Send::Send(Module* parent, const glm::vec2 &pos, const glm::vec2& size): Part(parent, pos, size) {}
+	Send::Send(Module* parent, const glm::vec2 &pos, const glm::vec2& size, std::string name): Part(parent, pos, size), mName(std::move(name)) {}
 
 	void Send::setSendTarget(SendTarget* target) {
 		mSendTarget = target;
@@ -46,7 +46,7 @@ namespace genbliothinothon::module::part {
 		const glm::vec2 size = getSize();
 		renderer.rect(pos, size, glm::vec4{0.06f, 0.06f, 0.11f, 1.0f});
 		const float textHeight = size.y / 2.0f - 7.0f;
-		std::string sendText = "Null send";
+		std::string sendText = "Null (" + mName + ")";
 		if (mSendTarget) {
 			for (const std::unique_ptr<Part>& part: mSendTarget->getParent()->getParts()) {
 				if (const Background* background = dynamic_cast<Background*>(part.get())) {
@@ -56,7 +56,7 @@ namespace genbliothinothon::module::part {
 			}
 		}
 		else if (mSelecting) {
-			sendText = "Click to select...";
+			sendText = "Select " + mName;
 		}
 		if (sendText.size() > 23) {
 			sendText = sendText.substr(0, std::min<size_t>(sendText.size(), 20)) + "...";

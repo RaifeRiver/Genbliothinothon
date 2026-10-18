@@ -23,12 +23,12 @@ namespace genbliothinothon {
 		std::stringstream midiStream2;
 		midiStream2 << midiFile2.rdbuf();
 		std::string midiCSV2 = midiStream2.str();
-		mModules.emplace_back(std::make_unique<module::MidiModule>(glm::vec2{100.0f, 300.0f}));
+		mModules.emplace_back(std::make_unique<module::MidiModule>(glm::vec2{100.0f, 250.0f}));
 		dynamic_cast<module::MidiModule*>(mModules.back().get())->setInputCSV(midiCSV2);
 
-		mModules.emplace_back(std::make_unique<module::WaveGenerator>(glm::vec2{500.0f, 200.0f}));
-		mModules.emplace_back(std::make_unique<module::WaveGenerator>(glm::vec2{800.0f, 100.0f}));
-		mModules.emplace_back(std::make_unique<module::Output>(glm::vec2{300.0f, 500.0f}));
+		mModules.emplace_back(std::make_unique<module::WaveGenerator>(glm::vec2{310.0f, 100.0f}));
+		mModules.emplace_back(std::make_unique<module::WaveGenerator>(glm::vec2{310.0f, 250.0f}));
+		mModules.emplace_back(std::make_unique<module::Output>(glm::vec2{520.0f, 100.0f}));
 	}
 
 	void Genbliothinothon::run() {
