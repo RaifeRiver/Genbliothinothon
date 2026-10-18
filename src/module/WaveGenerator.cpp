@@ -14,8 +14,16 @@ namespace genbliothinothon::module {
 	}
 
 	std::string WaveGenerator::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>& inputValues) {
-		const std::string frequency = inputValues["Frequency"];
-		const std::string volume = inputValues["Volume"];
+		const auto frequencyIt = inputValues.find("Frequency");
+		const auto volumeIt = inputValues.find("Volume");
+		std::string frequency = mFrequency->getDefaultValueString();
+		std::string volume = mVolume->getDefaultValueString();
+		if (frequencyIt != inputValues.end()) {
+			frequency = frequencyIt->second;
+		}
+		if (volumeIt != inputValues.end()) {
+			volume += "*(" + volumeIt->second + ")";
+		}
 		const std::string indexStr = std::to_string(index);
 		switch (mWaveType->getSelectedOption()) {
 			case 0:

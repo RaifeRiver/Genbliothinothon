@@ -75,14 +75,11 @@ namespace genbliothinothon::audio {
 							}
 						}
 					}
-					if (inputCount == 0) {
-						inputString = sendTarget->getDefaultValueString();
-					}
-					else {
+					if (inputCount != 0) {
 						inputString.pop_back();
 						inputString += ")*" + std::to_string(1.0f / static_cast<float>(inputCount)) + "f";
+						inputStrings[sendTarget->getName()] = inputString;
 					}
-					inputStrings[sendTarget->getName()] = inputString;
 				}
 			}
 			generatedFunctions += modules[module]->generateFunctions(module);
