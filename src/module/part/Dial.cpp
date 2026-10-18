@@ -1,6 +1,7 @@
 #include "Dial.h"
 
 #include <algorithm>
+#include <format>
 
 namespace genbliothinothon::module::part {
 	Dial::Dial(Module* parent, const glm::vec2 pos, const glm::vec2 size, const std::string& name, const float min, const float max) : Dial(parent, pos, size, name, min, max, min) {}
@@ -25,5 +26,6 @@ namespace genbliothinothon::module::part {
 		render::UIRenderer& renderer = context.getUIRenderer();
 		const glm::vec2 size = getSize();
 		renderer.rotatedRect(pos, (mValue - mMin) / (mMax - mMin) * 300.0f - 150.0f, size, glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}, "dial");
+		renderer.centredText(pos + glm::vec2{size.x * 0.5f, size.y * 0.9f}, 12.0f, isDragged() ? std::format("{:.2f}", mValue) : getName(), glm::vec4{1.0f, 1.0f, 1.0f, 1.0f});
 	}
 }

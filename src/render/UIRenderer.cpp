@@ -102,6 +102,22 @@ namespace genbliothinothon::render {
 		}
 	}
 
+	void UIRenderer::centredText(glm::vec2 pos, const float size, const std::string& t, const glm::vec4 colour) {
+		float width = 0.0f;
+		for (const char c : t) {
+			auto it = mFontGlyphs.find(c);
+			if (it == mFontGlyphs.end()) {
+				it = mFontGlyphs.find('?');
+				if (it == mFontGlyphs.end()) {
+					continue;
+				}
+			}
+			width += it->second.advance * size;
+		}
+		pos.x -= width * 0.5f;
+		text(pos, size, t, colour);
+	}
+
 	void UIRenderer::rect(glm::vec2 pos, const glm::vec2 size, glm::vec4 colour, const std::string& texture) {
 		auto it = mUITextures.find(texture);
 		if (it == mUITextures.end()) {
