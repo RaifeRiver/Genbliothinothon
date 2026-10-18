@@ -22,6 +22,18 @@ namespace genbliothinothon::module::part {
 		setDirty(true);
 	}
 
+	void Dial::setValue(const float value) {
+		mValue = value;
+	}
+
+	void Dial::setMin(const float min) {
+		mMin = min;
+	}
+
+	void Dial::setMax(const float max) {
+		mMax = max;
+	}
+
 	void Dial::render_(const glm::vec2 pos, render::RenderContext& context) {
 		render::UIRenderer& renderer = context.getUIRenderer();
 		const glm::vec2 size = getSize();

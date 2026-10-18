@@ -15,6 +15,24 @@ namespace genbliothinothon::module::part {
 
 		void endDrag() override;
 
+		[[nodiscard]] float getValue() const {
+			return mValue;
+		}
+
+		void setValue(float value);
+
+		[[nodiscard]] float getMin() const {
+			return mMin;
+		}
+
+		void setMin(float min);
+
+		[[nodiscard]] float getMax() const {
+			return mMax;
+		}
+
+		void setMax(float max);
+
 	protected:
 		void render_(glm::vec2 pos, render::RenderContext& context) override;
 
