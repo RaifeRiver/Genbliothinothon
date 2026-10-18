@@ -3,7 +3,7 @@
 #include <utility>
 
 namespace genbliothinothon::module::part {
-	Background::Background(const glm::vec2 pos, const glm::vec2 size, std::string name) : Part(pos, size), mName(std::move(name)) {}
+	Background::Background(Module* parent, const glm::vec2 pos, const glm::vec2 size, std::string name) : Part(parent, pos, size), mName(std::move(name)) {}
 
 	void Background::setName(const std::string& name) {
 		mName = name;

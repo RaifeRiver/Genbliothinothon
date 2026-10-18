@@ -1,18 +1,18 @@
 #pragma once
 
 #include "Part.h"
-#include "module/Module.h"
+#include "SendTarget.h"
 
 namespace genbliothinothon::module::part {
 	class Send : public Part {
 	public:
-		Send(const glm::vec2& pos, const glm::vec2& size);
+		Send(Module* parent, const glm::vec2& pos, const glm::vec2& size);
 
-		[[nodiscard]] Module* getSendTarget() const {
+		[[nodiscard]] SendTarget* getSendTarget() const {
 			return mSendTarget;
 		}
 
-		void setSendTarget(Module* target);
+		void setSendTarget(SendTarget* target);
 
 		void click(glm::vec2 pos) override;
 
@@ -22,7 +22,7 @@ namespace genbliothinothon::module::part {
 		void render_(glm::vec2 pos, render::RenderContext& context) override;
 
 	private:
-		Module* mSendTarget = nullptr;
+		SendTarget* mSendTarget = nullptr;
 		bool mSelecting = false;
 	};
 }

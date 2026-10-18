@@ -1,7 +1,7 @@
 #include "Part.h"
 
 namespace genbliothinothon::module::part {
-	Part::Part(const glm::vec2 pos, const glm::vec2 size) : mPos(pos), mSize(size) {}
+	Part::Part(Module* parent, const glm::vec2 pos, const glm::vec2 size) : mParent(parent), mPos(pos), mSize(size) {}
 
 	void Part::render(const glm::vec2 pos, render::RenderContext& context) {
 		render_(pos + mPos, context);
