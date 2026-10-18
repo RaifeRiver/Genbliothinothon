@@ -7,9 +7,9 @@
 #include "part/Send.h"
 
 namespace genbliothinothon::module {
-	MidiModule::MidiModule(const glm::vec2 pos) : Module(pos, glm::vec2{200.0f, 150.0f}) {
-		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 150.0f}, "Midi player"));
-		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 46.0f}, glm::vec2{194.0f, 20.0f}));
+	MidiModule::MidiModule(const glm::vec2 pos) : Module(pos, glm::vec2{200.0f, 50.0f}) {
+		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 50.0f}, "Midi player"));
+		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}));
 		//addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 69.0f}, glm::vec2{194.0f, 20.0f}));
 	}
 
