@@ -11,6 +11,6 @@ namespace genbliothinothon::module {
 	}
 
 	std::string Output::generateGLSL(uint32_t index, std::unordered_map<std::string, std::string>& inputValues) {
-		return inputValues["Left"];
+		return "float leftAudio=" + inputValues["Left"] + ";\nfloat rightAudio=" + inputValues["Right"] + ";\n";
 	}
 }

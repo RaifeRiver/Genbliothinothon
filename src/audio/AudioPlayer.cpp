@@ -50,8 +50,6 @@ namespace genbliothinothon::audio {
 
 		std::vector generatedModules(modules.size(), false);
 		std::vector generatingModules(modules.size(), false);
-		std::vector<uint32_t> leftOutputs;
-		std::vector<uint32_t> rightOutputs;
 		const std::function<void(uint32_t)> generateModule = [&](const uint32_t module) {
 			if (generatedModules[module]) {
 				return;
@@ -60,6 +58,7 @@ namespace genbliothinothon::audio {
 				throw std::runtime_error("Recursive part generation");
 			}
 			generatingModules[module] = true;
+			const bool output = dynamic_cast<module::Output*>(modules[module].get());
 
 			const std::vector<std::unique_ptr<module::part::Part>>& parts = modules[module]->getParts();
 			std::unordered_map<std::string, std::string> inputStrings;
@@ -88,38 +87,20 @@ namespace genbliothinothon::audio {
 				}
 			}
 			generatedFunctions += modules[module]->generateFunctions(module);
-			generatedCode += "float a" + std::to_string(module) + " = " + modules[module]->generateGLSL(module, inputStrings) + ";\n";
+
+			if (!output) {
+				generatedCode += "float a" + std::to_string(module) + " = " + modules[module]->generateGLSL(module, inputStrings) + ";\n";
+			}
+			else {
+				generatedCode += modules[module]->generateGLSL(module, inputStrings);
+			}
 
 			generatedModules[module] = true;
 		};
 		for (uint32_t module = 0; module < modules.size(); module++) {
 			if (dynamic_cast<module::Output*>(modules[module].get())) {
 				generateModule(module);
-				leftOutputs.push_back(module);
-				rightOutputs.push_back(module);
 			}
-		}
-		if (leftOutputs.empty()) {
-			generatedCode += "float leftAudio = 0.0f;\n";
-		}
-		else {
-			generatedCode += "float leftAudio = (";
-			for (const uint32_t output : leftOutputs) {
-				generatedCode += "a" + std::to_string(output) + "+";
-			}
-			generatedCode.pop_back();
-			generatedCode += ")*" + std::to_string(1.0f / static_cast<float>(leftOutputs.size())) + "f;\n";
-		}
-		if (rightOutputs.empty()) {
-			generatedCode += "float rightAudio = 0.0f;";
-		}
-		else {
-			generatedCode += "float rightAudio = (";
-			for (const uint32_t output : rightOutputs) {
-				generatedCode += "a" + std::to_string(output) + "+";
-			}
-			generatedCode.pop_back();
-			generatedCode += ")*" + std::to_string(1.0f / static_cast<float>(rightOutputs.size())) + "f;";
 		}
 
 		std::cout << generatedFunctions << std::endl;
