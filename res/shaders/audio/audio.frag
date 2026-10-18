@@ -74,7 +74,7 @@ float Isaw(uint samp, float Hz, float vol){
 }
 float saw(uint samp, float Hz, float vol){
     float p=FS/Hz;
-    return(vol*(mod((2u*samp/p),2)+1));
+    return(vol*-1*(mod((2u*samp/p),2)*-1+1));
 }
 float sq(uint samp, float Hz, float vol){
     return(vol*(2.0*(uint(samp/(FS/Hz))&1u)-1.0));
