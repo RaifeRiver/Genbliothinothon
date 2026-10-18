@@ -37,72 +37,65 @@ float white(uint samp,float vol){
     s=s*(s*s*15731u+789221u)+1376312589u;
     return (float(s&0x7fffffffu)/1073741824.0*2.0-1.0)*vol;
 }
-float sine_wave(uint samp, float Hz, float vol){
+float sine(uint samp, float Hz, float vol){
     return (vol*audio_sin(PI*Hz*samp/48000.0));
 }
-float triangle(uint samp, float Hz, float vol, int depth){
+float Htri(uint samp, float Hz, float vol, int depth){
     float x=0.0;
     for (int n = 1; n < depth; n++){
         x+=((audio_sin(0.5f*(PI-((n<<1)-1)*PI*x))/(((n<<1)-1)*((n<<1)-1)))*vol*audio_sin(n*PI*Hz*samp/48000.0));
     }
     return x;
 }
-float ramp_up(uint samp, float Hz, float vol, int depth){
+float Hsaw(uint samp, float Hz, float vol, int depth){
     float x=0.0;
     for (int n = 1; n < depth; n++){
         x+=((1.0-2.0*((n+1)&1))/(n))*(vol * audio_sin(n*PI*Hz*samp/48000.0));
     }
     return x;
 }
-float ramp_down(uint samp, float Hz, float vol, int depth){
+float HIsaw(uint samp, float Hz, float vol, int depth){
     float x=0.0;
     for (int n = 1; n < depth; n++){
         x+=((-1*(1.0-2.0*(n&1)))/(n))*(vol * audio_sin(n*PI*Hz*samp/48000.0));
     }
     return x;
 }
-float square(uint samp, float Hz, float vol, int depth){
+float Hsquare(uint samp, float Hz, float vol, int depth){
     float x=0.0;
     for (int n = 1; n < depth; n++){
         x+=((2.0*(n&1))/n*PI)*(vol * 0.7 * audio_sin(n*PI*Hz*samp/48000.0));
     }
     return x;
 }
-float Tramp_down(uint samp, float Hz, float vol){
+float Isaw(uint samp, float Hz, float vol){
     float p=FS/Hz;
     return(vol*(mod((2u*samp/p+Hz),2)*-1+1));
 }
-float Tramp_up(uint samp, float Hz, float vol){
+float saw(uint samp, float Hz, float vol){
     float p=FS/Hz;
     return(vol*(mod((2u*samp/p),2)+1));
 }
-float Tsquare(uint samp, float Hz, float vol){
+float sq(uint samp, float Hz, float vol){
     return(vol*(2.0*(uint(samp/(FS/Hz))&1u)-1.0));
 }
-float Ttriangle(uint samp, float Hz, float vol){
+float tri(uint samp, float Hz, float vol){
     return(vol*(1.0-2.0*abs(2.0*fract(samp/(FS/Hz))-1.0)));
 }
 float note(int n, int octave) {
     return 27.5 * pow(2.0, float(n - 1 + octave * 12) / 12.0);
 }
-
-//=====================================================================================================================
-//=====================================================================================================================
-//=====================================================================================================================
-
-// ==========================================
-// AUDIO FILTER & MULTI-VOICE SYSTEM
-// ==========================================
-// ==========================================
-// LIGHTNING-FAST 4-SAMPLE BIQUAD SYSTEM
-// ==========================================
+// ==================================================
+// MULTIFILER SEPERATE EFFECTED SUPER VOICE SYSTEM!!!
+// ==================================================
+// LIGHTNING-FAST ULTRA QUAD-SAMPLE SUPER QUAD SYSTEM
+// ==================================================
 
 #define FILTER_LOWPASS    0
 #define FILTER_HIGHPASS   1
 #define FILTER_LOWSHELF   2
 #define FILTER_HIGHSHELF  3
 #define FILTER_NOTCH      4
-
 #define AUDIO_BUF_SIZE 4
 
 void applyBiquad(inout float Buffer[AUDIO_BUF_SIZE], int type, float hz, float q, float gain) {
@@ -196,12 +189,12 @@ void main() {
     float voice1, voice2;
 
     // Voice 1: Lowpass Filter
-    VOICE_BEGIN(Tsquare(sampleI, note(4, 1), 100.0f))
+    VOICE_BEGIN(sq(sampleI, note(4, 1), 100.0f))
                                                      VOICE_FILTER(FILTER_LOWPASS, 200.0, 100.0, 0.0)
                                                      VOICE_END(voice1)
 
     // Voice 2: Chained high/lowpass Filters (800Hz + 2kHz)
-    VOICE_BEGIN(white(sampleI, 1.0f))
+    VOICE_BEGIN(saw(sampleI, 1.0f))
                                      VOICE_FILTER(FILTER_HIGHPASS, 1500.0, 0.7, 0.0)
                                      VOICE_FILTER(FILTER_LOWPASS, 1600.0, 0.05, 0.0)
                                      VOICE_END(voice2)
