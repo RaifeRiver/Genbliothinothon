@@ -49,60 +49,79 @@ namespace genbliothinothon::audio {
 
 		std::vector generatedModules(modules.size(), false);
 		std::vector generatingModules(modules.size(), false);
-		std::vector<uint32_t> outputs;
-		const std::function generateModule = [&](const size_t module) {
+		std::vector<uint32_t> leftOutputs;
+		std::vector<uint32_t> rightOutputs;
+		const std::function<void(uint32_t)> generateModule = [&](const uint32_t module) {
 			if (generatedModules[module]) {
 				return;
 			}
 			if (generatingModules[module]) {
-				throw std::runtime_error("Recursive send loop");
+				throw std::runtime_error("Recursive part generation");
 			}
 			generatingModules[module] = true;
-			std::string sendString = "(";
-			uint32_t sendCount = 0;
-			for (uint32_t i = 0; i < modules.size(); i++) {
-				if (module == i) {
-					continue;
-				}
-				for (std::unique_ptr<module::part::Part>& part: modules[i]->getParts()) {
-					if (const module::part::Send* send = dynamic_cast<module::part::Send*>(part.get())) {
-						if (const module::Module* sendTarget = send->getSendTarget(); sendTarget != modules[module].get()) {
-							continue;
+
+			const std::vector<std::unique_ptr<module::part::Part>>& parts = modules[module]->getParts();
+			std::unordered_map<std::string, std::string> inputStrings;
+			for (const std::unique_ptr<module::part::Part>& part: parts) {
+				if (const auto sendTarget = dynamic_cast<module::part::SendTarget*>(part.get())) {
+					std::string inputString = "(";
+					uint32_t inputCount = 0;
+					for (const module::part::Send* input : sendTarget->getInputs()) {
+						const module::Module* parent = input->getParent();
+						for (uint32_t parentIndex = 0; parentIndex < modules.size(); parentIndex++) {
+							if (parent == modules[parentIndex].get()) {
+								generateModule(parentIndex);
+								inputString += "a" + std::to_string(parentIndex) + "+";
+								inputCount++;
+							}
 						}
-						sendString += "send" + std::to_string(i) + "+";
-						sendCount++;
 					}
+					if (inputCount == 0) {
+						inputString = sendTarget->getDefaultValueString();
+					}
+					else {
+						inputString.pop_back();
+						inputString += ")*" + std::to_string(1.0f / static_cast<float>(inputCount)) + "f";
+					}
+					inputStrings[sendTarget->getName()] = inputString;
 				}
 			}
-			if (sendCount == 0) {
-				sendString = "0.0f";
-			}
-			else {
-				sendString.pop_back();
-				sendString += ")/" + std::to_string(sendCount) + ".0f";
-			}
-			generatedCode += "float send" + std::to_string(module) + "=" + modules[module]->generateGLSL(sendString) + ";\n";
-			if (dynamic_cast<module::Output*>(modules[module].get())) {
-				outputs.push_back(module);
-			}
-			generatingModules[module] = false;
+			generatedCode += "float a" + std::to_string(module) + " = " + modules[module]->generateGLSL(inputStrings) + ";\n";
+
 			generatedModules[module] = true;
 		};
 		for (uint32_t module = 0; module < modules.size(); module++) {
-			generateModule(module);
+			if (dynamic_cast<module::Output*>(modules[module].get())) {
+				generateModule(module);
+				leftOutputs.push_back(module);
+				rightOutputs.push_back(module);
+			}
 		}
-		if (outputs.empty()) {
-			generatedCode += "float audio = 0.0f;";
+		if (leftOutputs.empty()) {
+			generatedCode += "float leftAudio = 0.0f;\n";
 		}
 		else {
-			generatedCode += "float audio = ";
-			for (const uint32_t output : outputs) {
-				generatedCode += "send" + std::to_string(output) + "+";
+			generatedCode += "float leftAudio = (";
+			for (const uint32_t output : leftOutputs) {
+				generatedCode += "a" + std::to_string(output) + "+";
 			}
 			generatedCode.pop_back();
-			generatedCode += ';';
+			generatedCode += ")*" + std::to_string(1.0f / static_cast<float>(leftOutputs.size())) + "f;\n";
 		}
+		if (rightOutputs.empty()) {
+			generatedCode += "float rightAudio = 0.0f;";
+		}
+		else {
+			generatedCode += "float rightAudio = (";
+			for (const uint32_t output : rightOutputs) {
+				generatedCode += "a" + std::to_string(output) + "+";
+			}
+			generatedCode.pop_back();
+			generatedCode += ")*" + std::to_string(1.0f / static_cast<float>(rightOutputs.size())) + "f;";
+		}
+
 		std::cout << generatedCode << std::endl;
+
 		fragmentShader.replace(fragmentShader.find("// insert audio code here"), 25, generatedCode);
 
 		mShader = std::make_unique<render::Shader>(vertexShader, fragmentShader);

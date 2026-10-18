@@ -4,9 +4,9 @@
 #include "Genbliothinothon.h"
 
 namespace genbliothinothon::module::part {
-	Send::Send(const glm::vec2 &pos, const glm::vec2& size): Part(pos, size) {}
+	Send::Send(Module* parent, const glm::vec2 &pos, const glm::vec2& size): Part(parent, pos, size) {}
 
-	void Send::setSendTarget(Module* target) {
+	void Send::setSendTarget(SendTarget* target) {
 		mSendTarget = target;
 	}
 
@@ -23,11 +23,19 @@ namespace genbliothinothon::module::part {
 		Genbliothinothon* genbliothinothon = Genbliothinothon::getInstance();
 		const glm::vec2 worldPos = genbliothinothon->getRenderContext().getMousePos() - genbliothinothon->getCameraPos();
 		for (const std::unique_ptr<Module>& module: genbliothinothon->getModules()) {
+			if (module.get() == getParent()) {
+				continue;
+			}
 			const glm::vec2 modulePos = module->getPos();
-			if (const glm::vec2 moduleSize = module->getSize(); module->hasInput() && worldPos.x >= modulePos.x && worldPos.x <= modulePos.x + moduleSize.x && worldPos.y >= modulePos.y && worldPos.y <= modulePos.y + moduleSize.y) {
-				mSendTarget = module.get();
-				setDirty(true);
-				break;
+			for (const std::unique_ptr<Part>& part: module->getParts()) {
+				const glm::vec2 partPos = part->getPos() + modulePos;
+				const glm::vec2 partSize = part->getSize();
+				if (const auto sendTarget = dynamic_cast<SendTarget*>(part.get()); sendTarget && worldPos.x >= partPos.x && worldPos.x < partPos.x + partSize.x && worldPos.y >= partPos.y && worldPos.y < partPos.y + partSize.y) {
+					mSendTarget = sendTarget;
+					sendTarget->addInput(this);
+					setDirty(true);
+					break;
+				}
 			}
 		}
 		mSelecting = false;
@@ -40,9 +48,9 @@ namespace genbliothinothon::module::part {
 		const float textHeight = size.y / 2.0f - 7.0f;
 		std::string sendText = "Null send";
 		if (mSendTarget) {
-			for (const std::unique_ptr<Part>& part: mSendTarget->getParts()) {
+			for (const std::unique_ptr<Part>& part: mSendTarget->getParent()->getParts()) {
 				if (const Background* background = dynamic_cast<Background*>(part.get())) {
-					sendText = background->getName();
+					sendText = background->getName() + "." + mSendTarget->getName();
 					break;
 				}
 			}

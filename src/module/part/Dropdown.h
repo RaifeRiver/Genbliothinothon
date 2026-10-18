@@ -5,7 +5,7 @@
 namespace genbliothinothon::module::part {
 	class Dropdown : public Part {
 	public:
-		Dropdown(glm::vec2 pos, glm::vec2 size, const std::vector<std::string>& options);
+		Dropdown(Module* parent, glm::vec2 pos, glm::vec2 size, const std::vector<std::string>& options);
 
 		[[nodiscard]] uint32_t getSelectedOption() const {
 			return mSelectedOption;

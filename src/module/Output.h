@@ -7,6 +7,6 @@ namespace genbliothinothon::module {
 	public:
 		explicit Output(const glm::vec2& pos);
 
-		std::string generateGLSL(const std::string& inputName) override;
+		std::string generateGLSL(std::unordered_map<std::string, std::string>& inputValues) override;
 	};
 }

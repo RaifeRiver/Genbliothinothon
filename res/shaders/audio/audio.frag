@@ -184,5 +184,5 @@ void main() {
 
     // insert audio code here
 
-    audioOut = vec4(audio, audio, 0.0f, 0.0f);
+    audioOut = vec4(leftAudio, rightAudio, 0.0f, 0.0f);
 }

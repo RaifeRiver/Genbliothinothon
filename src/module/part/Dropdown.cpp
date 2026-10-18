@@ -1,7 +1,7 @@
 #include "Dropdown.h"
 
 namespace genbliothinothon::module::part {
-	Dropdown::Dropdown(const glm::vec2 pos, const glm::vec2 size, const std::vector<std::string>& options) : Part(pos, size), mOptions(options) {}
+	Dropdown::Dropdown(Module* parent, const glm::vec2 pos, const glm::vec2 size, const std::vector<std::string>& options) : Part(parent, pos, size), mOptions(options) {}
 
 	void Dropdown::setSelectedOption(const uint32_t option) {
 		if (option >= mOptions.size()) {

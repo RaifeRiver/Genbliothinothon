@@ -40,20 +40,11 @@ namespace genbliothinothon::module {
 			mDragged = dragged;
 		}
 
-		[[nodiscard]] bool hasInput() const {
-			return mHasInput;
-		}
-
-		void setHasInput(const bool hasInput) {
-			mHasInput = hasInput;
-		}
-
-
 		[[nodiscard]] bool isDirty() const;
 
 		void clearDirty() const;
 
-		virtual std::string generateGLSL(const std::string& inputName) = 0;
+		virtual std::string generateGLSL(std::unordered_map<std::string, std::string>& inputValues) = 0;
 
 		void render(glm::vec2 pos, render::RenderContext& context) const;
 
@@ -64,6 +55,5 @@ namespace genbliothinothon::module {
 		glm::vec2 mPos;
 		glm::vec2 mSize;
 		bool mDragged = false;
-		bool mHasInput = false;
 	};
 }
