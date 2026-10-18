@@ -27,7 +27,7 @@ namespace genbliothinothon::audio {
 		outputParameters.device = Pa_GetDefaultOutputDevice();
 		outputParameters.channelCount = 2;
 		outputParameters.sampleFormat = paFloat32;
-		outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultHighOutputLatency;
+		outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultHighOutputLatency;
 		outputParameters.hostApiSpecificStreamInfo = nullptr;
 		if (Pa_OpenStream(&mStream, nullptr, &outputParameters, 96000, 16384, paClipOff, nullptr, nullptr) != paNoError) {
 			throw std::runtime_error("Failed to open audio output stream");
@@ -102,7 +102,7 @@ namespace genbliothinothon::audio {
 			generatedCode.pop_back();
 			generatedCode += ';';
 		}
-std::cout << generatedCode << std::endl;
+		std::cout << generatedCode << std::endl;
 		fragmentShader.replace(fragmentShader.find("// insert audio code here"), 25, generatedCode);
 
 		mShader = std::make_unique<render::Shader>(vertexShader, fragmentShader);
