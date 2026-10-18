@@ -1,5 +1,7 @@
 #include "Module.h"
 
+#include "Genbliothinothon.h"
+
 namespace genbliothinothon::module {
 	Module::Module(const glm::vec2 pos, const glm::vec2 size) : mPos(pos), mSize(size) {}
 
@@ -23,6 +25,40 @@ namespace genbliothinothon::module {
 	void Module::clearDirty() const {
 		for (const std::unique_ptr<part::Part>& part: mParts) {
 			part->setDirty(false);
+		}
+	}
+
+	void Module::drag(const glm::vec2 distance) {
+		bool override = false;
+		Genbliothinothon* genbliothinothon = Genbliothinothon::getInstance();
+		const glm::vec2 worldPos = genbliothinothon->getRenderContext().getMousePos() - genbliothinothon->getCameraPos();
+		for (const std::unique_ptr<part::Part>& part: mParts) {
+			if (part->isDragged()) {
+				override |= part->drag(distance);
+				if (override) {
+					break;
+				}
+			}
+			const glm::vec2 pos = part->getPos() + mPos;
+			if (const glm::vec2 size = part->getSize(); worldPos.x >= pos.x && worldPos.x < pos.x + size.x && worldPos.y >= pos.y && worldPos.y < pos.y + size.y) {
+				part->setDragged(true);
+				override |= part->drag(distance);
+				if (override) {
+					break;
+				}
+			}
+		}
+		if (!override) {
+			mPos += distance;
+		}
+	}
+
+	void Module::endDrag() const {
+		for (const std::unique_ptr<part::Part>& part: mParts) {
+			if (part->isDragged()) {
+				part->endDrag();
+				part->setDragged(false);
+			}
 		}
 	}
 

@@ -11,6 +11,10 @@ namespace genbliothinothon::module::part {
 
 		std::string getDefaultValueString() override;
 
+		bool drag(glm::vec2 distance) override;
+
+		void endDrag() override;
+
 	protected:
 		void render_(glm::vec2 pos, render::RenderContext& context) override;
 

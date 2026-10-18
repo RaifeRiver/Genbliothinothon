@@ -1,5 +1,7 @@
 #include "Dial.h"
 
+#include <algorithm>
+
 namespace genbliothinothon::module::part {
 	Dial::Dial(Module* parent, const glm::vec2 pos, const glm::vec2 size, const std::string& name, const float min, const float max) : Dial(parent, pos, size, name, min, max, min) {}
 
@@ -7,6 +9,16 @@ namespace genbliothinothon::module::part {
 
 	std::string Dial::getDefaultValueString() {
 		return std::to_string(mValue) + "f";
+	}
+
+	bool Dial::drag(const glm::vec2 distance) {
+		mValue -= (distance.y - distance.x) * (mMax - mMin) * 0.0001f;
+		mValue = std::clamp(mValue, mMin, mMax);
+		return true;
+	}
+
+	void Dial::endDrag() {
+		setDirty(true);
 	}
 
 	void Dial::render_(const glm::vec2 pos, render::RenderContext& context) {

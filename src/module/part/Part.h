@@ -33,9 +33,21 @@ namespace genbliothinothon::module::part {
 			mDirty = dirty;
 		}
 
+		[[nodiscard]] bool isDragged() const {
+			return mDragged;
+		}
+
+		void setDragged(const bool dragged) {
+			mDragged = dragged;
+		}
+
 		virtual void click(glm::vec2 pos);
 
 		virtual void clickOff(glm::vec2 pos);
+
+		virtual bool drag(glm::vec2 distance);
+
+		virtual void endDrag();
 
 		virtual ~Part() = default;
 
@@ -47,5 +59,6 @@ namespace genbliothinothon::module::part {
 		glm::vec2 mPos;
 		glm::vec2 mSize;
 		bool mDirty = false;
+		bool mDragged = false;
 	};
 }

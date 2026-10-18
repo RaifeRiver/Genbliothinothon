@@ -44,6 +44,10 @@ namespace genbliothinothon::module {
 
 		void clearDirty() const;
 
+		void drag(glm::vec2 distance);
+
+		void endDrag() const;
+
 		virtual std::string generateGLSL(std::unordered_map<std::string, std::string>& inputValues) = 0;
 
 		void render(glm::vec2 pos, render::RenderContext& context) const;

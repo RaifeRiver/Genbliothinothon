@@ -32,11 +32,12 @@ namespace genbliothinothon {
 				glm::vec2 modulePos = module->getPos() + mCameraPos;
 				if (!pressed) {
 					module->setDragged(false);
+					module->endDrag();
 				}
 				const glm::vec2 moduleSize = module->getSize();
 				const bool moduleHovered = mousePos.x >= modulePos.x && mousePos.x <= modulePos.x + moduleSize.x && mousePos.y >= modulePos.y && mousePos.y <= modulePos.y + moduleSize.y;
 				const bool dragged = module->isDragged();
-				moduleFound |= moduleHovered && dragged;
+				moduleFound |= moduleHovered || dragged;
 				if (!dragged && pressed && !lastPressed) {
 					for (const std::unique_ptr<module::part::Part>& part : module->getParts()) {
 						const glm::vec2 partPos = part->getPos() + modulePos;
@@ -50,7 +51,7 @@ namespace genbliothinothon {
 				}
 				if (dragged || moduleHovered && pressed && !dragging) {
 					module->setDragged(true);
-					module->setPos(modulePos + mouseMovement - mCameraPos);
+					module->drag(mouseMovement);
 					dragging = true;
 				}
 				module->render(mCameraPos, mRenderContext);
