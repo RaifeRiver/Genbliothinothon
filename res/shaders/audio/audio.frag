@@ -178,6 +178,8 @@ void applyBiquad(inout float Buffer[AUDIO_BUF_SIZE], int type, float hz, float q
     VOICE_FILTER(type, hz, q, gain) \
     VOICE_END(outVar)
 
+// insert functions here
+
 void main() {
     uvec2 sampleVec = uvec2(gl_FragCoord.xy);
     uint sample0 = sampleVec.x + (sampleVec.y * 128u) + uSampleBase;

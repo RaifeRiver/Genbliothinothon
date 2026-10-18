@@ -62,6 +62,10 @@ namespace genbliothinothon::module {
 		}
 	}
 
+	std::string Module::generateFunctions(uint32_t index) {
+		return "";
+	}
+
 	void Module::render(glm::vec2 pos, render::RenderContext& context) const {
 		pos += mPos;
 		for (const std::unique_ptr<part::Part>& part: mParts) {

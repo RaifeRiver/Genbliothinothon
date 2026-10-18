@@ -46,6 +46,7 @@ namespace genbliothinothon::audio {
 		std::string fragmentShader = render::loadShaderSource("../res/shaders/audio/audio.frag");
 
 		std::string generatedCode;
+		std::string generatedFunctions;
 
 		std::vector generatedModules(modules.size(), false);
 		std::vector generatingModules(modules.size(), false);
@@ -86,7 +87,8 @@ namespace genbliothinothon::audio {
 					inputStrings[sendTarget->getName()] = inputString;
 				}
 			}
-			generatedCode += "float a" + std::to_string(module) + " = " + modules[module]->generateGLSL(inputStrings) + ";\n";
+			generatedFunctions += modules[module]->generateFunctions(module);
+			generatedCode += "float a" + std::to_string(module) + " = " + modules[module]->generateGLSL(module, inputStrings) + ";\n";
 
 			generatedModules[module] = true;
 		};
@@ -122,6 +124,7 @@ namespace genbliothinothon::audio {
 
 		std::cout << generatedCode << std::endl;
 
+		fragmentShader.replace(fragmentShader.find("// insert functions here"), 24, generatedFunctions);
 		fragmentShader.replace(fragmentShader.find("// insert audio code here"), 25, generatedCode);
 
 		mShader = std::make_unique<render::Shader>(vertexShader, fragmentShader);

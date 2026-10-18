@@ -9,7 +9,7 @@ namespace genbliothinothon::module {
 	public:
 		explicit WaveGenerator(glm::vec2 pos);
 
-		std::string generateGLSL(std::unordered_map<std::string, std::string>& inputValues) override;
+		std::string generateGLSL(uint32_t index, std::unordered_map<std::string, std::string>& inputValues) override;
 
 	private:
 		part::Dropdown* mWaveType;
