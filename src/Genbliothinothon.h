@@ -38,5 +38,6 @@ namespace genbliothinothon {
 		audio::AudioPlayer mAudioPlayer;
 		std::vector<std::unique_ptr<module::Module>> mModules;
 		glm::vec2 mCameraPos = {0.0f, 0.0f};
+		std::vector<std::pair<std::string, std::function<std::unique_ptr<module::Module>(glm::vec2)>>> mModuleTypes;
 	};
 }
