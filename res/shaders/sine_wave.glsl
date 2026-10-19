@@ -5,33 +5,48 @@ out vec4 audioOut;
 uniform uint uSampleBase;
 
 #define MAX_INT 2147483647
-#define PI 3.141592653589793238462643383279502884197169399375105820974944592
+#define PI 3.141592653589793238462643383279502884197169399375105820974944592f
+#define TWO_PI 6.283185307179586476925286766559005768394338798750211641949889184f
+#define HALF_PI 6.2831853071795864769252867665590057683943387987502116419498891846f
 #define FS 96000.0
 
-float audio_sin(float x) {return sin(x);
-                          float TWO_PI = 2.0 * PI;
-                          float HALF_PI = 0.5 * PI;
+float audio_sin(float x) {
 
-                          x = x - TWO_PI * floor(x / TWO_PI + 0.5);
+    x = mod(x + PI, TWO_PI) - PI;
 
-                          float sign = 1.0;
-                          if (x > HALF_PI) {
-                              x = PI - x;
-                          } else if (x < -HALF_PI) {
-                              x = -PI - x;
-                              sign = -1.0;
-                          }
+    float sign = 1.0f;
+    if (x > HALF_PI) {
+        x = PI - x;
+    } else if (x < -HALF_PI) {
+        x = -PI - x;
+        sign = -1.0f;
+    }
 
-                          float x2 = x * x;
-                          float p = -1.6059043836821614e-10;
-                          p = p * x2 + 2.505210838544172e-8;
-                          p = p * x2 + -2.755731922398589e-6;
-                          p = p * x2 + 0.0001984126984126984;
-                          p = p * x2 + -0.0083333333333333333;
-                          p = p * x2 + 0.16666666666666666;
+    // 3. Degree-9 Minimax polynomial (uniform error distribution < 1e-7)
+    float x2 = x * x;
+    float poly = x * (1.0f + x2 * (-0.166666571f + x2 * (0.00833301729f + x2 * (-0.000198066152f + x2 * 0.00000260005477f))));
 
-                          return sign * x * (1.0 - x2 * p);
+    return poly * sign;
 }
+
+
+
+//AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR
+//  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR
+// AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR AHDSR
+
+
+
+
+
+
+
+
+//AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR
+//  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR
+// AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR AHDSR
+
+
 float white(uint samp,float vol){
     uint s=((samp)<<13)^(samp);
     s=s*(s*s*15731u+789221u)+1376312589u;
@@ -146,11 +161,11 @@ void applyBiquad(inout float Buffer[AUDIO_BUF_SIZE], int type, float hz, float q
 
     for (int i = 0; i < AUDIO_BUF_SIZE; i++) {
         float inSample = Buffer[i];
-    float outSample = (b0 * inSample) + (b1 * prevIn[0]) + (b2 * prevIn[1])
-    - (a1 * prevOut[0]) - (a2 * prevOut[1]);
-    prevIn[1] = prevIn[0]; prevIn[0] = inSample;
-    prevOut[1] = prevOut[0]; prevOut[0] = outSample;
-    Buffer[i] = outSample;
+        float outSample = (b0 * inSample) + (b1 * prevIn[0]) + (b2 * prevIn[1])
+        - (a1 * prevOut[0]) - (a2 * prevOut[1]);
+        prevIn[1] = prevIn[0]; prevIn[0] = inSample;
+        prevOut[1] = prevOut[0]; prevOut[0] = outSample;
+        Buffer[i] = outSample;
     }
 }
 
@@ -178,28 +193,13 @@ void applyBiquad(inout float Buffer[AUDIO_BUF_SIZE], int type, float hz, float q
     VOICE_FILTER(type, hz, q, gain) \
     VOICE_END(outVar)
 
-// ==========================================
-// MAIN SHADER ENTRY
-// ==========================================
+// insert functions here
 
 void main() {
     uvec2 sampleVec = uvec2(gl_FragCoord.xy);
-    uint baseSampleI = sampleVec.x + (sampleVec.y * 128u) + uSampleBase;
+    uint sample0 = sampleVec.x + (sampleVec.y * 128u) + uSampleBase;
 
-    float voice1, voice2;
+    // insert audio code here
 
-    // Voice 1: Lowpass Filter
-    VOICE_BEGIN(sq(sampleI, note(4, 1), 100.0f))
-                                                     VOICE_FILTER(FILTER_LOWPASS, 200.0, 100.0, 0.0)
-                                                     VOICE_END(voice1)
-
-    // Voice 2: Chained high/lowpass Filters (800Hz + 2kHz)
-    VOICE_BEGIN(saw(sampleI, 1.0f))
-                                     VOICE_FILTER(FILTER_HIGHPASS, 1500.0, 0.7, 0.0)
-                                     VOICE_FILTER(FILTER_LOWPASS, 1600.0, 0.05, 0.0)
-                                     VOICE_END(voice2)
-
-    // Mix and output
-    float finalMix = (voice1 + voice2) * 0.5f;
-    audioOut = vec4(finalMix, finalMix, 0.0f, 0.0f);
+    audioOut = vec4(leftAudio, rightAudio, 0.0f, 0.0f);
 }
