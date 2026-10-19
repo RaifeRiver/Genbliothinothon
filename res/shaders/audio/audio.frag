@@ -38,13 +38,13 @@ float audio_sin(float x) {
 //   AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR
 //  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR AHDSR
 
-float AHDSR(float sampleI, float Attack_Time, float Attack_Curve, float Hold_Time, float Decay_Time, float Decay_Curve, float Sustain_Percent, float Release_Time, float Release_Curve){
+float AHDSR(float sam, float Attack_Time, float Attack_Curve, float Hold_Time, float Decay_Time, float Decay_Curve, float Sustain_Percent, float Release_Time, float Release_Curve){
     float Decay_start = Attack_Time + Hold_Time;
     float Sustain_start = Decay_start + Decay_Time;
     float Release_end = Sustain_start + Release_Time;
     float Amplitude = 0.0f;
-    float Time = mS_conversion_num * sampleI;
-    if (Time < A) {
+    float Time = mS_conversion_num * sam;
+    if (Time < Attack_Time) {
         Amplitude = ((1-pow(Eulers_num, (-Attack_Curve*Time/Attack_Time))))/(1-pow(Eulers_num,(-Attack_Curve)));
     }
     else if (Time < Decay_start) {
@@ -54,13 +54,12 @@ float AHDSR(float sampleI, float Attack_Time, float Attack_Curve, float Hold_Tim
         Amplitude = Sustain_Percent + (1-Sustain_Percent) * ((1-(pow(Eulers_num, ((-1* Decay_Curve * (Sustain_start-Time)) /Decay_Time))))/(1 - (pow(Eulers_num, (-1 * Decay_Curve)))));
     }
     else if (Time < Release_end){
-        Amplitude = Sustain_Percent * ((1-(pow(Eulers_num, ((-1 * Release_Curve * (Release_end - Time)) / Release_Time))))/(1-(pow(e, (-1 * Release_Curve)))));
+        Amplitude = Sustain_Percent * ((1-(pow(Eulers_num, ((-1 * Release_Curve * (Release_end - Time)) / Release_Time))))/(1-(pow(Eulers_num, (-1 * Release_Curve)))));
     }
     else {
         Amplitude = 0.0f;
     }
-
-
+    return(Amplitude);
 }
 
 // AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR
@@ -115,9 +114,11 @@ float saw(uint samp, float Hz, float vol){
 float sq(uint samp, float Hz, float vol){
     return(vol*(2.0*(uint(samp/(FS/Hz))&1u)-1.0));
 }
+//float sam, float Attack_Time, float Attack_Curve, float Hold_Time, float Decay_Time, float Decay_Curve, float Sustain_Percent, float Release_Time, float Release_Curve
 float tri(uint samp, float Hz, float vol){
-    return(vol*(1.0-2.0*abs(2.0*fract(samp/(FS/Hz))-1.0)));
+    return(AHDSR(float(vol*(1.0-2.0*abs(2.0*fract(samp/(FS/Hz))-1.0))), 20.0f, 20.0f, 300.0f, 200.0f, -10.0f, 0.7f, 600.0f, -30.0f));
 }
+//float AHDSR(float sam, float Attack_Time, float Attack_Curve, float Hold_Time, float Decay_Time, float Decay_Curve, float Sustain_Percent, float Release_Time, float Release_Curve){
 float note(int n, int octave) {
     return 27.5 * pow(2.0, float(n - 1 + octave * 12) / 12.0);
 }
