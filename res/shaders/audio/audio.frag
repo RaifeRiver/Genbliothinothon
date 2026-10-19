@@ -8,6 +8,9 @@ uniform uint uSampleBase;
 #define PI 3.141592653589793238462643383279502884197169399375105820974944592f
 #define TWO_PI 6.283185307179586476925286766559005768394338798750211641949889184f
 #define HALF_PI 6.2831853071795864769252867665590057683943387987502116419498891846f
+#define Eulers_num 2.718281828459045235360287471352662497757247093699959574966967627f
+#define mS_conversion_num 0.0104166666666666666666666666666666666666666666666666666666666666f
+#define S_conversion_num 0.0000104166666666666666666666666666666666666666666666666666666666f
 #define FS 96000.0
 
 float audio_sin(float x) {
@@ -35,12 +38,30 @@ float audio_sin(float x) {
 //   AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR
 //  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR AHDSR
 
+float AHDSR(float sampleI, float Attack_Time, float Attack_Curve, float Hold_Time, float Decay_Time, float Decay_Curve, float Sustain_Percent, float Release_Time, float Release_Curve){
+    float Decay_start = Attack_Time + Hold_Time;
+    float Sustain_start = Decay_start + Decay_Time;
+    float Release_end = Sustain_start + Release_Time;
+    float Amplitude = 0.0f;
+    float Time = mS_conversion_num * sampleI;
+    if (Time < A) {
+        Amplitude = ((1-pow(Eulers_num, (-Attack_Curve*Time/Attack_Time))))/(1-pow(Eulers_num,(-Attack_Curve)));
+    }
+    else if (Time < Decay_start) {
+        Amplitude = 1;
+    }
+    else if (Time < Sustain_start){
+        Amplitude = Sustain_Percent + (1-Sustain_Percent) * ((1-(pow(Eulers_num, ((-1* Decay_Curve * (Sustain_start-Time)) /Decay_Time))))/(1 - (pow(Eulers_num, (-1 * Decay_Curve)))));
+    }
+    else if (Time < Release_end){
+        Amplitude = Sustain_Percent * ((1-(pow(Eulers_num, ((-1 * Release_Curve * (Release_end - Time)) / Release_Time))))/(1-(pow(e, (-1 * Release_Curve)))));
+    }
+    else {
+        Amplitude = 0.0f;
+    }
 
 
-
-
-
-
+}
 
 // AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR
 //   AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR
