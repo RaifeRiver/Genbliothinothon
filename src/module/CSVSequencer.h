@@ -4,9 +4,9 @@
 #include "part/TextInput.h"
 
 namespace genbliothinothon::module {
-	class MidiModule : public Module {
+	class CSVSequencer : public Module {
 	public:
-		explicit MidiModule(glm::vec2 pos);
+		explicit CSVSequencer(glm::vec2 pos);
 
 		std::string generateFunctions(uint32_t index) override;
 

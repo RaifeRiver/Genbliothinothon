@@ -2,9 +2,10 @@
 
 #include <fstream>
 
-#include "module/MidiModule.h"
+#include "module/CSVSequencer.h"
+#include "module/NoiseSource.h"
 #include "module/Output.h"
-#include "module/WaveGenerator.h"
+#include "module/Oscillator.h"
 #include "module/part/Background.h"
 #include "module/part/RemoveButton.h"
 #include "module/part/Send.h"
@@ -13,21 +14,24 @@ namespace genbliothinothon {
 	Genbliothinothon::Genbliothinothon() {
 		sInstance = this;
 
-		mModules.emplace_back(std::make_unique<module::MidiModule>(glm::vec2{100.0f, 100.0f}));
-		dynamic_cast<module::MidiModule*>(mModules.back().get())->getTextInput()->setText("../res/songs/song_1_voice1.csv");
+		mModules.emplace_back(std::make_unique<module::CSVSequencer>(glm::vec2{100.0f, 100.0f}));
+		dynamic_cast<module::CSVSequencer*>(mModules.back().get())->getTextInput()->setText("../res/songs/song_1_voice1.csv");
 
-		mModules.emplace_back(std::make_unique<module::MidiModule>(glm::vec2{100.0f, 250.0f}));
-		dynamic_cast<module::MidiModule*>(mModules.back().get())->getTextInput()->setText("../res/songs/song_1_voice2.csv");
+		mModules.emplace_back(std::make_unique<module::CSVSequencer>(glm::vec2{100.0f, 250.0f}));
+		dynamic_cast<module::CSVSequencer*>(mModules.back().get())->getTextInput()->setText("../res/songs/song_1_voice2.csv");
 
-		mModules.emplace_back(std::make_unique<module::WaveGenerator>(glm::vec2{310.0f, 100.0f}));
-		mModules.emplace_back(std::make_unique<module::WaveGenerator>(glm::vec2{310.0f, 250.0f}));
+		mModules.emplace_back(std::make_unique<module::Oscillator>(glm::vec2{310.0f, 100.0f}));
+		mModules.emplace_back(std::make_unique<module::Oscillator>(glm::vec2{310.0f, 250.0f}));
 		mModules.emplace_back(std::make_unique<module::Output>(glm::vec2{520.0f, 100.0f}));
 
-		mModuleTypes.emplace_back("Wave generator", [](const glm::vec2 pos) {
-			return std::make_unique<module::WaveGenerator>(pos);
+		mModuleTypes.emplace_back("CSV Sequencer", [](const glm::vec2 pos) {
+			return std::make_unique<module::CSVSequencer>(pos);
 		});
-		mModuleTypes.emplace_back("MIDI Sequencer", [](const glm::vec2 pos) {
-			return std::make_unique<module::MidiModule>(pos);
+		mModuleTypes.emplace_back("Noise Source", [](const glm::vec2 pos) {
+			return std::make_unique<module::NoiseSource>(pos);
+		});
+		mModuleTypes.emplace_back("Oscillator", [](const glm::vec2 pos) {
+			return std::make_unique<module::Oscillator>(pos);
 		});
 	}
 

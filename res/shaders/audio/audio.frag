@@ -198,7 +198,7 @@ void applyBiquad(inout float Buffer[AUDIO_BUF_SIZE], int type, float hz, float q
 { \
     float _buf[AUDIO_BUF_SIZE]; \
     for (int _i = 0; _i < AUDIO_BUF_SIZE; _i++) { \
-        uint sampleI = baseSampleI + uint(_i); \
+        uint sampleI = sample0 + uint(_i); \
         _buf[_i] = (wavExpr); \
     }
 
