@@ -6,9 +6,9 @@
 #include "part/NoteDial.h"
 
 namespace genbliothinothon::module {
-	class WaveGenerator : public Module {
+	class Oscillator : public Module {
 	public:
-		explicit WaveGenerator(glm::vec2 pos);
+		explicit Oscillator(glm::vec2 pos);
 
 		std::string generateGLSL(uint32_t index, std::unordered_map<std::string, std::string>& inputValues) override;
 

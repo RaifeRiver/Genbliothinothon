@@ -1,4 +1,4 @@
-#include "MidiModule.h"
+#include "CSVSequencer.h"
 
 #include <cmath>
 #include <fstream>
@@ -8,15 +8,15 @@
 #include "part/Send.h"
 
 namespace genbliothinothon::module {
-	MidiModule::MidiModule(const glm::vec2 pos) : Module(pos, glm::vec2{200.0f, 93.0f}) {
-		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 93.0f}, "Midi player"));
+	CSVSequencer::CSVSequencer(const glm::vec2 pos) : Module(pos, glm::vec2{200.0f, 93.0f}) {
+		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 93.0f}, "CSV Sequencer"));
 		addPart(std::make_unique<part::RemoveButton>(this));
 		mTextInput = &addPart(std::make_unique<part::TextInput>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}));
 		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 47.0f}, glm::vec2{194.0f, 20.0f}, "Frequency"));
 		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 70.0f}, glm::vec2{194.0f, 20.0f}, "Volume"));
 	}
 
-	std::string MidiModule::generateFunctions(const uint32_t index) {
+	std::string CSVSequencer::generateFunctions(const uint32_t index) {
 		std::ifstream midiFile(mTextInput->getText());
 		if (!midiFile.is_open()) {
 			mLength = 1.0f;
@@ -79,7 +79,7 @@ namespace genbliothinothon::module {
 		return functions;
 	}
 
-	std::string MidiModule::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>&) {
+	std::string CSVSequencer::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>&) {
 		const std::string indexStr = std::to_string(index);
 		return "vec2 Data" + indexStr + "=midiGetNote" + indexStr + "(sample0%" + std::to_string(static_cast<uint32_t>(mLength)) + "u);\nfloat Frequency" + indexStr + "=Data" + indexStr + "[0];\nfloat Volume" + indexStr + "=Data" + indexStr + "[1];";
 	}
