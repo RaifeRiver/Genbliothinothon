@@ -13,7 +13,7 @@ namespace genbliothinothon::module {
 		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 46.0f}, glm::vec2{194.0f, 20.0f}, "Audio"));
 		mFrequency = &addPart(std::make_unique<part::NoteDial>(this, glm::vec2{30.0f, 74.0f}, glm::vec2{50.0f, 50.0f}, "Tone"));
 		mVolume = &addPart(std::make_unique<part::Dial>(this, glm::vec2{110.0f, 74.0f}, glm::vec2{50.0f, 50.0f}, "Volume", 0.0f, 1.0f, 1.0f));
-		mWaveType = &addPart(std::make_unique<part::Dropdown>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}, std::vector<std::string>{"Sine", "Saw", "Inv Saw", "Triangle", "Square", "White noise"}));
+		mWaveType = &addPart(std::make_unique<part::Dropdown>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}, std::vector<std::string>{"Sine", "Saw", "Inv Saw", "Triangle", "Square"}));
 	}
 
 	std::string Oscillator::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>& inputValues) {
@@ -48,9 +48,6 @@ namespace genbliothinothon::module {
 				break;
 			case 4:
 				return "float Audio" + indexStr + "=sq(sample0," + frequency + "," + volume + ");";
-				break;
-			case 5:
-				return "float Audio" + indexStr + "=white(sample0," + volume + ");";
 				break;
 			default:
 				throw std::runtime_error("Invalid wave type");

@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include "module/CSVSequencer.h"
+#include "module/NoiseSource.h"
 #include "module/Output.h"
 #include "module/Oscillator.h"
 #include "module/part/Background.h"
@@ -23,11 +24,14 @@ namespace genbliothinothon {
 		mModules.emplace_back(std::make_unique<module::Oscillator>(glm::vec2{310.0f, 250.0f}));
 		mModules.emplace_back(std::make_unique<module::Output>(glm::vec2{520.0f, 100.0f}));
 
-		mModuleTypes.emplace_back("Oscillator", [](const glm::vec2 pos) {
-			return std::make_unique<module::Oscillator>(pos);
-		});
 		mModuleTypes.emplace_back("CSV Sequencer", [](const glm::vec2 pos) {
 			return std::make_unique<module::CSVSequencer>(pos);
+		});
+		mModuleTypes.emplace_back("Noise Source", [](const glm::vec2 pos) {
+			return std::make_unique<module::NoiseSource>(pos);
+		});
+		mModuleTypes.emplace_back("Oscillator", [](const glm::vec2 pos) {
+			return std::make_unique<module::Oscillator>(pos);
 		});
 	}
 
