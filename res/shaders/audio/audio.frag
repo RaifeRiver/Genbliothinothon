@@ -124,6 +124,9 @@ float tri(uint samp, float Hz, float vol){
 float note(int n, int octave) {
     return 27.5 * pow(2.0, float(n - 1 + octave * 12) / 12.0);
 }
+float soft_distort(float amplitude){
+    return tanh(amplitude);
+}
 // ==================================================
 // MULTIFILER SEPERATE EFFECTED SUPER VOICE SYSTEM!!!
 // ==================================================

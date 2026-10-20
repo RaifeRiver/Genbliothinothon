@@ -1,8 +1,9 @@
 #include "Genbliothinothon.h"
-
+// please sort everything alphabetically!
 #include <fstream>
 
 #include "module/CSVSequencer.h"
+#include "module/MathsWave.h"
 #include "module/MidiSequencer.h"
 #include "module/NoiseSource.h"
 #include "module/Output.h"
@@ -27,6 +28,9 @@ namespace genbliothinothon {
 
 		mModuleTypes.emplace_back("CSV Sequencer", [](const glm::vec2 pos) {
 			return std::make_unique<module::CSVSequencer>(pos);
+		});
+		mModuleTypes.emplace_back("Maths Wave", [](const glm::vec2 pos) {
+			return std::make_unique<module::MathsWave>(pos);
 		});
 		mModuleTypes.emplace_back("MIDI Sequencer", [](const glm::vec2 pos) {
 			return std::make_unique<module::MidiSequencer>(pos);

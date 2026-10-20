@@ -16,7 +16,9 @@ FetchContent_Declare(portaudio GIT_REPOSITORY https://github.com/PortAudio/porta
 FetchContent_MakeAvailable(portaudio)
 
 file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS src/*.cpp lib/*.c)
-add_executable(Genbliothinothon ${SRC_FILES})
+add_executable(Genbliothinothon ${SRC_FILES}
+        src/module/MathsWave.cpp
+        src/module/MathsWave.h)
 
 target_compile_definitions(Genbliothinothon PUBLIC GLM_ENABLE_EXPERIMENTAL)
 
