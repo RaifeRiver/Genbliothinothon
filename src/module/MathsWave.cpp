@@ -25,7 +25,7 @@ namespace genbliothinothon::module {
        // Let's replace the word "samp" in your text box with "sampleI" so the shader understands it.
        size_t pos = 0;
        while ((pos = userMath.find('t', pos)) != std::string::npos) {
-            userMath.replace(pos, 1, "sampleI");
+            userMath.replace(pos, 1, "sampleI/96000.0f");
             pos += 7; // Length of "sampleI" How do i make it t instead. i want to divide sampleI/96000
        }
 
