@@ -45,16 +45,16 @@ float AHDSR(float Amplitude_in, float sam, float Attack_Time, float Attack_Curve
     float Amplitude = 0.0f;
     float Time = mS_conversion_num * sam;
     if (Time < Attack_Time) {
-        Amplitude = ((1-pow(Eulers_num, (-Attack_Curve*Time/Attack_Time))))/(1-pow(Eulers_num,(-Attack_Curve)));
+        Amplitude = ((1-pow(e, (-Attack_Curve*Time/Attack_Time))))/(1-pow(e,(-Attack_Curve)));
     }
     else if (Time < Decay_start) {
         Amplitude = 1;
     }
     else if (Time < Sustain_start){
-        Amplitude = Sustain_Percent + (1-Sustain_Percent) * ((1-(pow(Eulers_num, ((-1* Decay_Curve * (Sustain_start-Time)) /Decay_Time))))/(1 - (pow(Eulers_num, (-1 * Decay_Curve)))));
+        Amplitude = Sustain_Percent + (1-Sustain_Percent) * ((1-(pow(e, ((-1* Decay_Curve * (Sustain_start-Time)) /Decay_Time))))/(1 - (pow(e, (-1 * Decay_Curve)))));
     }
     else if (Time < Release_end){
-        Amplitude = Sustain_Percent * ((1-(pow(Eulers_num, ((-1 * Release_Curve * (Release_end - Time)) / Release_Time))))/(1-(pow(Eulers_num, (-1 * Release_Curve)))));
+        Amplitude = Sustain_Percent * ((1-(pow(e, ((-1 * Release_Curve * (Release_end - Time)) / Release_Time))))/(1-(pow(e, (-1 * Release_Curve)))));
     }
     else {
         Amplitude = 0.0f;
