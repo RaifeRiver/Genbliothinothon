@@ -20,10 +20,10 @@ namespace genbliothinothon::module {
 		std::ifstream midiFile(mTextInput->getText());
 		if (!midiFile.is_open()) {
 			mLength = 1.0f;
-			return "vec2 midiGetNote"+ std::to_string(index) + "(uint s) {return vec2(0.0f,0.0f);}";
+			return "vec2 csvSequencerGetNote"+ std::to_string(index) + "(uint s) {return vec2(0.0f,0.0f);}";
 		}
 		mLength = 0.0f;
-		std::string functions = "vec2 midiGetNote" + std::to_string(index) + "(uint s) {";
+		std::string functions = "vec2 csvSequencerGetNote" + std::to_string(index) + "(uint s) {";
 		std::string line;
 		constexpr float beatLength = 60.0f * 96000.0f / 112.0f;
 		std::stringstream midiStream;
@@ -81,6 +81,6 @@ namespace genbliothinothon::module {
 
 	std::string CSVSequencer::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>&) {
 		const std::string indexStr = std::to_string(index);
-		return "vec2 Data" + indexStr + "=midiGetNote" + indexStr + "(sample0%" + std::to_string(static_cast<uint32_t>(mLength)) + "u);\nfloat Frequency" + indexStr + "=Data" + indexStr + "[0];\nfloat Volume" + indexStr + "=Data" + indexStr + "[1];";
+		return "vec2 Data" + indexStr + "=csvSequencerGetNote" + indexStr + "(sample0%" + std::to_string(static_cast<uint32_t>(mLength)) + "u);\nfloat Frequency" + indexStr + "=Data" + indexStr + "[0];\nfloat Volume" + indexStr + "=Data" + indexStr + "[1];";
 	}
 }

@@ -6,13 +6,13 @@
 namespace genbliothinothon::module {
 	Output::Output(const glm::vec2& pos) : Module(pos, glm::vec2{130.0f, 80.0f}) {
 		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{130.0f, 80.0f}, "Output"));
-		addPart(std::make_unique<part::Output>(this, glm::vec2{5.0f, 25.0f}, glm::vec2{50.0f, 50.0f}, "Left"));
-		addPart(std::make_unique<part::Output>(this, glm::vec2{75.0f, 25.0f}, glm::vec2{50.0f, 50.0f}, "Right"));
+		addPart(std::make_unique<part::Output>(this, glm::vec2{5.0f, 25.0f}, glm::vec2{50.0f, 50.0f}, "Left")).setAveraged(false);
+		addPart(std::make_unique<part::Output>(this, glm::vec2{75.0f, 25.0f}, glm::vec2{50.0f, 50.0f}, "Right")).setAveraged(false);
 	}
 
 	std::string Output::generateGLSL(uint32_t, std::unordered_map<std::string, std::string>& inputValues) {
-		const auto leftIt = inputValues.find("Left");
-		const auto rightIt = inputValues.find("Right");
+		const auto leftIt = inputValues.find("Left0_");
+		const auto rightIt = inputValues.find("Right0_");
 		std::string left = "0.0f";
 		std::string right = "0.0f";
 		if (leftIt != inputValues.end()) {
