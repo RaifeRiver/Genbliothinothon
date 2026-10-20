@@ -13,6 +13,7 @@ namespace genbliothinothon::module {
 		std::string generateGLSL(uint32_t index, std::unordered_map<std::string, std::string>& inputValues) override;
 
 	private:
+		part::Send* mAudio;
 		part::Dropdown* mWaveType;
 		part::NoteDial* mFrequency;
 		part::Dial* mVolume;

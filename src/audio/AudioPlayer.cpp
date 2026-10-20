@@ -63,22 +63,29 @@ namespace genbliothinothon::audio {
 			std::unordered_map<std::string, std::string> inputStrings;
 			for (const std::unique_ptr<module::part::Part>& part: parts) {
 				if (const auto sendTarget = dynamic_cast<module::part::SendTarget*>(part.get())) {
-					std::string inputString = "(";
-					uint32_t inputCount = 0;
+					uint32_t channelCount = 0;
 					for (const module::part::Send* input : sendTarget->getInputs()) {
-						const module::Module* parent = input->getParent();
-						for (uint32_t parentIndex = 0; parentIndex < modules.size(); parentIndex++) {
-							if (parent == modules[parentIndex].get()) {
-								generateModule(parentIndex);
-								inputString += input->getName() + std::to_string(parentIndex) + "+";
-								inputCount++;
+						channelCount = std::max(channelCount, input->getChannelCount());
+					}
+					for (uint32_t channel = 0; channel < channelCount; channel++) {
+						std::string channelStr = std::to_string(channel);
+						std::string inputString = "(";
+						uint32_t inputCount = 0;
+						for (const module::part::Send* input : sendTarget->getInputs()) {
+							const module::Module* parent = input->getParent();
+							for (uint32_t parentIndex = 0; parentIndex < modules.size(); parentIndex++) {
+								if (parent == modules[parentIndex].get()) {
+									generateModule(parentIndex);
+									inputString += input->getName() + channelStr + "_" + std::to_string(parentIndex) + "+";
+									inputCount++;
+								}
 							}
 						}
-					}
-					if (inputCount != 0) {
-						inputString.pop_back();
-						inputString += ")*" + std::to_string(1.0f / static_cast<float>(inputCount)) + "f";
-						inputStrings[sendTarget->getName()] = inputString;
+						if (inputCount != 0) {
+							inputString.pop_back();
+							inputString += ")*" + std::to_string(1.0f / static_cast<float>(inputCount)) + "f";
+							inputStrings[sendTarget->getName() + channelStr + "_"] = inputString;
+						}
 					}
 				}
 			}

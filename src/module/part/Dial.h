@@ -5,9 +5,9 @@
 namespace genbliothinothon::module::part {
 	class Dial : public SendTarget {
 	public:
-		Dial(Module* parent, glm::vec2 pos, glm::vec2 size, const std::string& name, float min, float max);
+		Dial(Module* parent, glm::vec2 pos, glm::vec2 size, const std::string& name, float min, float max, bool multiChannel = false);
 
-		Dial(Module* parent, glm::vec2 pos, glm::vec2 size, const std::string& name, float min, float max, float initial);
+		Dial(Module* parent, glm::vec2 pos, glm::vec2 size, const std::string& name, float min, float max, float initial, bool multiChannel = false);
 
 		std::string getDefaultValueString() override;
 

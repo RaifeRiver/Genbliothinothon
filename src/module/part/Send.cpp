@@ -6,10 +6,14 @@
 #include "Genbliothinothon.h"
 
 namespace genbliothinothon::module::part {
-	Send::Send(Module* parent, const glm::vec2 &pos, const glm::vec2& size, std::string name): Part(parent, pos, size), mName(std::move(name)) {}
+	Send::Send(Module* parent, const glm::vec2 &pos, const glm::vec2& size, std::string name, const uint32_t channelCount): Part(parent, pos, size), mName(std::move(name)), mChannelCount(channelCount) {}
 
 	void Send::setSendTarget(SendTarget* target) {
 		mSendTarget = target;
+	}
+
+	void Send::setChannelCount(const uint32_t channelCount) {
+		mChannelCount = channelCount;
 	}
 
 	void Send::click(glm::vec2) {
@@ -37,6 +41,9 @@ namespace genbliothinothon::module::part {
 				const glm::vec2 partPos = part->getPos() + modulePos;
 				const glm::vec2 partSize = part->getSize();
 				if (const auto sendTarget = dynamic_cast<SendTarget*>(part.get()); sendTarget && worldPos.x >= partPos.x && worldPos.x < partPos.x + partSize.x && worldPos.y >= partPos.y && worldPos.y < partPos.y + partSize.y) {
+					if (!sendTarget->isMultiChannel() && mChannelCount > 1) {
+						break;
+					}
 					mSendTarget = sendTarget;
 					sendTarget->addInput(this);
 					setDirty(true);
