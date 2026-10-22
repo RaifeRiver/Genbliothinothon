@@ -6,8 +6,8 @@
 namespace genbliothinothon::module {
 	Output::Output(const glm::vec2& pos) : Module(pos, glm::vec2{130.0f, 80.0f}) {
 		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{130.0f, 80.0f}, "Output"));
-		addPart(std::make_unique<part::Output>(this, glm::vec2{5.0f, 25.0f}, glm::vec2{50.0f, 50.0f}, "Left")).setAveraged(false);
-		addPart(std::make_unique<part::Output>(this, glm::vec2{75.0f, 25.0f}, glm::vec2{50.0f, 50.0f}, "Right")).setAveraged(false);
+		addPart(std::make_unique<part::Output>(this, glm::vec2{5.0f, 25.0f}, glm::vec2{50.0f, 50.0f}, "Left")).setCombiningMode(part::CombiningMode::SUM);
+		addPart(std::make_unique<part::Output>(this, glm::vec2{75.0f, 25.0f}, glm::vec2{50.0f, 50.0f}, "Right")).setCombiningMode(part::CombiningMode::SUM);
 	}
 
 	Output::Output(const uint32_t version, util::FileIStream& stream) : Module(version, stream) {}

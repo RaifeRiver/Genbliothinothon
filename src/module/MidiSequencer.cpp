@@ -1,6 +1,7 @@
 #include "MidiSequencer.h"
 
 #include <cmath>
+#include <deque>
 #include <fstream>
 
 #include "part/Background.h"
@@ -8,17 +9,24 @@
 #include "part/Send.h"
 
 namespace genbliothinothon::module {
-	MidiSequencer::MidiSequencer(const glm::vec2& pos) : Module(pos, {200.0f, 116.0f}) {
-		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 116.0f}, "MIDI Sequencer"));
+	MidiSequencer::MidiSequencer(const glm::vec2& pos) : Module(pos, {200.0f, 139.0f}) {
+		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 139.0f}, "MIDI Sequencer"));
 		addPart(std::make_unique<part::RemoveButton>(this));
 		mTextInput = &addPart(std::make_unique<part::TextInput>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}));
 		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 47.0f}, glm::vec2{194.0f, 20.0f}, "Frequency", 16));
 		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 70.0f}, glm::vec2{194.0f, 20.0f}, "Volume", 16));
 		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 93.0f}, glm::vec2{194.0f, 20.0f}, "NoteStart", 16));
+		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 116.0f}, glm::vec2{194.0f, 20.0f}, "NoteHeld", 16));
 	}
 
 	MidiSequencer::MidiSequencer(const uint32_t version, util::FileIStream& stream) : Module(version, stream) {
-		mTextInput = reinterpret_cast<part::TextInput*>(getParts()[2].get());
+		const std::vector<std::unique_ptr<part::Part>>& parts = getParts();
+		if (version == 0) {
+			setSize({200.0f, 139.0f});
+			parts[0]->setSize({200.0f, 139.0f});
+			addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 116.0f}, glm::vec2{194.0f, 20.0f}, "NoteHeld", 16));
+		}
+		mTextInput = reinterpret_cast<part::TextInput*>(parts[2].get());
 	}
 
 	std::string MidiSequencer::generateFunctions(const uint32_t index) {
@@ -74,7 +82,7 @@ namespace genbliothinothon::module {
 		std::tuple<uint32_t, float, uint8_t> playingNotes[16][128] = {};
 		uint32_t trackEndPos = pos + length;
 		uint8_t runningStatus = 0;
-		std::vector<uint8_t> freeChannels = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+		std::deque<uint8_t> freeChannels = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 		while (pos < trackEndPos) {
 			uint32_t deltaTime = parseVariableInt(pos, buffer.data());
 			previousTime += deltaTime;
@@ -104,8 +112,8 @@ namespace genbliothinothon::module {
 					}
 				}
 				else {
-					playingNotes[channel][note] = {previousTime, static_cast<float>(velocity) / 127.0f, freeChannels.back()};
-					freeChannels.pop_back();
+					playingNotes[channel][note] = {previousTime, static_cast<float>(velocity) / 127.0f, freeChannels.front()};
+					freeChannels.pop_front();
 				}
 			}
 			else if (command >= 0xA0 && command <= 0xAF) {
@@ -159,7 +167,7 @@ namespace genbliothinothon::module {
 		std::string glsl;
 		for (int i = 0; i < 16; i++) {
 			std::string channelStr = std::to_string(i);
-			glsl += "vec3 Data" + channelStr + "_" += indexStr + "=midiSequencerGetNote" += channelStr + "_" += indexStr + "(sample0%" + std::to_string(static_cast<uint32_t>(mLength)) + "u);\nfloat Frequency" += channelStr + "_" += indexStr + "=Data" += channelStr + "_" += indexStr + ".x;\nfloat Volume" += channelStr + "_" += indexStr + "=Data" += channelStr + "_" += indexStr + ".y;\nuint NoteStart" += channelStr + "_" += indexStr + "=uint(Data" += channelStr + "_" += indexStr + ".z);";
+			glsl += "vec3 Data" + channelStr + "_" += indexStr + "=midiSequencerGetNote" += channelStr + "_" += indexStr + "(sample0%" + std::to_string(static_cast<uint32_t>(mLength)) + "u);\nfloat Frequency" += channelStr + "_" += indexStr + "=Data" += channelStr + "_" += indexStr + ".x;\nfloat Volume" += channelStr + "_" += indexStr + "=Data" += channelStr + "_" += indexStr + ".y;\nuint NoteStart" += channelStr + "_" += indexStr + "=uint(Data" += channelStr + "_" += indexStr + ".z);\nbool NoteHeld" += channelStr + "_" += indexStr + "=Data" += channelStr + "_" += indexStr + ".y>0.0f;";
 		}
 		return glsl;
 	}

@@ -34,9 +34,13 @@ namespace genbliothinothon::module::part {
 			return mPos;
 		}
 
+		void setPos(glm::vec2 pos);
+
 		[[nodiscard]] glm::vec2 getSize() const {
 			return mSize;
 		}
+
+		void setSize(glm::vec2 size);
 
 		[[nodiscard]] bool isDirty() const {
 			return mDirty;

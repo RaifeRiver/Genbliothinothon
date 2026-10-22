@@ -3,6 +3,12 @@
 #include "Part.h"
 
 namespace genbliothinothon::module::part {
+	enum class CombiningMode : uint32_t {
+		AVERAGE = 0,
+		SUM = 1,
+		OR = 2
+	};
+
 	class SendTarget : public Part {
 	public:
 		SendTarget(uint32_t type, Module* parent, glm::vec2 pos, const glm::vec2& size, std::string name, bool multiChannel = false);
@@ -21,11 +27,11 @@ namespace genbliothinothon::module::part {
 		
 		void setMultiChannel(bool multiChannel);
 
-		[[nodiscard]] bool isAveraged() const {
-			return mAveraged;
+		[[nodiscard]] CombiningMode getCombiningMode() const {
+			return mCombiningMode;
 		}
 
-		void setAveraged(bool averaged);
+		void setCombiningMode(CombiningMode combiningMode);
 
 		virtual std::string getDefaultValueString() = 0;
 
@@ -39,6 +45,6 @@ namespace genbliothinothon::module::part {
 		std::vector<PartID> mInputs;
 		std::string mName;
 		bool mMultiChannel = false;
-		bool mAveraged = true;
+		CombiningMode mCombiningMode = CombiningMode::AVERAGE;
 	};
 }

@@ -32,6 +32,14 @@ namespace genbliothinothon::module::part {
 		mParent = parent;
 	}
 
+	void Part::setPos(const glm::vec2 pos) {
+		mPos = pos;
+	}
+
+	void Part::setSize(const glm::vec2 size) {
+		mSize = size;
+	}
+
 	void Part::setType(const uint32_t type) {
 		mType = type;
 	}

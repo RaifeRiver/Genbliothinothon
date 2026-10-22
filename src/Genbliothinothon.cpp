@@ -26,7 +26,7 @@ namespace genbliothinothon {
 
 	Genbliothinothon::~Genbliothinothon() {
 		util::FileOStream stream("../save.bin");
-		stream << 0u;
+		stream << 1u;
 		mModuleManager.save(stream);
 	}
 }

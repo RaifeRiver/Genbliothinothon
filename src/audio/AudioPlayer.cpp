@@ -70,23 +70,40 @@ namespace genbliothinothon::audio {
 					for (auto [parentID, partIndex] : sendTarget->getInputs()) {
 						channelCount = std::max(channelCount, reinterpret_cast<module::part::Send*>(modules[parentID]->getParts()[partIndex].get())->getChannelCount());
 					}
+					const module::part::CombiningMode combiningMode = sendTarget->getCombiningMode();
+					std::string combiningOperator;
+					switch (combiningMode) {
+						case module::part::CombiningMode::AVERAGE:
+						case module::part::CombiningMode::SUM:
+							combiningOperator = "+";
+							break;
+							break;
+						case module::part::CombiningMode::OR:
+							combiningOperator = "|";
+							break;
+					}
 					for (uint32_t channel = 0; channel < channelCount; channel++) {
 						std::string channelStr = std::to_string(channel);
-						std::string inputString = "(";
+						std::string inputString;
+						if (combiningMode == module::part::CombiningMode::AVERAGE) {
+							inputString = "(";
+						}
 						uint32_t inputCount = 0;
 						for (auto [parentID, partIndex] : sendTarget->getInputs()) {
 							module::Module* parent = modules[parentID].get();
 							for (uint32_t parentIndex = 0; parentIndex < modules.size(); parentIndex++) {
 								if (parent == modules[parentIndex].get()) {
 									generateModule(parentIndex);
-									inputString += reinterpret_cast<module::part::Send*>(parent->getParts()[partIndex].get())->getName() + channelStr + "_" + std::to_string(parentIndex) + "+";
+									inputString += reinterpret_cast<module::part::Send*>(parent->getParts()[partIndex].get())->getName() + channelStr + "_" + std::to_string(parentIndex) += combiningOperator;
 									inputCount++;
 								}
 							}
 						}
 						if (inputCount != 0) {
 							inputString.pop_back();
-							inputString += ")*" + std::to_string(1.0f / static_cast<float>(inputCount)) + "f";
+							if (combiningMode == module::part::CombiningMode::AVERAGE) {
+								inputString += ")*" + std::to_string(1.0f / static_cast<float>(inputCount)) + "f";
+							}
 							inputStrings[sendTarget->getName() + channelStr + "_"] = inputString;
 						}
 					}
