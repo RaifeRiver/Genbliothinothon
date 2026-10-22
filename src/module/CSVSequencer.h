@@ -8,6 +8,8 @@ namespace genbliothinothon::module {
 	public:
 		explicit CSVSequencer(glm::vec2 pos);
 
+		CSVSequencer(uint32_t version, util::FileIStream& stream);
+
 		std::string generateFunctions(uint32_t index) override;
 
 		std::string generateGLSL(uint32_t index, std::unordered_map<std::string, std::string>& inputValues) override;

@@ -7,7 +7,18 @@ namespace genbliothinothon::module::part {
 	public:
 		explicit RemoveButton(Module* parent);
 
+		RemoveButton(uint32_t version, util::FileIStream& stream);
+
+		static void setType(uint32_t type);
+
+		[[nodiscard]] static uint32_t getType() {
+			return sType;
+		}
+
 	protected:
 		void render_(glm::vec2 pos, render::RenderContext& context) override;
+
+	private:
+		static inline uint32_t sType;
 	};
 }

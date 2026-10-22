@@ -9,6 +9,8 @@ namespace genbliothinothon::module::part {
 
 		Dial(Module* parent, glm::vec2 pos, glm::vec2 size, const std::string& name, float min, float max, float initial, bool multiChannel = false);
 
+		Dial(uint32_t version, util::FileIStream& stream);
+
 		std::string getDefaultValueString() override;
 
 		bool drag(glm::vec2 distance) override;
@@ -33,12 +35,21 @@ namespace genbliothinothon::module::part {
 
 		void setMax(float max);
 
+		void save(util::FileOStream& stream) override;
+
+		static void setType(uint32_t type);
+
+		[[nodiscard]] static uint32_t getType() {
+			return sType;
+		}
+
 	protected:
 		void render_(glm::vec2 pos, render::RenderContext& context) override;
 
 	private:
-		float mMin;
-		float mMax;
-		float mValue;
+		static inline uint32_t sType;
+		float mMin = 0.0f;
+		float mMax = 0.0f;
+		float mValue = 0.0f;
 	};
 }

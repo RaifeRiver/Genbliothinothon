@@ -1,12 +1,18 @@
 #include "Send.h"
 
 #include <algorithm>
+#include <ranges>
 
 #include "Background.h"
 #include "Genbliothinothon.h"
 
 namespace genbliothinothon::module::part {
-	Send::Send(Module* parent, const glm::vec2 &pos, const glm::vec2& size, std::string name, const uint32_t channelCount): Part(parent, pos, size), mName(std::move(name)), mChannelCount(channelCount) {}
+	Send::Send(Module* parent, const glm::vec2 &pos, const glm::vec2& size, std::string name, const uint32_t channelCount): Part(sType, parent, pos, size), mName(std::move(name)), mChannelCount(channelCount) {}
+
+	Send::Send(const uint32_t version, util::FileIStream& stream) : Part(version, stream) {
+		stream >> mName;
+		stream >> mChannelCount;
+	}
 
 	void Send::setSendTarget(SendTarget* target) {
 		mSendTarget = target;
@@ -32,7 +38,7 @@ namespace genbliothinothon::module::part {
 		}
 		Genbliothinothon* genbliothinothon = Genbliothinothon::getInstance();
 		const glm::vec2 worldPos = genbliothinothon->getRenderContext().getMousePos() - genbliothinothon->getCameraPos();
-		for (const std::unique_ptr<Module>& module: genbliothinothon->getModules()) {
+		for (const std::unique_ptr<Module>& module: genbliothinothon->getModuleManager().getModules() | std::views::values) {
 			if (module.get() == getParent()) {
 				continue;
 			}
@@ -52,6 +58,16 @@ namespace genbliothinothon::module::part {
 			}
 		}
 		mSelecting = false;
+	}
+
+	void Send::save(util::FileOStream& stream) {
+		Part::save(stream);
+		stream << mName;
+		stream << mChannelCount;
+	}
+
+	void Send::setType(const uint32_t type) {
+		sType = type;
 	}
 
 	void Send::render_(const glm::vec2 pos, render::RenderContext& context) {

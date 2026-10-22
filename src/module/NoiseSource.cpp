@@ -14,6 +14,12 @@ namespace genbliothinothon::module {
 		mHighPass = &addPart(std::make_unique<part::Dial>(this, glm::vec2{140.0f, 52.0f}, glm::vec2{50.0f, 50.0f}, "High Pass", 10.0f, 20000.0f, 10.0f));
 	}
 
+	NoiseSource::NoiseSource(const uint32_t version, util::FileIStream& stream) : Module(version, stream) {
+		mVolume = reinterpret_cast<part::Dial*>(getParts()[3].get());
+		mLowPass = reinterpret_cast<part::Dial*>(getParts()[4].get());
+		mHighPass = reinterpret_cast<part::Dial*>(getParts()[5].get());
+	}
+
 	std::string NoiseSource::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>& inputValues) {
 		const auto volumeIt = inputValues.find("Volume");
 		const auto lowPassIt = inputValues.find("Low Pass");

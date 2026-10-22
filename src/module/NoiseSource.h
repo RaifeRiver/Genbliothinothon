@@ -8,6 +8,8 @@ namespace genbliothinothon::module {
 	public:
 		explicit NoiseSource(const glm::vec2& pos);
 
+		NoiseSource(uint32_t version, util::FileIStream& stream);
+
 		std::string generateGLSL(uint32_t index, std::unordered_map<std::string, std::string>& inputValues) override;
 
 	private:

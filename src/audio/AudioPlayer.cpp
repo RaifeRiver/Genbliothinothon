@@ -41,12 +41,14 @@ namespace genbliothinothon::audio {
 		}
 	}
 
-	void AudioPlayer::rebuildShader(const std::vector<std::unique_ptr<module::Module>>& modules) {
+	void AudioPlayer::rebuildShader(module::ModuleManager& moduleManager) {
 		std::string vertexShader = render::loadShaderSource("../res/shaders/audio/audio.vert");
 		std::string fragmentShader = render::loadShaderSource("../res/shaders/audio/audio.frag");
 
 		std::string generatedCode;
 		std::string generatedFunctions;
+
+		std::unordered_map<uint32_t, std::unique_ptr<module::Module>>& modules = moduleManager.getModules();
 
 		std::vector generatedModules(modules.size(), false);
 		std::vector generatingModules(modules.size(), false);
@@ -95,10 +97,19 @@ namespace genbliothinothon::audio {
 
 			generatedModules[module] = true;
 		};
+		bool foundOutput = false;
 		for (uint32_t module = 0; module < modules.size(); module++) {
 			if (dynamic_cast<module::Output*>(modules[module].get())) {
+				if (foundOutput) {
+					throw std::runtime_error("Multiple outputs found");
+				}
 				generateModule(module);
+				foundOutput = true;
 			}
+		}
+
+		if (!foundOutput) {
+			generatedCode += "float leftAudio=0.0f;\nfloat rightAudio=0.0f;\n";
 		}
 
 		std::cout << generatedFunctions << std::endl;

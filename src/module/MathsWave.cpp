@@ -18,6 +18,10 @@ namespace genbliothinothon::module {
         mMathsBox->setText("sin(3.1415926535897932384626*t*2*440)");
     }
 
+    MathsWave::MathsWave(const uint32_t version, util::FileIStream& stream) : Module(version, stream) {
+	    mMathsBox = reinterpret_cast<part::TextInput*>(getParts()[3].get());
+    }
+
     std::string MathsWave::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>& inputValues) {
        // Grab whatever text the user typed into the box
        std::string userMath = mMathsBox->getText();

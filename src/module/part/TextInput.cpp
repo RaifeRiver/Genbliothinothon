@@ -1,7 +1,11 @@
 #include "TextInput.h"
 
 namespace genbliothinothon::module::part {
-	TextInput::TextInput(Module* parent, const glm::vec2& pos, const glm::vec2& size) : Part(parent, pos, size) {}
+	TextInput::TextInput(Module* parent, const glm::vec2 pos, const glm::vec2 size) : Part(sType, parent, pos, size) {}
+
+	TextInput::TextInput(const uint32_t version, util::FileIStream& stream) : Part(version, stream) {
+		stream >> mText;
+	}
 
 	void TextInput::setText(const std::string& text) {
 		mText = text;
@@ -33,6 +37,15 @@ namespace genbliothinothon::module::part {
 				setDirty(true);
 			}
 		}
+	}
+
+	void TextInput::save(util::FileOStream& stream) {
+		Part::save(stream);
+		stream << mText;
+	}
+
+	void TextInput::setType(const uint32_t type) {
+		sType = type;
 	}
 
 	void TextInput::render_(const glm::vec2 pos, render::RenderContext& context) {

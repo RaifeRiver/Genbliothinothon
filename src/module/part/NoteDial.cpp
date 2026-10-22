@@ -4,10 +4,18 @@
 #include <format>
 
 namespace genbliothinothon::module::part {
-	NoteDial::NoteDial(Module* parent, const glm::vec2& pos, const glm::vec2& size, const std::string& name, const bool multiChannel) : Dial(parent, pos, size, name, 1, 120, 60, multiChannel) {}
+	NoteDial::NoteDial(Module* parent, const glm::vec2& pos, const glm::vec2& size, const std::string& name, const bool multiChannel) : Dial(parent, pos, size, name, 1, 120, 60, multiChannel) {
+		Part::setType(sType);
+	}
+
+	NoteDial::NoteDial(const uint32_t version, util::FileIStream& stream) : Dial(version, stream) {}
 
 	std::string NoteDial::getDefaultValueString() {
 		return std::to_string(27.5f * std::pow(2.0f, (std::round(getValue()) - 1.0f) / 12.0f)) + "f";
+	}
+
+	void NoteDial::setType(const uint32_t type) {
+		sType = type;
 	}
 
 	void NoteDial::render_(const glm::vec2 pos, render::RenderContext& context) {

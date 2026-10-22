@@ -10,6 +10,8 @@ namespace genbliothinothon::module {
 		addPart(std::make_unique<part::Output>(this, glm::vec2{75.0f, 25.0f}, glm::vec2{50.0f, 50.0f}, "Right")).setAveraged(false);
 	}
 
+	Output::Output(const uint32_t version, util::FileIStream& stream) : Module(version, stream) {}
+
 	std::string Output::generateGLSL(uint32_t, std::unordered_map<std::string, std::string>& inputValues) {
 		const auto leftIt = inputValues.find("Left0_");
 		const auto rightIt = inputValues.find("Right0_");

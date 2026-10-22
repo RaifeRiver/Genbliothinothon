@@ -2,6 +2,7 @@
 
 #include <cstring>
 #include <iostream>
+#include <ranges>
 #include <stdexcept>
 
 #include "Genbliothinothon.h"
@@ -42,7 +43,7 @@ namespace genbliothinothon::render {
 			lastPos = pos;
 		});
 		glfwSetCharCallback(mWindow, [](GLFWwindow*, const unsigned int c) {
-			for (Genbliothinothon* genbliothinothon = Genbliothinothon::getInstance(); const std::unique_ptr<module::Module>& module : genbliothinothon->getModules()) {
+			for (Genbliothinothon* genbliothinothon = Genbliothinothon::getInstance(); const std::unique_ptr<module::Module>& module : genbliothinothon->getModuleManager().getModules() | std::views::values) {
 				for (const std::unique_ptr<module::part::Part>& part : module->getParts()) {
 					part->charPressed(static_cast<char>(c));
 				}
@@ -52,7 +53,7 @@ namespace genbliothinothon::render {
 			if (action == GLFW_RELEASE) {
 				return;
 			}
-			for (Genbliothinothon* genbliothinothon = Genbliothinothon::getInstance(); const std::unique_ptr<module::Module>& module : genbliothinothon->getModules()) {
+			for (Genbliothinothon* genbliothinothon = Genbliothinothon::getInstance(); const std::unique_ptr<module::Module>& module : genbliothinothon->getModuleManager().getModules() | std::views::values) {
 				for (const std::unique_ptr<module::part::Part>& part : module->getParts()) {
 					part->keyPressed(key);
 				}
@@ -132,6 +133,7 @@ namespace genbliothinothon::render {
 	}
 
 	RenderContext::~RenderContext() {
+		mUIRenderer = nullptr;
 		glfwDestroyWindow(mWindow);
 		glfwTerminate();
 	}

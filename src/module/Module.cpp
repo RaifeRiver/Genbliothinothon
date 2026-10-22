@@ -1,9 +1,30 @@
 #include "Module.h"
 
+#include "AHDSR.h"
+#include "CSVSequencer.h"
 #include "Genbliothinothon.h"
+#include "MathsWave.h"
+#include "MidiSequencer.h"
+#include "NoiseSource.h"
+#include "Oscillator.h"
+#include "Output.h"
 
 namespace genbliothinothon::module {
 	Module::Module(const glm::vec2 pos, const glm::vec2 size) : mPos(pos), mSize(size) {}
+
+	Module::Module(const uint32_t version, util::FileIStream& stream) {
+		stream >> mID;
+		stream >> mPos;
+		stream >> mSize;
+		uint32_t partCount;
+		stream >> partCount;
+		mParts.reserve(partCount);
+		for (uint32_t i = 0; i < partCount; i++) {
+			std::unique_ptr<part::Part> part = part::Part::loadPart(version, stream);
+			part->setParent(this);
+			mParts.push_back(std::move(part));
+		}
+	}
 
 	void Module::setPos(const glm::vec2 pos) {
 		mPos = pos;
@@ -34,6 +55,10 @@ namespace genbliothinothon::module {
 
 	void Module::setDirty() {
 		mDirty = true;
+	}
+
+	void Module::setID(const uint32_t id) {
+		mID = id;
 	}
 
 	void Module::drag(const glm::vec2 distance) {
@@ -70,8 +95,19 @@ namespace genbliothinothon::module {
 		}
 	}
 
-	std::string Module::generateFunctions(uint32_t index) {
+	std::string Module::generateFunctions(uint32_t) {
 		return "";
+	}
+
+	void Module::save(util::FileOStream& stream) const {
+		stream << mType;
+		stream << getID();
+		stream << mPos;
+		stream << mSize;
+		stream << static_cast<uint32_t>(mParts.size());
+		for (const std::unique_ptr<part::Part>& part: mParts) {
+			part->save(stream);
+		}
 	}
 
 	void Module::render(glm::vec2 pos, render::RenderContext& context) const {
@@ -79,5 +115,39 @@ namespace genbliothinothon::module {
 		for (const std::unique_ptr<part::Part>& part: mParts) {
 			part->render(pos, context);
 		}
+	}
+
+	std::unique_ptr<Module> Module::createModule(const std::string& type, const glm::vec2 pos) {
+		initModules();
+		for (const auto& [t, constructor, _]: sModuleRegistry) {
+			if (type == t) {
+				return constructor(pos);
+			}
+		}
+		return nullptr;
+	}
+
+	std::unique_ptr<Module> Module::loadModule(const uint32_t version, util::FileIStream& stream) {
+		initModules();
+		uint32_t type;
+		stream >> type;
+		std::unique_ptr<Module> module = std::get<2>(sModuleRegistry[type])(version, stream);
+		module->mType = type;
+		return std::move(module);
+	}
+
+	void Module::initModules() {
+		static uint32_t _ = registerModules();
+	}
+
+	uint32_t Module::registerModules() {
+		registerModule<AHDSR>("AHDSR");
+		registerModule<CSVSequencer>("CSV Sequencer");
+		registerModule<MathsWave>("Maths Wave");
+		registerModule<MidiSequencer>("MIDI Sequencer");
+		registerModule<NoiseSource>("Noise Source");
+		registerModule<Oscillator>("Oscillator");
+		registerModule<Output>("Output");
+		return 0;
 	}
 }

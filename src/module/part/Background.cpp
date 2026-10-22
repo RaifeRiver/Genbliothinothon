@@ -6,10 +6,23 @@
 #include "module/Module.h"
 
 namespace genbliothinothon::module::part {
-	Background::Background(Module* parent, const glm::vec2 pos, const glm::vec2 size, std::string name) : Part(parent, pos, size), mName(std::move(name)) {}
+	Background::Background(Module* parent, const glm::vec2 pos, const glm::vec2 size, std::string name) : Part(sType, parent, pos, size), mName(std::move(name)) {}
+
+	Background::Background(const uint32_t version, util::FileIStream& stream) : Part(version, stream) {
+		stream >> mName;
+	}
 
 	void Background::setName(const std::string& name) {
 		mName = name;
+	}
+
+	void Background::save(util::FileOStream& stream) {
+		Part::save(stream);
+		stream << mName;
+	}
+
+	void Background::setType(const uint32_t type) {
+		sType = type;
 	}
 
 	void Background::render_(const glm::vec2 pos, render::RenderContext& context) {

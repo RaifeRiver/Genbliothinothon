@@ -1,7 +1,7 @@
 #pragma once
 
 #include "audio/AudioPlayer.h"
-#include "module/Module.h"
+#include "module/ModuleManager.h"
 #include "render/RenderContext.h"
 
 namespace genbliothinothon {
@@ -19,11 +19,11 @@ namespace genbliothinothon {
 			return mAudioPlayer;
 		}
 
-		[[nodiscard]] std::vector<std::unique_ptr<module::Module>>& getModules() {
-			return mModules;
+		[[nodiscard]] module::ModuleManager& getModuleManager() {
+			return mModuleManager;
 		}
 
-		[[nodiscard]] glm::vec2 getCameraPos() const {
+		[[nodiscard]] glm::vec2& getCameraPos() {
 			return mCameraPos;
 		}
 
@@ -31,13 +31,14 @@ namespace genbliothinothon {
 			return sInstance;
 		}
 
+		~Genbliothinothon();
+
 	private:
 		inline static Genbliothinothon* sInstance;
 
 		render::RenderContext mRenderContext;
 		audio::AudioPlayer mAudioPlayer;
-		std::vector<std::unique_ptr<module::Module>> mModules;
+		module::ModuleManager mModuleManager;
 		glm::vec2 mCameraPos = {0.0f, 0.0f};
-		std::vector<std::pair<std::string, std::function<std::unique_ptr<module::Module>(glm::vec2)>>> mModuleTypes;
 	};
 }

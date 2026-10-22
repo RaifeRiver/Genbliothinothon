@@ -16,6 +16,13 @@ namespace genbliothinothon::module {
 		mWaveType = &addPart(std::make_unique<part::Dropdown>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}, std::vector<std::string>{"Sine", "Saw", "Inv Saw", "Triangle", "Square"}));
 	}
 
+	Oscillator::Oscillator(const uint32_t version, util::FileIStream& stream) : Module(version, stream) {
+		mAudio = reinterpret_cast<part::Send*>(getParts()[2].get());
+		mFrequency = reinterpret_cast<part::NoteDial*>(getParts()[3].get());
+		mVolume = reinterpret_cast<part::Dial*>(getParts()[4].get());
+		mWaveType = reinterpret_cast<part::Dropdown*>(getParts()[5].get());
+	}
+
 	std::string Oscillator::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>& inputValues) {
 		std::string functionName;
 		switch (mWaveType->getSelectedOption()) {

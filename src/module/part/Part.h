@@ -1,6 +1,8 @@
 #pragma once
 
 #include "render/RenderContext.h"
+#include "util/FileIStream.h"
+#include "util/FileOStream.h"
 
 namespace genbliothinothon::module {
 	class Module;
@@ -9,13 +11,17 @@ namespace genbliothinothon::module {
 namespace genbliothinothon::module::part {
 	class Part {
 	public:
-		explicit Part(Module* parent, glm::vec2 pos, glm::vec2 size);
+		Part(uint32_t type, Module* parent, glm::vec2 pos, glm::vec2 size);
+
+		Part(uint32_t version, util::FileIStream& stream);
 
 		void render(glm::vec2 pos, render::RenderContext& context);
 
 		[[nodiscard]] Module* getParent() const {
 			return mParent;
 		}
+
+		void setParent(Module* parent);
 
 		[[nodiscard]] glm::vec2 getPos() const {
 			return mPos;
@@ -41,6 +47,12 @@ namespace genbliothinothon::module::part {
 			mDragged = dragged;
 		}
 
+		[[nodiscard]] uint32_t getType() const {
+			return mType;
+		}
+
+		void setType(uint32_t type);
+
 		virtual void click(glm::vec2 pos);
 
 		virtual void clickOff(glm::vec2 pos);
@@ -53,16 +65,37 @@ namespace genbliothinothon::module::part {
 
 		virtual void keyPressed(int key);
 
+		virtual void save(util::FileOStream& stream);
+
 		virtual ~Part() = default;
+
+		static std::unique_ptr<Part> loadPart(uint32_t version, util::FileIStream& stream);
+
+		static void initParts();
 
 	protected:
 		virtual void render_(glm::vec2 pos, render::RenderContext& context) = 0;
 
 	private:
-		Module* mParent;
-		glm::vec2 mPos;
-		glm::vec2 mSize;
+		static inline std::vector<std::function<std::unique_ptr<Part>(uint32_t, util::FileIStream&)>> sPartRegistry;
+
+		Module* mParent = nullptr;
+		glm::vec2 mPos = {};
+		glm::vec2 mSize = {};
 		bool mDirty = false;
 		bool mDragged = false;
+		uint32_t mType = 0;
+
+		template <std::derived_from<Part> T> static void registerPart() {
+			uint32_t type = sPartRegistry.size();
+			T::setType(type);
+			sPartRegistry.push_back([type](uint32_t version, util::FileIStream& stream) -> std::unique_ptr<Part> {
+				std::unique_ptr<Part> part = std::make_unique<T>(version, stream);
+				part->mType = type;
+				return part;
+			});
+		}
+
+		static uint32_t registerParts();
 	};
 }

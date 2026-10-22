@@ -16,6 +16,10 @@ namespace genbliothinothon::module {
 		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 70.0f}, glm::vec2{194.0f, 20.0f}, "Volume"));
 	}
 
+	CSVSequencer::CSVSequencer(const uint32_t version, util::FileIStream& stream) : Module(version, stream) {
+		mTextInput = reinterpret_cast<part::TextInput*>(getParts()[1].get());
+	}
+
 	std::string CSVSequencer::generateFunctions(const uint32_t index) {
 		std::ifstream midiFile(mTextInput->getText());
 		if (!midiFile.is_open()) {

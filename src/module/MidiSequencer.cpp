@@ -17,6 +17,10 @@ namespace genbliothinothon::module {
 		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 93.0f}, glm::vec2{194.0f, 20.0f}, "NoteStart", 16));
 	}
 
+	MidiSequencer::MidiSequencer(const uint32_t version, util::FileIStream& stream) : Module(version, stream) {
+		mTextInput = reinterpret_cast<part::TextInput*>(getParts()[2].get());
+	}
+
 	std::string MidiSequencer::generateFunctions(const uint32_t index) {
 		std::ifstream file(mTextInput->getText(), std::ios::binary | std::ios::ate);
 		if (!file.is_open()) {

@@ -1,7 +1,19 @@
 #include "Dropdown.h"
 
 namespace genbliothinothon::module::part {
-	Dropdown::Dropdown(Module* parent, const glm::vec2 pos, const glm::vec2 size, const std::vector<std::string>& options) : Part(parent, pos, size), mOptions(options) {}
+	Dropdown::Dropdown(Module* parent, const glm::vec2 pos, const glm::vec2 size, const std::vector<std::string>& options) : Part(sType, parent, pos, size), mOptions(options) {}
+
+	Dropdown::Dropdown(const uint32_t version, util::FileIStream& stream) : Part(version, stream) {
+		uint32_t optionCount;
+		stream >> optionCount;
+		mOptions.reserve(optionCount);
+		for (uint32_t i = 0; i < optionCount; ++i) {
+			std::string option;
+			stream >> option;
+			mOptions.push_back(option);
+		}
+		stream >> mSelectedOption;
+	}
 
 	void Dropdown::setSelectedOption(const uint32_t option) {
 		if (option >= mOptions.size()) {
@@ -30,6 +42,19 @@ namespace genbliothinothon::module::part {
 			}
 			mOpen = false;
 		}
+	}
+
+	void Dropdown::save(util::FileOStream& stream) {
+		Part::save(stream);
+		stream << static_cast<uint32_t>(mOptions.size());
+		for (const std::string& option : mOptions) {
+			stream << option;
+		}
+		stream << mSelectedOption;
+	}
+
+	void Dropdown::setType(const uint32_t type) {
+		sType = type;
 	}
 
 	void Dropdown::render_(const glm::vec2 pos, render::RenderContext& context) {

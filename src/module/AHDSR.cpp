@@ -13,6 +13,11 @@ namespace genbliothinothon::module {
 		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 70.0f}, glm::vec2{194.0f, 20.0f}, "Amplitude"));
 	}
 
+	AHDSR::AHDSR(const uint32_t version, util::FileIStream& stream) : Module(version, stream) {
+		mAmplitude = reinterpret_cast<part::GenericSendTarget*>(getParts()[2].get());
+		mNoteStart = reinterpret_cast<part::GenericSendTarget*>(getParts()[3].get());
+	}
+
 	std::string AHDSR::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>& inputValues) {
 		std::string glsl = "float Amplitude0_" + std::to_string(index) + "=";
 		uint32_t channelCount = 0;
@@ -31,7 +36,7 @@ namespace genbliothinothon::module {
 			if (noteStartIt != inputValues.end()) {
 				noteStart = noteStartIt->second;
 			}
-			glsl += "AHDSR(" + amplitude + ",sample0-" += noteStart + ",100.0f,-30.0f,300.0f,200.0f,-10.0f,0.7f,6000.0f,-20.0f)+";
+			glsl += "AHDSR(" + amplitude + ",sample0-" += noteStart + ",100.0f,-30.0f,300.0f,200.0f,-10.0f,0.7f,6000.0f,-20.0f,false)+";
 		}
 		glsl.back() = ';';
 		return glsl;

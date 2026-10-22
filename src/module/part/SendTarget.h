@@ -7,7 +7,9 @@ namespace genbliothinothon::module::part {
 
 	class SendTarget : public Part {
 	public:
-		SendTarget(Module* parent, glm::vec2 pos, const glm::vec2& size, std::string name, bool multiChannel = false);
+		SendTarget(uint32_t type, Module* parent, glm::vec2 pos, const glm::vec2& size, std::string name, bool multiChannel = false);
+
+		SendTarget(uint32_t version, util::FileIStream& stream);
 
 		[[nodiscard]] std::vector<Send*>& getInputs() {
 			return mInputs;
@@ -33,10 +35,12 @@ namespace genbliothinothon::module::part {
 			return mName;
 		}
 
+		void save(util::FileOStream& stream) override;
+
 	private:
 		std::vector<Send*> mInputs;
 		std::string mName;
-		bool mMultiChannel;
+		bool mMultiChannel = false;
 		bool mAveraged = true;
 	};
 }
