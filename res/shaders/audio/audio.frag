@@ -112,15 +112,12 @@ float saw(uint samp, float Hz, float vol){
     return(vol*-1*(mod((2u*samp/p),2)*-1+1));
 }
 float sq(uint samp, float Hz, float vol){
-    //return(vol*(2.0*(uint(samp/(FS/Hz))&1u)-1.0));
-    return(AHDSR((float((vol*(2.0*(uint(samp/(FS/Hz ))&1u)-1.0)))), samp, 400.0f, 200.0f, 300.0f, 200.0f, -10.0f, 0.7f, 6000.0f, -20.0f));
-    //return(AHDSR((float((vol*(2.0*(uint(samp/(FS/Hz))&1u)-1.0)))),<samples since it started playing> , 200.0f, 20.0f, 300.0f, 200.0f, -10.0f, 0.7f, 6000.0f, -20.0f));
-}
-//float sam, float Attack_Time, float Attack_Curve, float Hold_Time, float Decay_Time, float Decay_Curve, float Sustain_Percent, float Release_Time, float Release_Curve
+    return(vol*(2.0*(uint(samp/(FS/Hz))&1u)-1.0));
+    }
 float tri(uint samp, float Hz, float vol){
     return(float(vol*(1.0-2.0*abs(2.0*fract(samp/(FS/Hz))-1.0))));
 }
-//float AHDSR(float sam, float Attack_Time, float Attack_Curve, float Hold_Time, float Decay_Time, float Decay_Curve, float Sustain_Percent, float Release_Time, float Release_Curve){
+//float AT, float AC, float HT, float DT, float DC, float SP, float RT, float RC
 float note(int n, int octave) {
     return 27.5 * pow(2.0, float(n - 1 + octave * 12) / 12.0);
 }
