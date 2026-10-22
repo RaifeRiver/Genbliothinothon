@@ -52,7 +52,7 @@ namespace genbliothinothon::module {
 			if (noteHeldIt != inputValues.end()) {
 				noteHeld = noteHeldIt->second;
 			}
-			glsl += "AHDSR(" + amplitude + ",sample0-" += noteStart + ",100.0f,-30.0f,300.0f,200.0f,-10.0f,0.7f,6000.0f,-20.0f," += noteHeld + ")+";
+			glsl += "AHDSR(" + amplitude + ",sample0-" += noteStart + ",50.0f,-10.0f,300.0f,200.0f,10.0f,0.7f,6000.0f,-5.0f," += noteHeld + ")+";
 		}
 		glsl.back() = ';';
 		return glsl;
