@@ -36,7 +36,7 @@ namespace genbliothinothon::module {
 			if (noteStartIt != inputValues.end()) {
 				noteStart = noteStartIt->second;
 			}
-			glsl += "AHDSR(" + amplitude + ",sample0-" += noteStart + ",100.0f,-30.0f,300.0f,200.0f,-10.0f,0.7f,6000.0f,-20.0f,false)+";
+			glsl += "AHDSR(" + amplitude + ",sample0-" += noteStart + ",50.0f,-10.0f,300.0f,200.0f,10.0f,0.7f,6000.0f,-5.0f,false)+";
 		}
 		glsl.back() = ';';
 		return glsl;
