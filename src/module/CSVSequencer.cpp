@@ -81,6 +81,6 @@ namespace genbliothinothon::module {
 
 	std::string CSVSequencer::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>&) {
 		const std::string indexStr = std::to_string(index);
-		return "vec2 Data" + indexStr + "=csvSequencerGetNote" + indexStr + "(sample0%" + std::to_string(static_cast<uint32_t>(mLength)) + "u);\nfloat Frequency" + indexStr + "=Data" + indexStr + "[0];\nfloat Volume" + indexStr + "=Data" + indexStr + "[1];";
+		return "vec2 Data0_" + indexStr + "=csvSequencerGetNote" + indexStr + "(sample0%" + std::to_string(static_cast<uint32_t>(mLength)) + "u);\nfloat Frequency0_" + indexStr + "=Data0_" + indexStr + "[0];\nfloat Volume0_" + indexStr + "=Data0_" + indexStr + "[1];";
 	}
 }
