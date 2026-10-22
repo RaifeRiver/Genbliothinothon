@@ -52,7 +52,8 @@ namespace genbliothinothon::module {
 			const bool dragged = module->isDragged();
 			moduleFound |= moduleHovered || dragged;
 			if (!dragged && pressed && !lastPressed) {
-				for (const std::unique_ptr<part::Part>& part : module->getParts()) {
+				std::vector<std::unique_ptr<part::Part>>& parts = module->getParts();;
+				for (const std::unique_ptr<part::Part>& part : parts) {
 					const glm::vec2 partPos = part->getPos() + modulePos;
 					if (const glm::vec2 partSize = part->getSize(); mousePos.x >= partPos.x && mousePos.x <= partPos.x + partSize.x && mousePos.y >= partPos.y && mousePos.y <= partPos.y + partSize.y) {
 						if (dynamic_cast<part::RemoveButton*>(part.get())) {
@@ -61,9 +62,9 @@ namespace genbliothinothon::module {
 									continue;
 								}
 								for (const std::unique_ptr<part::Part>& p : m->getParts()) {
-									for (const std::unique_ptr<part::Part>& p2 : module->getParts()) {
-										if (const auto send = dynamic_cast<part::Send*>(p.get()); send && send->getSendTarget() == p2.get()) {
-											send->setSendTarget(nullptr);
+									for (uint32_t i = 0; i < parts.size(); i++) {
+										if (const auto send = dynamic_cast<part::Send*>(p.get()); send && send->getSendTarget().has_value() && send->getSendTarget().value() == part::PartID{.module = module->getID(), .part = i}) {
+											send->setSendTarget({});
 										}
 									}
 								}

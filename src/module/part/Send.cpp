@@ -5,6 +5,7 @@
 
 #include "Background.h"
 #include "Genbliothinothon.h"
+#include "SendTarget.h"
 
 namespace genbliothinothon::module::part {
 	Send::Send(Module* parent, const glm::vec2 &pos, const glm::vec2& size, std::string name, const uint32_t channelCount): Part(sType, parent, pos, size), mName(std::move(name)), mChannelCount(channelCount) {}
@@ -12,9 +13,16 @@ namespace genbliothinothon::module::part {
 	Send::Send(const uint32_t version, util::FileIStream& stream) : Part(version, stream) {
 		stream >> mName;
 		stream >> mChannelCount;
+		bool hasSendTarget;
+		stream >> hasSendTarget;
+		if (hasSendTarget) {
+			mSendTarget = {.module = 0, .part = 0};
+			stream >> mSendTarget->module;
+			stream >> mSendTarget->part;
+		}
 	}
 
-	void Send::setSendTarget(SendTarget* target) {
+	void Send::setSendTarget(const std::optional<PartID> target) {
 		mSendTarget = target;
 	}
 
@@ -25,9 +33,18 @@ namespace genbliothinothon::module::part {
 	void Send::click(glm::vec2) {
 		mSelecting = !mSelecting;
 		if (mSendTarget) {
-			std::vector<Send*>& sends = mSendTarget->getInputs();
-			sends.erase(std::ranges::find(sends, this));
-			mSendTarget = nullptr;
+			std::vector<PartID>& sends = reinterpret_cast<SendTarget*>(Genbliothinothon::getInstance()->getModuleManager().getModule(mSendTarget->module)->getParts()[mSendTarget->part].get())->getInputs();
+			Module* parent = getParent();
+			uint32_t index = 0;
+			const std::vector<std::unique_ptr<Part>>& parts = parent->getParts();
+			for (uint32_t i = 0; i < parts.size(); i++) {
+				if (parts[i].get() == this) {
+					index = i;
+					break;
+				}
+			}
+			sends.erase(std::ranges::find(sends, PartID{.module = parent->getID(), .part = index}));
+			mSendTarget = {};
 		}
 		setDirty(true);
 	}
@@ -43,15 +60,26 @@ namespace genbliothinothon::module::part {
 				continue;
 			}
 			const glm::vec2 modulePos = module->getPos();
-			for (const std::unique_ptr<Part>& part: module->getParts()) {
+			std::vector<std::unique_ptr<Part>>& parts = module->getParts();
+			for (uint32_t i = 0; i < parts.size(); i++) {
+				const std::unique_ptr<Part>& part = parts[i];
 				const glm::vec2 partPos = part->getPos() + modulePos;
 				const glm::vec2 partSize = part->getSize();
 				if (const auto sendTarget = dynamic_cast<SendTarget*>(part.get()); sendTarget && worldPos.x >= partPos.x && worldPos.x < partPos.x + partSize.x && worldPos.y >= partPos.y && worldPos.y < partPos.y + partSize.y) {
 					if (!sendTarget->isMultiChannel() && mChannelCount > 1) {
 						break;
 					}
-					mSendTarget = sendTarget;
-					sendTarget->addInput(this);
+					mSendTarget = {.module = module->getID(), .part = i};
+					Module* parent = getParent();
+					uint32_t index = 0;
+					const std::vector<std::unique_ptr<Part>>& p = parent->getParts();
+					for (uint32_t j = 0; j < p.size(); j++) {
+						if (p[j].get() == this) {
+							index = j;
+							break;
+						}
+					}
+					sendTarget->addInput({.module = parent->getID(), .part = index});
 					setDirty(true);
 					break;
 				}
@@ -64,6 +92,12 @@ namespace genbliothinothon::module::part {
 		Part::save(stream);
 		stream << mName;
 		stream << mChannelCount;
+		const bool hasSendTarget = mSendTarget.has_value();
+		stream << hasSendTarget;
+		if (hasSendTarget) {
+			stream << mSendTarget->module;
+			stream << mSendTarget->part;
+		}
 	}
 
 	void Send::setType(const uint32_t type) {
@@ -77,9 +111,9 @@ namespace genbliothinothon::module::part {
 		const float textHeight = size.y / 2.0f - 7.0f;
 		std::string sendText = "Null (" + mName + ")";
 		if (mSendTarget) {
-			for (const std::unique_ptr<Part>& part: mSendTarget->getParent()->getParts()) {
+			for (const SendTarget* sendTarget = reinterpret_cast<SendTarget*>(Genbliothinothon::getInstance()->getModuleManager().getModule(mSendTarget->module)->getParts()[mSendTarget->part].get()); const std::unique_ptr<Part>& part: sendTarget->getParent()->getParts()) {
 				if (const Background* background = dynamic_cast<Background*>(part.get())) {
-					sendText = background->getName() + "." + mSendTarget->getName();
+					sendText = background->getName() + "." + sendTarget->getName();
 					break;
 				}
 			}
