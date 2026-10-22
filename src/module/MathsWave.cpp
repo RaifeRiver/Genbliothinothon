@@ -15,7 +15,7 @@ namespace genbliothinothon::module {
        addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{244.0f, 20.0f}, "Audio"));
 
         mMathsBox = &addPart(std::make_unique<part::TextInput>(this, glm::vec2{3.0f, 47.0f}, glm::vec2{194.0f, 20.0f}));
-        mMathsBox->setText("sin(3.14159*t*440/48000)");
+        mMathsBox->setText("sin(3.1415926535897932384626*t*2*440)");
     }
 
     std::string MathsWave::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>& inputValues) {
