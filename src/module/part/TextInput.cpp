@@ -40,7 +40,7 @@ namespace genbliothinothon::module::part {
 		const glm::vec2 size = getSize();
 		renderer.rect(pos, size, glm::vec4{0.06f, 0.06f, 0.11f, 1.0f});
 		const float textHeight = size.y / 2.0f - 7.0f;
-		renderer.text(pos + glm::vec2{2.0f, textHeight}, 14.0f, mText, glm::vec4{1.0f, 1.0f, 1.0f, 1.0f});
+		renderer.text(pos + glm::vec2{2.0f, textHeight}, 14.0f, mText, glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}, size.x);
 		if (mSelected) {
 			if (const std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now(); std::chrono::duration<float>(now - mCursorTime).count() < 0.5f) {
 				renderer.rect(pos + glm::vec2{renderer.getTextWidth(14.0f, mText) + 2.0f, textHeight}, glm::vec2{2.0f, 14.0f}, glm::vec4{1.0f, 1.0f, 1.0f, 1.0f});

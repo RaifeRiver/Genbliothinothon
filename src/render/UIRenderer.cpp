@@ -82,7 +82,7 @@ namespace genbliothinothon::render {
 		return width;
 	}
 
-	void UIRenderer::text(const glm::vec2 pos, const float size, const std::string& text, const glm::vec4 colour) {
+	void UIRenderer::text(const glm::vec2 pos, const float size, const std::string& text, const glm::vec4 colour, int32_t maxWidth) {
 		glm::vec2 cursor = pos;
 		cursor.y += mFontAscent * size;
 		const glm::vec2 atlasSize = mFontAtlas->getSize();
@@ -114,6 +114,12 @@ namespace genbliothinothon::render {
 			mVertices.emplace_back(glm::vec2{x0, y0}, glm::vec2{u0, v0}, colour, 0);
 			
 			cursor.x += advance * size;
+
+			if (cursor.x >= pos.x + maxWidth && maxWidth > 0) {
+				cursor.x = pos.x;
+				cursor.y += mFontAscent * size;
+			}
+
 		}
 	}
 
