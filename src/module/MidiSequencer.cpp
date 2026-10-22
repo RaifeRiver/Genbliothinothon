@@ -48,7 +48,7 @@ namespace genbliothinothon::module {
 		timeDivision |= static_cast<uint16_t>(buffer[pos++]);
 		float timeScale = 0.0f;
 		if (timeDivision & 0x8000) {
-			timeScale = 96000.0f / static_cast<float>(-static_cast<int8_t>(timeDivision & 0xFF00 >> 8) * timeDivision & 0xFF);
+			timeScale = 96000.0f / static_cast<float>(-static_cast<int8_t>((timeDivision & 0xFF00) >> 8) * (timeDivision & 0xFF));
 		}
 		else {
 			timeScale = 500000.0f / static_cast<float>(timeDivision & 0x7FFF) / 1000000.0f * 96000.0f;
@@ -129,8 +129,17 @@ namespace genbliothinothon::module {
 			}
 			else if (command == 0xFF) {
 				// TODO: Meta command
-				pos++;
-				pos += parseVariableInt(pos, buffer.data());
+				if (uint8_t type = buffer[pos++]; type == 0x51) {
+					uint32_t value = buffer[pos++] << 16;
+					value |= buffer[pos++] << 8;
+					value |= buffer[pos++];
+					if (!(timeDivision & 0x8000)) {
+						timeScale = 500000.0f / static_cast<float>(value) / 1000000.0f * 96000.0f / static_cast<float>(timeDivision & 0x7FFF);
+					}
+				}
+				else {
+					pos += parseVariableInt(pos, buffer.data());
+				}
 			}
 		}
 		std::string functionsStr;
