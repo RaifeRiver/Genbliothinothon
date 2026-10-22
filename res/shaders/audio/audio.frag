@@ -38,21 +38,29 @@ float audio_sin(float x) {
 //   AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR
 //  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR AHDSR
 
-float AHDSR(float Amplitude_in, float sam, float Attack_Time, float Attack_Curve, float Hold_Time, float Decay_Time, float Decay_Curve, float Sustain_Percent, float Release_Time, float Release_Curve){
+float AHDSR(float Amplitude_in, float sam, float Attack_Time, float Attack_Curve, float Hold_Time, float Decay_Time, float Decay_Curve, float Sustain_Percent, float Release_Time, float Release_Curve, bool Held){
     float Decay_start = Attack_Time + Hold_Time;
     float Sustain_start = Decay_start + Decay_Time;
     float Release_end = Sustain_start + Release_Time;
     float Amplitude = 0.0f;
     float Time = mS_conversion_num * sam;
-    if (Time < Attack_Time) {
+    //attack
+    if (Time <= Attack_Time) {
         Amplitude = ((1-pow(e, (-Attack_Curve*Time/Attack_Time))))/(1-pow(e,(-Attack_Curve)));
     }
+    //hold
     else if (Time < Decay_start) {
-        Amplitude = 1;
+        Amplitude = 1.0f;
     }
+    //decay&sustain, sustain_start = point where decay ends
     else if (Time < Sustain_start){
         Amplitude = Sustain_Percent + (1-Sustain_Percent) * ((1-(pow(e, ((-1* Decay_Curve * (Sustain_start-Time)) /Decay_Time))))/(1 - (pow(e, (-1 * Decay_Curve)))));
     }
+    //sustain when held
+    else if (Held = True) {
+        Amplitude = Sustain_Percent;
+    }
+    //release
     else if (Time < Release_end){
         Amplitude = Sustain_Percent * ((1-(pow(e, ((-1 * Release_Curve * (Release_end - Time)) / Release_Time))))/(1-(pow(e, (-1 * Release_Curve)))));
     }
