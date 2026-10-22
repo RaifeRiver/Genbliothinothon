@@ -71,15 +71,7 @@ namespace genbliothinothon::module {
 		uint8_t runningStatus = 0;
 		std::vector<uint8_t> freeChannels = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 		while (pos < trackEndPos) {
-			uint32_t deltaTime = 0;
-			for (uint8_t j = 0; j < 4; j++) {
-				uint8_t value = static_cast<uint32_t>(buffer[pos++]);
-				deltaTime <<= 7;
-				deltaTime |= value & 0x7F;
-				if (!(value & 0x80)) {
-					break;
-				}
-			}
+			uint32_t deltaTime = parseVariableInt(pos, buffer.data());
 			previousTime += deltaTime;
 			uint8_t status = 0;
 			if (buffer[pos] & 0x80) {
@@ -110,6 +102,34 @@ namespace genbliothinothon::module {
 					freeChannels.pop_back();
 				}
 			}
+			else if (command >= 0xA0 && command <= 0xAF) {
+				// TODO: Polyphonic key pressure command
+				pos += 2;
+			}
+			else if (command >= 0xB0 && command <= 0xBF) {
+				// TODO: Control change command
+				pos += 2;
+			}
+			else if (command >= 0xC0 && command <= 0xCF) {
+				// TODO: Program change command
+				pos++;
+			}
+			else if (command >= 0xD0 && command <= 0xDF) {
+				// TODO: Channel pressure command
+				pos++;
+			}
+			else if (command >= 0xE0 && command <= 0xEF) {
+				// TODO: Pitch bend command
+				pos += 2;
+			}
+			else if (command == 0xF0 || command == 0xF7) {
+				pos += parseVariableInt(pos, buffer.data());
+			}
+			else if (command == 0xFF) {
+				// TODO: Meta command
+				pos++;
+				pos += parseVariableInt(pos, buffer.data());
+			}
 		}
 		std::string functionsStr;
 		for (const std::string& function: functions) {
@@ -127,5 +147,18 @@ namespace genbliothinothon::module {
 			glsl += "vec2 Data" + channelStr + "_" += indexStr + "=midiSequencerGetNote" += channelStr + "_" += indexStr + "(sample0%" + std::to_string(static_cast<uint32_t>(mLength)) + "u);\nfloat Frequency" += channelStr + "_" += indexStr + "=Data" += channelStr + "_" += indexStr + "[0];\nfloat Volume" += channelStr + "_" += indexStr + "=Data" += channelStr + "_" += indexStr + "[1];";
 		}
 		return glsl;
+	}
+
+	uint32_t MidiSequencer::parseVariableInt(std::streamsize& pos, const uint8_t* buffer) {
+		uint32_t value = 0;
+		for (uint8_t i = 0; i < 4; i++) {
+			const uint8_t b = static_cast<uint32_t>(buffer[pos++]);
+			value <<= 7;
+			value |= b & 0x7F;
+			if (!(b & 0x80)) {
+				break;
+			}
+		}
+		return value;
 	}
 }

@@ -17,5 +17,7 @@ namespace genbliothinothon::module {
 	private:
 		part::TextInput* mTextInput = nullptr;
 		float mLength = 0.0f;
+
+		static uint32_t parseVariableInt(std::streamsize& pos, const uint8_t* buffer);
 	};
 }
