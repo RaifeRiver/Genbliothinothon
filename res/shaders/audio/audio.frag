@@ -46,7 +46,10 @@ float AHDSR(float Amplitude_in, float sam, float Attack_Time, float Attack_Curve
     float Time = mS_conversion_num * sam;
     //attack
     if (Time <= Attack_Time) {
-        Amplitude = ((1-pow(e, (-Attack_Curve*Time/Attack_Time))))/(1-pow(e,(-Attack_Curve)));
+        float t = Time / Attack_Time;
+        float base = (1.0f - pow(e, -Attack_Curve * t)) / (1.0f - pow(e, -Attack_Curve));
+        float tail = 0.95f+0.05f * (3.0f - (2.0f * ((t-0.95f)*20.0f)));
+        Amplitude = (t > 0.95f) ? tail : base;
     }
     //hold
     else if (Time < Decay_start) {
