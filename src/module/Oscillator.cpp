@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+#include "Genbliothinothon.h"
 #include "part/Background.h"
 #include "part/RemoveButton.h"
 #include "part/Send.h"
@@ -44,10 +45,11 @@ namespace genbliothinothon::module {
 			default:
 				throw std::runtime_error("Invalid wave type");
 		}
-		const std::vector<part::Send*>& frequencySends = mFrequency->getInputs();
+		const std::vector<part::PartID>& frequencySends = mFrequency->getInputs();
 		uint32_t channelCount = 0;
-		for (const part::Send* frequencySend: frequencySends) {
-			channelCount = std::max(channelCount, frequencySend->getChannelCount());
+		ModuleManager& moduleManager = Genbliothinothon::getInstance()->getModuleManager();
+		for (const auto [module, part]: frequencySends) {
+			channelCount = std::max(channelCount, reinterpret_cast<part::Send*>(moduleManager.getModule(module)->getParts()[part].get())->getChannelCount());
 		}
 		const std::string defaultFrequency = mFrequency->getDefaultValueString();
 		const std::string defaultVolume = mVolume->getDefaultValueString();

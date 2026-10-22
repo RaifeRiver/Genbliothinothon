@@ -4,6 +4,7 @@
 #include "part/Dial.h"
 #include "part/Dropdown.h"
 #include "part/NoteDial.h"
+#include "part/Send.h"
 
 namespace genbliothinothon::module {
 	class Oscillator : public Module {

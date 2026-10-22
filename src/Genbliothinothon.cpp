@@ -5,7 +5,7 @@ namespace genbliothinothon {
 		sInstance = this;
 
 		try {
-			util::FileIStream stream("save.bin");
+			util::FileIStream stream("../save.bin");
 			uint32_t version;
 			stream >> version;
 			mModuleManager.load(version, stream);
@@ -25,7 +25,7 @@ namespace genbliothinothon {
 	}
 
 	Genbliothinothon::~Genbliothinothon() {
-		util::FileOStream stream("save.bin");
+		util::FileOStream stream("../save.bin");
 		stream << 0u;
 		mModuleManager.save(stream);
 	}

@@ -1,7 +1,8 @@
 #pragma once
 
+#include <optional>
+
 #include "Part.h"
-#include "SendTarget.h"
 
 namespace genbliothinothon::module::part {
 	class Send : public Part {
@@ -10,11 +11,11 @@ namespace genbliothinothon::module::part {
 
 		Send(uint32_t version, util::FileIStream& stream);
 
-		[[nodiscard]] SendTarget* getSendTarget() const {
+		[[nodiscard]] std::optional<PartID> getSendTarget() const {
 			return mSendTarget;
 		}
 
-		void setSendTarget(SendTarget* target);
+		void setSendTarget(std::optional<PartID> target);
 
 		[[nodiscard]] std::string getName() const {
 			return mName;
@@ -43,7 +44,7 @@ namespace genbliothinothon::module::part {
 
 	private:
 		static inline uint32_t sType;
-		SendTarget* mSendTarget = nullptr;
+		std::optional<PartID> mSendTarget;
 		bool mSelecting = false;
 		std::string mName;
 		uint32_t mChannelCount = 1;

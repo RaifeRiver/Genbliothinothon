@@ -13,7 +13,11 @@
 #include "TextInput.h"
 
 namespace genbliothinothon::module::part {
-	Part::Part(const uint32_t type, Module* parent, const glm::vec2 pos, const glm::vec2 size) : mType(type), mParent(parent), mPos(pos), mSize(size) {}
+	bool operator==(const PartID a, const PartID b) {
+		return a.module == b.module && a.part == b.part;
+	}
+
+	Part::Part(const uint32_t type, Module* parent, const glm::vec2 pos, const glm::vec2 size) : mParent(parent), mPos(pos), mSize(size), mType(type) {}
 
 	Part::Part(uint32_t, util::FileIStream& stream) {
 		stream >> mPos;

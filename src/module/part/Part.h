@@ -9,6 +9,13 @@ namespace genbliothinothon::module {
 }
 
 namespace genbliothinothon::module::part {
+	struct PartID {
+		uint32_t module;
+		uint32_t part;
+	};
+
+	bool operator==(PartID a, PartID b);
+
 	class Part {
 	public:
 		Part(uint32_t type, Module* parent, glm::vec2 pos, glm::vec2 size);

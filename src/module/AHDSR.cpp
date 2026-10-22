@@ -1,5 +1,6 @@
 #include "AHDSR.h"
 
+#include "Genbliothinothon.h"
 #include "part/Background.h"
 #include "part/RemoveButton.h"
 #include "part/Send.h"
@@ -21,8 +22,8 @@ namespace genbliothinothon::module {
 	std::string AHDSR::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>& inputValues) {
 		std::string glsl = "float Amplitude0_" + std::to_string(index) + "=";
 		uint32_t channelCount = 0;
-		for (const std::vector<part::Send*>& amplitudeSends = mAmplitude->getInputs(); const part::Send* amplitudeSend: amplitudeSends) {
-			channelCount = std::max(channelCount, amplitudeSend->getChannelCount());
+		for (const std::vector<part::PartID>& amplitudeSends = mAmplitude->getInputs(); const auto [module, part]: amplitudeSends) {
+			channelCount = std::max(channelCount, reinterpret_cast<part::Send*>(Genbliothinothon::getInstance()->getModuleManager().getModule(module)->getParts()[part].get())->getChannelCount());
 		}
 		for (uint32_t channel = 0; channel < channelCount; channel++) {
 			std::string channelStr = std::to_string(channel);
