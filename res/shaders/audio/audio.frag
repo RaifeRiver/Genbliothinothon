@@ -57,7 +57,7 @@ float AHDSR(float Amplitude_in, float sam, float Attack_Time, float Attack_Curve
         Amplitude = Sustain_Percent + (1-Sustain_Percent) * ((1-(pow(e, ((-1* Decay_Curve * (Sustain_start-Time)) /Decay_Time))))/(1 - (pow(e, (-1 * Decay_Curve)))));
     }
     //sustain when held
-    else if (Held = True) {
+    else if (Held == true) {
         Amplitude = Sustain_Percent;
     }
     //release
