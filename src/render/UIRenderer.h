@@ -9,6 +9,7 @@
 #include "Image.h"
 #include "Shader.h"
 #include "VAO.h"
+#include "glm/fwd.hpp"
 
 namespace genbliothinothon::render {
 	static constexpr uint32_t MAX_VERTICES = 16384;
@@ -39,7 +40,7 @@ namespace genbliothinothon::render {
 
 		float getTextWidth(float size, const std::string& text);
 
-		void text(glm::vec2 pos, float size, const std::string& text, glm::vec4 colour);
+		void text(glm::vec2 pos, float size, const std::string& text, glm::vec4 colour, int32_t maxWidth = -1);
 
 		void centredText(glm::vec2 pos, float size, const std::string& t, glm::vec4 colour);
 
