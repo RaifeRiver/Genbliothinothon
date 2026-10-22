@@ -2,6 +2,7 @@
 // please sort everything alphabetically!
 #include <fstream>
 
+#include "module/AHDSR.h"
 #include "module/CSVSequencer.h"
 #include "module/MathsWave.h"
 #include "module/MidiSequencer.h"
@@ -26,6 +27,9 @@ namespace genbliothinothon {
 		mModules.emplace_back(std::make_unique<module::Oscillator>(glm::vec2{310.0f, 250.0f}));
 		mModules.emplace_back(std::make_unique<module::Output>(glm::vec2{520.0f, 100.0f}));
 
+		mModuleTypes.emplace_back("AHDSR", [](const glm::vec2 pos) {
+			return std::make_unique<module::AHDSR>(pos);
+		});
 		mModuleTypes.emplace_back("CSV Sequencer", [](const glm::vec2 pos) {
 			return std::make_unique<module::CSVSequencer>(pos);
 		});

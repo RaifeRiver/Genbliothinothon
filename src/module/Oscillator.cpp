@@ -10,7 +10,7 @@ namespace genbliothinothon::module {
 	Oscillator::Oscillator(const glm::vec2 pos) : Module(pos, glm::vec2{200.0f, 140.0f}) {
 		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 140.0f}, "Oscillator"));
 		addPart(std::make_unique<part::RemoveButton>(this));
-		mAudio = &addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 46.0f}, glm::vec2{194.0f, 20.0f}, "Audio"));
+		mAudio = &addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 46.0f}, glm::vec2{194.0f, 20.0f}, "Amplitude", 16));
 		mFrequency = &addPart(std::make_unique<part::NoteDial>(this, glm::vec2{30.0f, 74.0f}, glm::vec2{50.0f, 50.0f}, "Tone", true));
 		mVolume = &addPart(std::make_unique<part::Dial>(this, glm::vec2{110.0f, 74.0f}, glm::vec2{50.0f, 50.0f}, "Volume", 0.0f, 1.0f, 1.0f, true));
 		mWaveType = &addPart(std::make_unique<part::Dropdown>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}, std::vector<std::string>{"Sine", "Saw", "Inv Saw", "Triangle", "Square"}));
@@ -45,7 +45,7 @@ namespace genbliothinothon::module {
 		const std::string defaultFrequency = mFrequency->getDefaultValueString();
 		const std::string defaultVolume = mVolume->getDefaultValueString();
 		const std::string indexStr = std::to_string(index);
-		std::string glsl = "float Audio0_" + indexStr + "=";
+		std::string glsl;
 		for (uint32_t channel = 0; channel < channelCount; channel++) {
 			std::string channelStr = std::to_string(channel);
 			const auto toneIt = inputValues.find("Tone" + channelStr + "_");
@@ -63,9 +63,8 @@ namespace genbliothinothon::module {
 			if (volumeIt != inputValues.end()) {
 				volume += "*(" + volumeIt->second + ")";
 			}
-			glsl += functionName + "(sample0," += frequency + "," += volume + ")+";
+			glsl += "float Amplitude" + channelStr + "_" += indexStr + "=" += functionName + "(sample0," += frequency + "," += volume + ");\n";
 		}
-		glsl.back() = ';';
 		return glsl;
 	}
 }
