@@ -17,8 +17,10 @@ namespace genbliothinothon::module::part {
 	}
 
 	void TextInput::clickOff(glm::vec2) {
+		if (mSelected) {
+			setDirty(true);
+		}
 		mSelected = false;
-		setDirty(true);
 	}
 
 	void TextInput::charPressed(const char key) {
