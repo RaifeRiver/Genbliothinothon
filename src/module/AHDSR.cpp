@@ -9,13 +9,13 @@ namespace genbliothinothon::module {
 	AHDSR::AHDSR(const glm::vec2& pos) : Module(pos, {200.0f, 162.0f}) {
 		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 162.0f}, "AHDSR"));
 		addPart(std::make_unique<part::RemoveButton>(this));
-		mAmplitude = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}, "Amplitude", "0.0f", true));
-		mNoteStart = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 47.0f}, glm::vec2{194.0f, 20.0f}, "NoteStart", "0", true));
-		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 116.0f}, glm::vec2{194.0f, 20.0f}, "Amplitude"));
-		mNoteHeld = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 70.0f}, glm::vec2{194.0f, 20.0f}, "NoteHeld", "false", true));
+		mAmplitude = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 47.0f}, glm::vec2{194.0f, 20.0f}, "Amplitude", "0.0f", true));
+		mNoteStart = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 70.0f}, glm::vec2{194.0f, 20.0f}, "NoteStart", "0", true));
+		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 139.0f}, glm::vec2{194.0f, 20.0f}, "Amplitude"));
+		mNoteHeld = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 93.0f}, glm::vec2{194.0f, 20.0f}, "NoteHeld", "false", true));
 		mNoteHeld->setCombiningMode(part::CombiningMode::OR);
-		mFrequency = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 93.0f}, glm::vec2{194.0f, 20.0f}, "Frequency", "0.0f", true));
-		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 139.0f}, glm::vec2{194.0f, 20.0f}, "Frequency"));
+		mFrequency = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}, "Frequency", "0.0f", true));
+		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 116.0f}, glm::vec2{194.0f, 20.0f}, "Frequency"));
 	}
 
 	AHDSR::AHDSR(const uint32_t version, util::FileIStream& stream) : Module(version, stream) {
