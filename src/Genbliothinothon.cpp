@@ -9,6 +9,7 @@ namespace genbliothinothon {
 			uint32_t version;
 			stream >> version;
 			mModuleManager.load(version, stream);
+			mAudioPlayer.rebuildShader(mModuleManager);
 		}
 		catch (std::exception&) {}
 	}
