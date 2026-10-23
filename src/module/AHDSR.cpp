@@ -6,16 +6,32 @@
 #include "part/Send.h"
 
 namespace genbliothinothon::module {
-	AHDSR::AHDSR(const glm::vec2& pos) : Module(pos, {400.0f, 162.0f}) {
-		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{400.0f, 162.0f}, "AHDSR"));
+	AHDSR::AHDSR(const glm::vec2& pos) : Module(pos, {299.0f, 195.0f}) {
+		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{299.0f, 195.0f}, "AHDSR"));
 		addPart(std::make_unique<part::RemoveButton>(this));
-		mVolume = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 47.0f}, glm::vec2{194.0f, 20.0f}, "Volume", "0.0f", true));
-		mNoteStart = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 70.0f}, glm::vec2{194.0f, 20.0f}, "NoteStart", "0", true));
-		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 139.0f}, glm::vec2{194.0f, 20.0f}, "Volume"));
-		mNoteHeld = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 93.0f}, glm::vec2{194.0f, 20.0f}, "NoteHeld", "false", true));
+		// colum 1 row 2
+		mVolume = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 47.0f}, glm::vec2{145.0f, 20.0f}, "Volume", "0.0f", true));
+		// colum 2 row 1
+		mNoteStart = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{151.0f, 24.0f}, glm::vec2{145.0f, 20.0f}, "NoteStart", "0", true));
+		// colum 2 row 3
+		addPart(std::make_unique<part::Send>(this, glm::vec2{151.0f, 172.0f}, glm::vec2{145.0f, 20.0f}, "Volume"));
+		// colum 2 row 2
+		mNoteHeld = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{151.0f, 47.0f}, glm::vec2{145.0f, 20.0f}, "NoteHeld", "false", true));
 		mNoteHeld->setCombiningMode(part::CombiningMode::OR);
-		mFrequency = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}, "Frequency", "0.0f", true));
-		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 116.0f}, glm::vec2{194.0f, 20.0f}, "Frequency"));
+		// colum 1 row 1
+		mFrequency = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{145.0f, 20.0f}, "Frequency", "0.0f", true));
+		// colum 1 row 3
+		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 172.0f}, glm::vec2{145.0f, 20.0f}, "Frequency"));
+
+		mAT = &addPart(std::make_unique<part::Dial>(this, glm::vec2{3.0f, 73.0f}, glm::vec2{50.0f, 50.0f}, "AT", 0.0f, 20000.0f, 50.0f, true));
+		mAC = &addPart(std::make_unique<part::Dial>(this, glm::vec2{38.0f, 108.0f}, glm::vec2{50.0f, 50.0f}, "AC", -50.0f, 50.0f, -10.0f, true));
+		mHT = &addPart(std::make_unique<part::Dial>(this, glm::vec2{73.0f, 73.0f}, glm::vec2{50.0f, 50.0f}, "HT", 0.0f, 20000.0f, 1.0f, true));
+		mSP = &addPart(std::make_unique<part::Dial>(this, glm::vec2{108.0f, 108.0f}, glm::vec2{50.0f, 50.0f}, "SP", 0.0f, 1.0f, 0.7f, true));
+		mDT = &addPart(std::make_unique<part::Dial>(this, glm::vec2{143.0f, 73.0f}, glm::vec2{50.0f, 50.0f}, "DT", 0.0f, 20000.0f, 500.0f, true));
+		mDC = &addPart(std::make_unique<part::Dial>(this, glm::vec2{178.0f, 108.0f}, glm::vec2{50.0f, 50.0f}, "DC", -50.0f, 50.0f, 4.0f, true));
+		mRT = &addPart(std::make_unique<part::Dial>(this, glm::vec2{213.0f, 73.0f}, glm::vec2{50.0f, 50.0f}, "RT", 0.0f, 20000.0f, 600.0f, true));
+		mRC = &addPart(std::make_unique<part::Dial>(this, glm::vec2{248.0f, 108.0f}, glm::vec2{50.0f, 50.0f}, "RC", -50.0f, 50.0f, -10.0f, true));
+
 	}
 
 	AHDSR::AHDSR(const uint32_t version, util::FileIStream& stream) : Module(version, stream) {
@@ -47,6 +63,14 @@ namespace genbliothinothon::module {
 			std::string noteStart = "0";
 			std::string noteHeld = "false";
 			std::string frequency = "0.0";
+			std::string AT = mAT->getDefaultValueString();
+			std::string AC = mAC->getDefaultValueString();
+			std::string HT = mHT->getDefaultValueString();
+			std::string SP = mSP->getDefaultValueString();
+			std::string DT = mDT->getDefaultValueString();
+			std::string DC = mDC->getDefaultValueString();
+			std::string RT = mRT->getDefaultValueString();
+			std::string RC = mRC->getDefaultValueString();
 			if (volumeIt != inputValues.end()) {
 				volume = volumeIt->second;
 			}
@@ -59,7 +83,8 @@ namespace genbliothinothon::module {
 			if (frequencyIt != inputValues.end()) {
 				frequency = frequencyIt->second;
 			}
-			glsl += "AHDSR(" + volume + ",sample0-" += noteStart + ",50.0f,-10.0f,300.0f,200.0f,10.0f,0.7f,6000.0f,-5.0f," += noteHeld + frequency +")+";
+			//float AT, float AC, float HT, float DT, float DC, float SP, float RT, float RC
+			glsl += "AHDSR(" + volume + ",sample0-" += noteStart + "AT" + "AC" + "HT" + "DT" + "DC" + "SP" + "RT" + "RC" += noteHeld + frequency +")+";
 		}
 		glsl.back() = ';';
 		return glsl;

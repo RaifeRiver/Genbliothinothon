@@ -1,5 +1,6 @@
 #pragma once
 
+#include "part/Dial.h"
 #include "Module.h"
 #include "part/GenericSendTarget.h"
 
@@ -17,5 +18,14 @@ namespace genbliothinothon::module {
 		part::GenericSendTarget* mNoteStart;
 		part::GenericSendTarget* mNoteHeld;
 		part::GenericSendTarget* mFrequency;
+		part::Dial* mAT;
+		part::Dial* mAC;
+		part::Dial* mHT;
+		part::Dial* mSP;
+		part::Dial* mDT;
+		part::Dial* mDC;
+		part::Dial* mRT;
+		part::Dial* mRC;
+
 	};
 }
