@@ -38,7 +38,7 @@ float audio_sin(float x) {
 //   AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR
 //  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR AHDSR
 
-float AHDSR(float Amplitude_in, float sam, float Attack_Time, float Attack_Curve, float Hold_Time, float Decay_Time, float Decay_Curve, float Sustain_Percent, float Release_Time, float Release_Curve, bool Held){
+vec2 AHDSR(float Amplitude_in, float sam, float Attack_Time, float Attack_Curve, float Hold_Time, float Decay_Time, float Decay_Curve, float Sustain_Percent, float Release_Time, float Release_Curve, bool Held, float frequency){
     float Decay_start = Attack_Time + Hold_Time;
     float Sustain_start = Decay_start + Decay_Time;
     float Release_end = Sustain_start + Release_Time;
@@ -70,7 +70,7 @@ float AHDSR(float Amplitude_in, float sam, float Attack_Time, float Attack_Curve
     else {
         Amplitude = 0.0f;
     }
-    return(Amplitude*Amplitude_in);
+    return vec2(Amplitude*Amplitude_in, frequency);
 }
 
 // AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR

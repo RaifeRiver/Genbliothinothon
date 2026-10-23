@@ -16,5 +16,6 @@ namespace genbliothinothon::module {
 		part::GenericSendTarget* mAmplitude;
 		part::GenericSendTarget* mNoteStart;
 		part::GenericSendTarget* mNoteHeld;
+		part::GenericSendTarget* mFrequency;
 	};
 }

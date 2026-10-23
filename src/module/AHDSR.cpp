@@ -6,14 +6,16 @@
 #include "part/Send.h"
 
 namespace genbliothinothon::module {
-	AHDSR::AHDSR(const glm::vec2& pos) : Module(pos, {200.0f, 116.0f}) {
-		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 116.0f}, "AHDSR"));
+	AHDSR::AHDSR(const glm::vec2& pos) : Module(pos, {200.0f, 162.0f}) {
+		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 162.0f}, "AHDSR"));
 		addPart(std::make_unique<part::RemoveButton>(this));
 		mAmplitude = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}, "Amplitude", "0.0f", true));
 		mNoteStart = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 47.0f}, glm::vec2{194.0f, 20.0f}, "NoteStart", "0", true));
-		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 93.0f}, glm::vec2{194.0f, 20.0f}, "Amplitude"));
+		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 116.0f}, glm::vec2{194.0f, 20.0f}, "Amplitude"));
 		mNoteHeld = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 70.0f}, glm::vec2{194.0f, 20.0f}, "NoteHeld", "false", true));
 		mNoteHeld->setCombiningMode(part::CombiningMode::OR);
+		mFrequency = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 93.0f}, glm::vec2{194.0f, 20.0f}, "Frequency", "0.0f", true));
+		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 139.0f}, glm::vec2{194.0f, 20.0f}, "Frequency"));
 	}
 
 	AHDSR::AHDSR(const uint32_t version, util::FileIStream& stream) : Module(version, stream) {
@@ -40,9 +42,11 @@ namespace genbliothinothon::module {
 			const auto amplitudeIt = inputValues.find("Amplitude" + channelStr + "_");
 			const auto noteStartIt = inputValues.find("NoteStart" + channelStr + "_");
 			const auto noteHeldIt = inputValues.find("NoteHeld" + channelStr + "_");
+			const auto frequencyIt = inputValues.find("Frequency" + channelStr + "_");
 			std::string amplitude = "0.0f";
 			std::string noteStart = "0";
 			std::string noteHeld = "false";
+			std::string frequency = "0.0";
 			if (amplitudeIt != inputValues.end()) {
 				amplitude = amplitudeIt->second;
 			}
@@ -52,7 +56,10 @@ namespace genbliothinothon::module {
 			if (noteHeldIt != inputValues.end()) {
 				noteHeld = noteHeldIt->second;
 			}
-			glsl += "AHDSR(" + amplitude + ",sample0-" += noteStart + ",50.0f,-10.0f,300.0f,200.0f,10.0f,0.7f,6000.0f,-5.0f," += noteHeld + ")+";
+			if (frequencyIt != inputValues.end()) {
+				frequency = frequencyIt->second;
+			}
+			glsl += "AHDSR(" + amplitude + ",sample0-" += noteStart + ",50.0f,-10.0f,300.0f,200.0f,10.0f,0.7f,6000.0f,-5.0f," += noteHeld + frequency +")+";
 		}
 		glsl.back() = ';';
 		return glsl;
