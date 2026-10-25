@@ -8,6 +8,17 @@
 #include "NoiseSource.h"
 #include "Oscillator.h"
 #include "Output.h"
+#include "AntiDepressant.h"
+#include "BitCrusher.h"
+#include "Depresser.h"
+#include "FullRectifier.h"
+#include "HardClip.h"
+#include "OverInvert.h"
+#include "SoftDistort.h"
+#include "TapeSaturation.h"
+#include "Tremlo.h"
+#include "TubeSaturation.h"
+#include "XOR.h"
 
 namespace genbliothinothon::module {
 	Module::Module(const glm::vec2 pos, const glm::vec2 size) : mPos(pos), mSize(size) {}
@@ -148,6 +159,17 @@ namespace genbliothinothon::module {
 		registerModule<NoiseSource>("Noise Source");
 		registerModule<Oscillator>("Oscillator");
 		registerModule<Output>("Output");
+		registerModule<AntiDepressant>("AntiDepressant");
+		registerModule<BitCrusher>("BitCrusher");
+		registerModule<Depresser>("Depresser");
+		registerModule<FullRectifier>("FullRectifier");
+		registerModule<HardClip>("HardClip");
+		registerModule<OverInvert>("OverInvert");
+		registerModule<SoftDistort>("SoftDistort");
+		registerModule<TapeSaturation>("TapeSaturation");
+		registerModule<Tremlo>("Tremlo");
+		registerModule<TubeSaturation>("TubeSaturation");
+		registerModule<XOR>("XOR");
 		return 0;
 	}
 }
