@@ -132,6 +132,42 @@ float tri(uint samp, float Hz, float Gain){
 float note(int n, int octave) {
     return 27.5 * pow(2.0, float(n - 1 + octave * 12) / 12.0);
 }
+vec2 Tremlo(uint Samp, float Amp, float Period, float Smooth, float Gain) {
+    float x = tanh(sin((PI*Samp)/(FS*Period)));
+    float left = (tanh(sin(x))*0.5f)+1.0f;
+    float right = ((-1.0f*tanh(sin(x)))*0.5f)+1.0f;
+    return vec2(left, right);
+}
+float XOR(float Amp, float idunno) { // RaifeRiver: "idunno"
+                                     return(mod(Amp+idunno,2.0f));
+}
+float BitCrusher(float Amp, int bits, float Gain) {
+    return float(int((((Amp*bits)/float(bits))*Gain)));
+}// folded
+float OverInvert(float Amp, float Drive, float Gain) {
+    return float(-1*(mod((Amp*Drive),2-1))*Gain);
+}
+float SoftDistort(float Amp, float Drive, float Gain) {
+    return float((tanh(Amp*Drive))*Gain);
+}
+float HardClip(float Amp, float Drive, float Gain) {
+    return float(clamp(Amp*Drive, -1.0f, 1.0f)*Gain);
+}
+float FullRectifier(float Amp, float Drive, float Gain) {
+    return float(abs(Amp*Drive)*Gain);
+}// waves positive
+float AntiDepressant(float Amp, float Drive, float Gain) {
+    return float(max(Amp*Drive,0.0f)*Gain);
+}// waves negative
+float Depresser(float Amp, float Drive, float Gain) {
+    return float(min(Amp*Drive, 0)*Gain);
+}
+float TapeSaturation(float Amp, float Drive, float Gain) {
+    return float((tanh(Amp*Drive))/(tanh(Drive))*Gain);
+}
+float TubeSaturation(float Amp, float Drive, float Gain) {
+    return float((Amp*Drive)/(1+Drive*abs(Amp)));
+}
 // ==================================================
 // MULTIFILER SEPERATE EFFECTED SUPER VOICE SYSTEM!!!
 // ==================================================
@@ -234,40 +270,4 @@ void main() {
     // insert audio code here
 
     audioOut = vec4(leftAudio, rightAudio, 0.0f, 0.0f);
-}
-float BitCrusher(float Amp, int bits, float Gain) {
-    return(int((((Amp*bits)/float(bits))*Gain)));
-}// folded
-float OverInvert(float Amp, float Drive, float Gain) {
-    return((-1*((Amp*Drive)%2-1))*Gain);
-}
-float soft_distort(float Amp, float Drive, float Gain) {
-    return((tanh(Amp*Drive))*Gain);
-}
-float HardClip(float Amp, float Drive, float Gain) {
-    return(clamp(Amp*Drive, -1.0f, 1.0f)*Gain);
-}
-float FullRectumfrier(float Amp, float Drive, float Gain) {
-    return(abs(Amp*Drive)*Gain);
-}// waves positive
-float AntiDepressant(float Amp, float Drive, float Gain) {
-    return(max(Amp*Drive,0.0f)*Gain);
-}// waves negative
-float Depresser(float Amp, float Drive, float Gain) {
-    return(min(Amp*Drive, 0)*Gain);
-}
-float TapeSaturation(float Amp, float Drive, float Gain) {
-    return((tanh(Amp*Drive))/(tanh(Drive))*Gain);
-}
-float TubeSaturation(float Amp, float Drive, float Gain) {
-    return((Amp*Drive)/(1+Drive*abs(Amp)));
-}
-vec2 Tremlo(uint Samp, float Amp, float Period, float Smooth, float Gain) {
-    float x = tanh(sin((PI*Samp)/(FS*Period)));
-    float left = (tanh(sin(x))*0.5f)+1.0f;
-    float right = ((-1.0f*tanh(sin(x)))*0.5f)+1.0f;
-    return vec2(left, right);
-}
-float XOR(float Amp, float idunno) { // RaifeRiver: "idunno"
-    return(mod(Amp+idunno,2.0f));
 }
