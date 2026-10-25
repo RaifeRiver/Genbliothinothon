@@ -94,7 +94,7 @@ namespace genbliothinothon::ui {
 		waveTypesHeader->setPadding({0.0f, 10.0f, 0.0f, 3.0f});
 		mHelpContainer->addChild(std::move(waveTypesHeader));
 
-		auto waveTypes = std::make_unique<Label>(" - Sine\n - Saw\n - Inv Saw\n - Triangle\n - Square");
+		auto waveTypes = std::make_unique<Label>(" - Sine: this wave generates a consistent and smooth form, it has one harmonic(itself)\n and you literally cannot have a smoother wave at the same amplitude, that is the definition.\n\n - Saw: this wave type ramps up and then instantly drops down to -1 again.\n it is called saw because it looks like a saw.\n it has many harmonics and is great for bass, sounds like a \nbuzzy and annoying but really loud and harsh fly\n\n - Inv Saw: This is simply the opposite of a sawtooth wave,\n it is slightly different sound but interchangeable\n and can sound more this and that depending on configuration.\n\n - Triangle: this sounds like a sine wave but it has some more harmonics.\n I would use it if you want a sin sound but need a bit more tang,\n it is a pretty nice and not too harsh wave form. \nBut of course has infinite harmonics technically like the others,\n on this one the higher harmonics decrease in volume faster so generally it is just a slightly less plain sine wave\n\n - Square: This one is rich, it is amazing for anything that needs tons of overtones.\n All quite loud. But if you want to use it a lot i recommend to cut out the high frequencies.\n This one is fun but i would usually use saw rather than it.\n It definitely has its place as the buzz king though. If you want that.");
 		mHelpContainer->addChild(std::move(waveTypes));
 
 		auto inputsHeader = std::make_unique<Label>("Inputs");
