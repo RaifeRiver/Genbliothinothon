@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Module.h"
+#include "part/Output.h"
 
 namespace genbliothinothon::module {
 	class Output : public Module {
@@ -10,5 +11,9 @@ namespace genbliothinothon::module {
 		Output(uint32_t version, util::FileIStream& stream);
 
 		std::string generateGLSL(uint32_t index, std::unordered_map<std::string, std::string>& inputValues) override;
+
+	private:
+		part::Output* left;
+		part::Output* right;
 	};
 }

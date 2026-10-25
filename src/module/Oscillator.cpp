@@ -45,17 +45,11 @@ namespace genbliothinothon::module {
 			default:
 				throw std::runtime_error("Invalid wave type");
 		}
-		const std::vector<part::PartID>& frequencySends = mFrequency->getInputs();
-		uint32_t channelCount = 0;
-		ModuleManager& moduleManager = Genbliothinothon::getInstance()->getModuleManager();
-		for (const auto [module, part]: frequencySends) {
-			channelCount = std::max(channelCount, reinterpret_cast<part::Send*>(moduleManager.getModule(module)->getParts()[part].get())->getChannelCount());
-		}
 		const std::string defaultFrequency = mFrequency->getDefaultValueString();
 		const std::string defaultVolume = mVolume->getDefaultValueString();
 		const std::string indexStr = std::to_string(index);
 		std::string glsl;
-		for (uint32_t channel = 0; channel < channelCount; channel++) {
+		for (uint32_t channel = 0; channel < 16; channel++) {
 			std::string channelStr = std::to_string(channel);
 			const auto toneIt = inputValues.find("Tone" + channelStr + "_");
 			const auto volumeIt = inputValues.find("Volume" + channelStr + "_");
