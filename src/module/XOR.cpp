@@ -10,8 +10,7 @@ namespace genbliothinothon::module {
 		addPart(std::make_unique<part::RemoveButton>(this));
 		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}, "Audio",16));
 		mAmplitude = &addPart(std::make_unique<part::Dial>(this, glm::vec2{10.0f, 52.0f}, glm::vec2{50.0f, 50.0f}, "Amplitude", 0.0f, 1.0f, 1.0f, true));
-		mDrive = &addPart(std::make_unique<part::Dial>(this, glm::vec2{75.0f, 52.0f}, glm::vec2{50.0f, 50.0f}, "Drive", 0.1f, 10.0f, 1.0f, true));
-		mGain = &addPart(std::make_unique<part::Dial>(this, glm::vec2{140.0f, 52.0f}, glm::vec2{50.0f, 50.0f}, "Gain", 0.1f, 10.0f, 1.0f, true));
+		mDrive = &addPart(std::make_unique<part::Dial>(this, glm::vec2{75.0f, 52.0f}, glm::vec2{50.0f, 50.0f}, "Value to XOR with", 0.1f, 100.0f, 1.0f, true));
 	}
 
 	XOR::XOR(const uint32_t version, util::FileIStream& stream) : Module(version, stream) {
@@ -40,7 +39,7 @@ namespace genbliothinothon::module {
 				gain += "*(" + gainIt->second + ")";
 			}
 			const std::string indexStr = std::to_string(index);
-			glsl+= "float Audio" + channelStr + "_" += indexStr + "=XOR(" += volume + "," += drive + "," += gain + ");\n";
+			glsl+= "float Audio" + channelStr + "_" += indexStr + "=XOR(" += volume + "," += drive + ");\n";
 		}
 		return glsl;
 	}
