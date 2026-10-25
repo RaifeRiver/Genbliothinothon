@@ -78,62 +78,59 @@ vec2 AHDSR(float Amplitude_in, float sam, float Attack_Time, float Attack_Curve,
 //  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR  AHDSR AHDSR
 
 
-float white(uint samp,float vol){
+float white(uint samp,float Gain){
     uint s=((samp)<<13)^(samp);
     s=s*(s*s*15731u+789221u)+1376312589u;
-    return (float(s&0x7fffffffu)/1073741824.0*2.0-1.0)*vol;
+    return (float(s&0x7fffffffu)/1073741824.0*2.0-1.0)*Gain;
 }
-float sine(uint samp, float Hz, float vol){
-    return (vol*audio_sin(PI*Hz*samp/48000.0));
+float sine(uint samp, float Hz, float Gain){
+    return (Gain*audio_sin(PI*Hz*samp/48000.0));
 }
-float Htri(uint samp, float Hz, float vol, int depth){
+float Htri(uint samp, float Hz, float Gain, int depth){
     float x=0.0;
     for (int n = 1; n < depth; n++){
-        x+=((audio_sin(0.5f*(PI-((n<<1)-1)*PI*x))/(((n<<1)-1)*((n<<1)-1)))*vol*audio_sin(n*PI*Hz*samp/48000.0));
+        x+=((audio_sin(0.5f*(PI-((n<<1)-1)*PI*x))/(((n<<1)-1)*((n<<1)-1)))*Gain*audio_sin(n*PI*Hz*samp/48000.0));
     }
     return x;
 }
-float Hsaw(uint samp, float Hz, float vol, int depth){
+float Hsaw(uint samp, float Hz, float Gain, int depth){
     float x=0.0;
     for (int n = 1; n < depth; n++){
-        x+=((1.0-2.0*((n+1)&1))/(n))*(vol * audio_sin(n*PI*Hz*samp/48000.0));
+        x+=((1.0-2.0*((n+1)&1))/(n))*(Gain * audio_sin(n*PI*Hz*samp/48000.0));
     }
     return x;
 }
-float HIsaw(uint samp, float Hz, float vol, int depth){
+float HIsaw(uint samp, float Hz, float Gain, int depth){
     float x=0.0;
     for (int n = 1; n < depth; n++){
-        x+=((-1*(1.0-2.0*(n&1)))/(n))*(vol * audio_sin(n*PI*Hz*samp/48000.0));
+        x+=((-1*(1.0-2.0*(n&1)))/(n))*(Gain * audio_sin(n*PI*Hz*samp/48000.0));
     }
     return x;
 }
-float Hsquare(uint samp, float Hz, float vol, int depth){
+float Hsquare(uint samp, float Hz, float Gain, int depth){
     float x=0.0;
     for (int n = 1; n < depth; n++){
-        x+=((2.0*(n&1))/n*PI)*(vol * 0.7 * audio_sin(n*PI*Hz*samp/48000.0));
+        x+=((2.0*(n&1))/n*PI)*(Gain * 0.7 * audio_sin(n*PI*Hz*samp/48000.0));
     }
     return x;
 }
-float Isaw(uint samp, float Hz, float vol){
+float Isaw(uint samp, float Hz, float Gain){
     float p=FS/Hz;
-    return(vol*(mod((2u*samp/p+Hz),2)*-1+1));
+    return(Gain*(mod((2u*samp/p+Hz),2)*-1+1));
 }
-float saw(uint samp, float Hz, float vol){
+float saw(uint samp, float Hz, float Gain){
     float p=FS/Hz;
-    return(vol*-1*(mod((2u*samp/p),2)*-1+1));
+    return(Gain*-1*(mod((2u*samp/p),2)*-1+1));
 }
-float sq(uint samp, float Hz, float vol){
-    return(vol*(2.0*(uint(samp/(FS/Hz))&1u)-1.0));
+float sq(uint samp, float Hz, float Gain){
+    return(Gain*(2.0*(uint(samp/(FS/Hz))&1u)-1.0));
     }
-float tri(uint samp, float Hz, float vol){
-    return(float(vol*(1.0-2.0*abs(2.0*fract(samp/(FS/Hz))-1.0))));
+float tri(uint samp, float Hz, float Gain){
+    return(float(Gain*(1.0-2.0*abs(2.0*fract(samp/(FS/Hz))-1.0))));
 }
 //float AT, float AC, float HT, float DT, float DC, float SP, float RT, float RC
 float note(int n, int octave) {
     return 27.5 * pow(2.0, float(n - 1 + octave * 12) / 12.0);
-}
-float soft_distort(float amplitude){
-    return tanh(amplitude);
 }
 // ==================================================
 // MULTIFILER SEPERATE EFFECTED SUPER VOICE SYSTEM!!!
@@ -237,4 +234,40 @@ void main() {
     // insert audio code here
 
     audioOut = vec4(leftAudio, rightAudio, 0.0f, 0.0f);
+}
+float BitCrusher(float Amp, int bits, float Gain) {
+    return(int((((Amp*bits)/float(bits))*Gain)));
+}// folded
+float OverInvert(float Amp, float Drive, float Gain) {
+    return((-1*((Amp*Drive)%2-1))*Gain);
+}
+float soft_distort(float Amp, float Drive, float Gain) {
+    return((tanh(Amp*Drive))*Gain);
+}
+float HardClip(float Amp, float Drive, float Gain) {
+    return(clamp(Amp*Drive, -1.0f, 1.0f)*Gain);
+}
+float FullRectumfrier(float Amp, float Drive, float Gain) {
+    return(abs(Amp*Drive)*Gain);
+}// waves positive
+float AntiDepressant(float Amp, float Drive, float Gain) {
+    return(max(Amp*Drive,0.0f)*Gain);
+}// waves negative
+float Depresser(float Amp, float Drive, float Gain) {
+    return(min(Amp*Drive, 0)*Gain);
+}
+float TapeSaturation(float Amp, float Drive, float Gain) {
+    return((tanh(Amp*Drive))/(tanh(Drive))*Gain);
+}
+float TubeSaturation(float Amp, float Drive, float Gain) {
+    return((Amp*Drive)/(1+Drive*abs(Amp)));
+}
+vec2 Tremlo(uint Samp, float Amp, float Period, float Smooth, float Gain) {
+    float x = tanh(sin((PI*Samp)/(FS*Period)));
+    float left = (tanh(sin(x))*0.5f)+1.0f;
+    float right = ((-1.0f*tanh(sin(x)))*0.5f)+1.0f;
+    return vec2(left, right);
+}
+float XOR(float Amp, float idunno) { // RaifeRiver: "idunno"
+    return(mod(Amp+idunno,2.0f));
 }
