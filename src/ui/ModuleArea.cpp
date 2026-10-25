@@ -6,7 +6,6 @@
 #include "module/Module.h"
 #include "module/ModuleManager.h"
 #include "module/part/RemoveButton.h"
-#include "module/part/Send.h"
 
 namespace genbliothinothon::ui {
 	ModuleArea::ModuleArea(const glm::vec2 size) : mSize(size) {}
@@ -20,27 +19,15 @@ namespace genbliothinothon::ui {
 		Genbliothinothon* genbliothinothon = Genbliothinothon::getInstance();
 		const glm::vec2 cameraPos = genbliothinothon->getCameraPos();
 		std::vector<uint32_t> modulesToRemove;
-		std::unordered_map<uint32_t, std::unique_ptr<module::Module>>& modules = genbliothinothon->getModuleManager().getModules();
-		for (const auto& [id, module]: modules) {
+		module::ModuleManager& moduleManager = genbliothinothon->getModuleManager();
+		for (std::unordered_map<uint32_t, std::unique_ptr<module::Module>>& modules = moduleManager.getModules(); const auto& [id, module]: modules) {
 			const glm::vec2 modulePos = module->getPos() + cameraPos;
-			const std::vector<std::unique_ptr<module::part::Part>>& parts = module->getParts();;
+			const std::vector<std::unique_ptr<module::part::Part>>& parts = module->getParts();
 			if (const glm::vec2 moduleSize = module->getSize(); pos.x >= modulePos.x && pos.x <= modulePos.x + moduleSize.x && pos.y >= modulePos.y && pos.y <= modulePos.y + moduleSize.y) {
 				for (const std::unique_ptr<module::part::Part>& part : parts) {
 					const glm::vec2 partPos = part->getPos() + modulePos;
 					if (const glm::vec2 partSize = part->getSize(); pos.x >= partPos.x && pos.x <= partPos.x + partSize.x && pos.y >= partPos.y && pos.y <= partPos.y + partSize.y) {
 						if (dynamic_cast<module::part::RemoveButton*>(part.get())) {
-							for (const std::unique_ptr<module::Module>& m : modules | std::views::values) {
-								if (m.get() == module.get()) {
-									continue;
-								}
-								for (const std::unique_ptr<module::part::Part>& p : m->getParts()) {
-									for (uint32_t i = 0; i < parts.size(); i++) {
-										if (const auto send = dynamic_cast<module::part::Send*>(p.get()); send && send->getSendTarget().has_value() && send->getSendTarget().value() == module::part::PartID{.module = module->getID(), .part = i}) {
-											send->setSendTarget({});
-										}
-									}
-								}
-							}
 							modulesToRemove.push_back(id);
 						}
 						part->click(pos - partPos);
@@ -58,8 +45,8 @@ namespace genbliothinothon::ui {
 				}
 			}
 		}
-		for (uint32_t id : modulesToRemove) {
-			modules.erase(id);
+		for (const uint32_t id : modulesToRemove) {
+			moduleManager.removeModule(id);
 		}
 	}
 
