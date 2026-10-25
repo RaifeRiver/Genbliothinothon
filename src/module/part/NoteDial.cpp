@@ -4,7 +4,7 @@
 #include <format>
 
 namespace genbliothinothon::module::part {
-	NoteDial::NoteDial(Module* parent, const glm::vec2& pos, const glm::vec2& size, const std::string& name, const bool multiChannel) : Dial(parent, pos, size, name, 1, 120, 60, multiChannel) {
+	NoteDial::NoteDial(Module* parent, const glm::vec2& pos, const glm::vec2& size, const std::string& name, const bool multiChannel) : Dial(parent, pos, size, name, 0, 120, 60, multiChannel) {
 		Part::setType(sType);
 	}
 

@@ -40,7 +40,7 @@ namespace genbliothinothon::module {
 				gain += "*(" + gainIt->second + ")";
 			}
 			const std::string indexStr = std::to_string(index);
-			glsl+= "float Audio" + channelStr + "_" += indexStr + "=Antidepressant(" += volume + "," += drive + "," += gain + ");\n";
+			glsl+= "float Audio" + channelStr + "_" += indexStr + "=SoftDistort(" += volume + "," += drive + "," += gain + ");\n";
 		}
 		return glsl;
 	}
