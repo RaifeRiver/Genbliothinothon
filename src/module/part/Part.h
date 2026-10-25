@@ -12,9 +12,9 @@ namespace genbliothinothon::module::part {
 	struct PartID {
 		uint32_t module;
 		uint32_t part;
-	};
 
-	bool operator==(PartID a, PartID b);
+		bool operator==(const PartID&) const = default;
+	};
 
 	class Part {
 	public:

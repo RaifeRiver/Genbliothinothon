@@ -1,10 +1,13 @@
 #include "ModuleManager.h"
 
+#include <algorithm>
+#include <iostream>
 #include <ranges>
 
 #include "Genbliothinothon.h"
 #include "Output.h"
 #include "part/RemoveButton.h"
+#include "part/Send.h"
 
 namespace genbliothinothon::module {
 	ModuleManager::ModuleManager() {
@@ -23,7 +26,29 @@ namespace genbliothinothon::module {
 	}
 
 	void ModuleManager::removeModule(const uint32_t id) {
+		const std::vector<std::unique_ptr<part::Part>>& parts = mModules[id]->getParts();
+		for (uint32_t i = 0; i < parts.size(); i++) {
+			if (const auto sendTarget = dynamic_cast<part::SendTarget*>(parts[i].get())) {
+				for (const auto [moduleID, partID] : sendTarget->getInputs()) {
+					auto* send = dynamic_cast<part::Send*>(mModules[moduleID]->getParts()[partID].get());
+					send->setSendTarget({});
+					send->setDirty(true);
+				}
+			}
+			else if (const auto send = dynamic_cast<part::Send*>(parts[i].get())) {
+				std::optional<part::PartID> target = send->getSendTarget();
+				if (!target.has_value()) {
+					continue;
+				}
+				auto [moduleID, partID] = target.value();
+				auto* sendTarget2 = dynamic_cast<part::SendTarget*>(mModules[moduleID]->getParts()[partID].get());
+				std::erase(sendTarget2->getInputs(), part::PartID{.module = id, .part = i});
+			}
+		}
+
 		mModules.erase(id);
+
+		std::cout << "Erasing module " << id << std::endl;
 	}
 
 	void ModuleManager::resetModules() {

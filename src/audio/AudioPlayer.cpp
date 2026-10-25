@@ -51,8 +51,8 @@ namespace genbliothinothon::audio {
 
 		std::unordered_map<uint32_t, std::unique_ptr<module::Module>>& modules = moduleManager.getModules();
 
-		std::vector generatedModules(modules.size(), false);
-		std::vector generatingModules(modules.size(), false);
+		std::unordered_map<uint32_t, bool> generatedModules;
+		std::unordered_map<uint32_t, bool> generatingModules;
 		const std::function<void(uint32_t)> generateModule = [&](const uint32_t module) {
 			if (generatedModules[module]) {
 				return;
@@ -91,8 +91,8 @@ namespace genbliothinothon::audio {
 						uint32_t inputCount = 0;
 						for (auto [parentID, partIndex] : sendTarget->getInputs()) {
 							module::Module* parent = modules[parentID].get();
-							for (uint32_t parentIndex = 0; parentIndex < modules.size(); parentIndex++) {
-								if (parent == modules[parentIndex].get()) {
+							for (auto& [parentIndex, p] : modules) {
+								if (parent == p.get()) {
 									generateModule(parentIndex);
 									inputString += reinterpret_cast<module::part::Send*>(parent->getParts()[partIndex].get())->getName() + channelStr + "_" + std::to_string(parentIndex) += combiningOperator;
 									inputCount++;
@@ -116,12 +116,12 @@ namespace genbliothinothon::audio {
 			generatedModules[module] = true;
 		};
 		bool foundOutput = false;
-		for (uint32_t module = 0; module < modules.size(); module++) {
-			if (dynamic_cast<module::Output*>(modules[module].get())) {
+		for (auto& [id, module] : modules) {
+			if (dynamic_cast<module::Output*>(module.get())) {
 				if (foundOutput) {
 					throw std::runtime_error("Multiple outputs found");
 				}
-				generateModule(module);
+				generateModule(id);
 				foundOutput = true;
 			}
 		}
