@@ -142,7 +142,7 @@ float XOR(float Amp, float idunno) { // RaifeRiver: "idunno"
                                      return(mod(Amp+idunno,2.0f));
 }
 float BitCrusher(float Amp, int bits, float Gain) {
-    return float(int((((Amp*bits)/float(bits))*Gain)));
+    return floor(Amp * float(1 << bits)) / float(1 << bits) * Gain;
 }// folded
 float OverInvert(float Amp, float Drive, float Gain) {
     return float(-1*(mod((Amp*Drive),2-1))*Gain);
