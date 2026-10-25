@@ -40,9 +40,7 @@ namespace genbliothinothon::module {
 			return mDragged;
 		}
 
-		void setDragged(const bool dragged) {
-			mDragged = dragged;
-		}
+		void setDragged(const bool dragged);
 
 		[[nodiscard]] bool isDirty() const;
 
@@ -60,7 +58,7 @@ namespace genbliothinothon::module {
 			return mType;
 		}
 
-		void drag(glm::vec2 distance);
+		void drag(glm::vec2 distance, glm::vec2 pos);
 
 		void endDrag() const;
 

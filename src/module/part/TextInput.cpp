@@ -16,7 +16,7 @@ namespace genbliothinothon::module::part {
 		mCursorTime = std::chrono::steady_clock::now();
 	}
 
-	void TextInput::clickOff(glm::vec2) {
+	void TextInput::clickOff(glm::vec2, glm::vec2) {
 		if (mSelected) {
 			setDirty(true);
 		}

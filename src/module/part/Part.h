@@ -66,9 +66,9 @@ namespace genbliothinothon::module::part {
 
 		virtual void click(glm::vec2 pos);
 
-		virtual void clickOff(glm::vec2 pos);
+		virtual void clickOff(glm::vec2 pos, glm::vec2 worldPos);
 
-		virtual bool drag(glm::vec2 distance);
+		virtual void drag(glm::vec2 distance);
 
 		virtual void endDrag();
 

@@ -29,7 +29,7 @@ namespace genbliothinothon::module::part {
 
 		void click(glm::vec2 pos) override;
 
-		void clickOff(glm::vec2 pos) override;
+		void clickOff(glm::vec2 pos, glm::vec2 worldPos) override;
 
 		void save(util::FileOStream& stream) override;
 

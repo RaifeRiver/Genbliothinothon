@@ -49,13 +49,11 @@ namespace genbliothinothon::module::part {
 		setDirty(true);
 	}
 
-	void Send::clickOff(glm::vec2) {
+	void Send::clickOff(glm::vec2, const glm::vec2 worldPos) {
 		if (!mSelecting) {
 			return;
 		}
-		Genbliothinothon* genbliothinothon = Genbliothinothon::getInstance();
-		const glm::vec2 worldPos = genbliothinothon->getRenderContext().getMousePos() - genbliothinothon->getCameraPos();
-		for (const std::unique_ptr<Module>& module: genbliothinothon->getModuleManager().getModules() | std::views::values) {
+		for (const std::unique_ptr<Module>& module: Genbliothinothon::getInstance()->getModuleManager().getModules() | std::views::values) {
 			if (module.get() == getParent()) {
 				continue;
 			}

@@ -3,6 +3,8 @@
 #include "ui/Button.h"
 #include "ui/HelpMenu.h"
 #include "ui/HoverMenu.h"
+#include "ui/List.h"
+#include "ui/ModuleArea.h"
 #include "ui/SideLayoutManager.h"
 #include "ui/SimpleLayoutManager.h"
 
@@ -21,6 +23,40 @@ namespace genbliothinothon {
 
 		mUIContainer.setLayoutManager(std::make_unique<ui::SideLayoutManager>());
 		mUIContainer.setBackgroundColour(glm::vec4{0.0f, 0.0f, 0.0f, 0.0f});
+
+		auto moduleAreaContainer = std::make_unique<ui::Container>(glm::vec2{-1.0f, -1.0f});
+		moduleAreaContainer->setLayoutManager(std::make_unique<ui::SimpleLayoutManager>(ui::Direction::HORIZONTAL));
+		moduleAreaContainer->setComponentPadding({0.0f, 0.0f});
+
+		auto moduleListContainer = std::make_unique<ui::Container>(glm::vec2{0.0f, -1.0f});
+		moduleListContainer->setLayoutManager(std::make_unique<ui::SimpleLayoutManager>(ui::Direction::VERTICAL));
+		auto moduleListContainerPadding = std::make_unique<ui::Container>(glm::vec2{-1.0f, 20.0f});
+		moduleListContainerPadding->setLayoutManager(std::make_unique<ui::SimpleLayoutManager>(ui::Direction::VERTICAL));
+		moduleListContainer->addChild(std::move(moduleListContainerPadding));
+
+		std::vector<std::string> moduleNames = {};
+		uint32_t outputID = 0;
+		std::vector<std::tuple<std::string, std::function<std::unique_ptr<module::Module>(glm::vec2)>, std::function<std::unique_ptr<module::Module>(uint32_t, util::FileIStream&)>>>& modules = module::Module::getModules();
+		for (uint32_t i = 0; i < modules.size(); i++) {
+			const std::string& name = std::get<0>(modules[i]);
+			if (name == "Output") {
+				outputID = i;
+				continue;
+			}
+			moduleNames.push_back(name);
+		}
+		auto moduleList = std::make_unique<ui::List>(moduleNames);
+		moduleList->setSelectCallback([this, outputID](const uint32_t item) {
+			mModuleManager.addModule(module::Module::createModule(std::get<0>(module::Module::getModules()[item >= outputID ? item + 1 : item]), glm::vec2{200.0f, 200.0f} - mCameraPos));
+		});
+		moduleListContainer->setSize({moduleList->calculateSize(mRenderContext.getUIRenderer()).x, -1.0f});
+		moduleListContainer->addChild(std::move(moduleList));
+		moduleAreaContainer->addChild(std::move(moduleListContainer));
+
+		auto moduleArea = std::make_unique<ui::ModuleArea>(glm::vec2{-1.0f, -1.0f});
+		moduleAreaContainer->addChild(std::move(moduleArea));
+
+		mUIContainer.addChild(std::move(moduleAreaContainer), new ui::SideLayoutData{.side = ui::Side::LEFT});
 
 		auto menuBar = std::make_unique<ui::Container>(glm::vec2{-1.0f, 20.0f});
 		menuBar->setLayoutManager(std::make_unique<ui::SimpleLayoutManager>(ui::Direction::HORIZONTAL));

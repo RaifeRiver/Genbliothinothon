@@ -34,7 +34,7 @@ namespace genbliothinothon::module::part {
 		mOpen = !mOpen;
 	}
 
-	void Dropdown::clickOff(const glm::vec2 pos) {
+	void Dropdown::clickOff(const glm::vec2 pos, glm::vec2) {
 		if (mOpen) {
 			if (const glm::vec2 size = getSize(); pos.y > size.y && pos.y <= size.y * static_cast<float>(mOptions.size() + 1)) {
 				mSelectedOption = static_cast<uint32_t>((pos.y - size.y) / size.y);

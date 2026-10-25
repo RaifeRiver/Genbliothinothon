@@ -19,6 +19,7 @@
 #include "Tremlo.h"
 #include "TubeSaturation.h"
 #include "XOR.h"
+#include "part/Background.h"
 
 namespace genbliothinothon::module {
 	Module::Module(const glm::vec2 pos, const glm::vec2 size) : mPos(pos), mSize(size) {}
@@ -43,6 +44,10 @@ namespace genbliothinothon::module {
 
 	void Module::setSize(const glm::vec2 size) {
 		mSize = size;
+	}
+
+	void Module::setDragged(const bool dragged) {
+		mDragged = dragged;
 	}
 
 	bool Module::isDirty() const {
@@ -72,29 +77,25 @@ namespace genbliothinothon::module {
 		mID = id;
 	}
 
-	void Module::drag(const glm::vec2 distance) {
-		bool override = false;
-		Genbliothinothon* genbliothinothon = Genbliothinothon::getInstance();
-		const glm::vec2 worldPos = genbliothinothon->getRenderContext().getMousePos() - genbliothinothon->getCameraPos();
+	void Module::drag(const glm::vec2 distance, const glm::vec2 pos) {
 		for (const std::unique_ptr<part::Part>& part: mParts) {
 			if (part->isDragged()) {
-				override |= part->drag(distance);
-				if (override) {
-					break;
-				}
+				part->drag(distance);
+				return;
 			}
-			const glm::vec2 pos = part->getPos() + mPos;
-			if (const glm::vec2 size = part->getSize(); worldPos.x >= pos.x && worldPos.x < pos.x + size.x && worldPos.y >= pos.y && worldPos.y < pos.y + size.y) {
+		}
+		for (const std::unique_ptr<part::Part>& part: mParts) {
+			if (dynamic_cast<part::Background*>(part.get())) {
+				continue;
+			}
+			const glm::vec2 partPos = part->getPos() + mPos;
+			if (const glm::vec2 size = part->getSize(); pos.x >= partPos.x && pos.x < partPos.x + size.x && pos.y >= partPos.y && pos.y < partPos.y + size.y) {
 				part->setDragged(true);
-				override |= part->drag(distance);
-				if (override) {
-					break;
-				}
+				part->drag(distance);
+				return;
 			}
 		}
-		if (!override) {
-			mPos += distance;
-		}
+		mPos += distance;
 	}
 
 	void Module::endDrag() const {

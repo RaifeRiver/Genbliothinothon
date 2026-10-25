@@ -46,11 +46,9 @@ namespace genbliothinothon::module::part {
 
 	void Part::click(glm::vec2) {}
 
-	void Part::clickOff(glm::vec2) {}
+	void Part::clickOff(glm::vec2, glm::vec2) {}
 
-	bool Part::drag(const glm::vec2) {
-		return false;
-	}
+	void Part::drag(const glm::vec2) {}
 
 	void Part::endDrag() {}
 

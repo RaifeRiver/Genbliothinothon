@@ -18,10 +18,9 @@ namespace genbliothinothon::module::part {
 		return std::to_string(mValue) + "f";
 	}
 
-	bool Dial::drag(const glm::vec2 distance) {
+	void Dial::drag(const glm::vec2 distance) {
 		mValue -= (distance.y - distance.x) * (mMax - mMin) * 0.001f;
 		mValue = std::clamp(mValue, mMin, mMax);
-		return true;
 	}
 
 	void Dial::endDrag() {
