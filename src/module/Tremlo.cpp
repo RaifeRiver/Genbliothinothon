@@ -47,7 +47,8 @@ namespace genbliothinothon::module {
 				smooth += "*(" + smoothIt->second + ")";
 			}
 			const std::string indexStr = std::to_string(index);
-			glsl += "vec2 Data" + channelStr + "_" + indexStr + " = Tremlo(" + amplitude + ", " + period + ", " + gain + "_" + smooth + ");\n" + "float Amplitude" + channelStr + "_" + indexStr + " = Data" + channelStr + "_" + indexStr + ".x;\n" + "float Frequency" + channelStr + "_" + indexStr + " = Data" + channelStr + "_" + indexStr + ".y;\n";		}
+			glsl += "vec2 Data" + channelStr + "_" + indexStr + " = Tremlo(SampleI, " + amplitude + ", " + period + ", " + gain + ", " + smooth + ");\n" + "float Amplitude" + channelStr + "_" + indexStr + " = Data" + channelStr + "_" + indexStr + ".x;\n" + "float Frequency" + channelStr + "_" + indexStr + " = Data" + channelStr + "_" + indexStr + ".y;\n";
+		}
 		return glsl;
 	}
 }
