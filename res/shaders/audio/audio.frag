@@ -141,8 +141,8 @@ vec2 Tremlo(uint Samp, float Amp, float Period, float Smooth, float Gain) {
 float XOR(float Amp, float idunno) { // RaifeRiver: "idunno"
                                      return(mod(Amp+idunno,2.0f));
 }
-float BitCrusher(float Amp, int bits, float Gain) {
-    return floor(Amp * float(1 << bits)) / float(1 << bits) * Gain;
+float BitCrusher(float Amp, int Bits, float Gain) {
+    return (((floor((Amp * 0.5 + 0.5) * exp2(float(Bits))) / exp2(float(Bits))) * 2.0 - 1.0) * Gain);
 }// folded
 float OverInvert(float Amp, float Drive, float Gain) {
     return float(-1*(mod((Amp*Drive),2-1))*Gain);
