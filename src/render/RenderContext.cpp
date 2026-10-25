@@ -96,10 +96,6 @@ namespace genbliothinothon::render {
 						std::cerr << "OpenGL Error: id: " << id  << ", message: "<< trimmedMessage << std::endl;
 						break;
 					default:
-						if (id == 131185) {
-							break;
-						}
-						std::cout << "OpenGL Message: id: " << id  << ", message: "<< trimmedMessage << std::endl;
 						break;
 				}
 			}, nullptr);
