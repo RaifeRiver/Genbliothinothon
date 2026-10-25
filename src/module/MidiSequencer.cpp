@@ -167,7 +167,7 @@ namespace genbliothinothon::module {
 		std::string glsl;
 		for (int i = 0; i < 16; i++) {
 			std::string channelStr = std::to_string(i);
-			glsl += "vec3 Data" + channelStr + "_" += indexStr + "=midiSequencerGetNote" += channelStr + "_" += indexStr + "(sample0%" + std::to_string(static_cast<uint32_t>(mLength)) + "u);\nfloat Frequency" += channelStr + "_" += indexStr + "=Data" += channelStr + "_" += indexStr + ".x;\nfloat Volume" += channelStr + "_" += indexStr + "=Data" += channelStr + "_" += indexStr + ".y;\nuint NoteStart" += channelStr + "_" += indexStr + "=uint(Data" += channelStr + "_" += indexStr + ".z);\nbool NoteHeld" += channelStr + "_" += indexStr + "=Data" += channelStr + "_" += indexStr + ".y>0.0f;";
+			glsl += "vec3 Data" + channelStr + "_" += indexStr + "=midiSequencerGetNote" += channelStr + "_" += indexStr + "(sample0%" + std::to_string(static_cast<uint32_t>(mLength)) + "u);\nfloat Frequency" += channelStr + "_" += indexStr + "=Data" += channelStr + "_" += indexStr + ".x;\nfloat Volume" += channelStr + "_" += indexStr + "=Data" += channelStr + "_" += indexStr + ".y;\nuint NoteStart" += channelStr + "_" += indexStr + "=uint(Data" += channelStr + "_" += indexStr + ".z);\nbool NoteHeld" += channelStr + "_" += indexStr + "=Data" += channelStr + "_" += indexStr + ".y>0.0f;\n";
 		}
 		return glsl;
 	}

@@ -1,7 +1,7 @@
 #include "Output.h"
 
 namespace genbliothinothon::module::part {
-	Output::Output(Module* parent, const glm::vec2& pos, const glm::vec2& size, const std::string& name) : SendTarget(sType, parent, pos, size, name) {}
+	Output::Output(Module* parent, const glm::vec2& pos, const glm::vec2& size, const std::string& name) : SendTarget(sType, parent, pos, size, name, true) {}
 
 	Output::Output(const uint32_t version, util::FileIStream& stream) : SendTarget(version, stream) {}
 

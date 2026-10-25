@@ -14,14 +14,14 @@ namespace genbliothinothon::module {
 		// colum 2 row 1
 		mNoteStart = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{151.0f, 24.0f}, glm::vec2{145.0f, 20.0f}, "NoteStart", "0", true));
 		// colum 2 row 3
-		addPart(std::make_unique<part::Send>(this, glm::vec2{151.0f, 172.0f}, glm::vec2{145.0f, 20.0f}, "Volume"));
+		addPart(std::make_unique<part::Send>(this, glm::vec2{151.0f, 172.0f}, glm::vec2{145.0f, 20.0f}, "Volume", 16));
 		// colum 2 row 2
 		mNoteHeld = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{151.0f, 47.0f}, glm::vec2{145.0f, 20.0f}, "NoteHeld", "false", true));
 		mNoteHeld->setCombiningMode(part::CombiningMode::OR);
 		// colum 1 row 1
 		mFrequency = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{145.0f, 20.0f}, "Frequency", "0.0f", true));
 		// colum 1 row 3
-		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 172.0f}, glm::vec2{145.0f, 20.0f}, "Frequency"));
+		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 172.0f}, glm::vec2{145.0f, 20.0f}, "Frequency", 16));
 
 		mAT = &addPart(std::make_unique<part::Dial>(this, glm::vec2{3.0f, 73.0f}, glm::vec2{50.0f, 50.0f}, "AT", 0.0f, 20000.0f, 50.0f, true));
 		mAC = &addPart(std::make_unique<part::Dial>(this, glm::vec2{38.0f, 108.0f}, glm::vec2{50.0f, 50.0f}, "AC", -50.0f, 50.0f, -10.0f, true));
@@ -36,24 +36,24 @@ namespace genbliothinothon::module {
 
 	AHDSR::AHDSR(const uint32_t version, util::FileIStream& stream) : Module(version, stream) {
 		const std::vector<std::unique_ptr<part::Part>>& parts = getParts();
-		if (version == 0) {
-			setSize({200.0f, 116.0f});
-			parts[0]->setSize({200.0f, 116.0f});
-			parts[4]->setPos({3.0f, 93.0f});
-			mNoteHeld = &addPart(std::make_unique<part::GenericSendTarget>(this, glm::vec2{3.0f, 70.0f}, glm::vec2{194.0f, 20.0f}, "NoteHeld", "false", true));
-			mNoteHeld->setCombiningMode(part::CombiningMode::OR);
-		}
 		mVolume = reinterpret_cast<part::GenericSendTarget*>(parts[2].get());
 		mNoteStart = reinterpret_cast<part::GenericSendTarget*>(parts[3].get());
+		mNoteHeld = reinterpret_cast<part::GenericSendTarget*>(parts[5].get());
+		mFrequency = reinterpret_cast<part::GenericSendTarget*>(parts[6].get());
+		mAT = reinterpret_cast<part::Dial*>(parts[8].get());
+		mAC = reinterpret_cast<part::Dial*>(parts[9].get());
+		mHT = reinterpret_cast<part::Dial*>(parts[10].get());
+		mSP = reinterpret_cast<part::Dial*>(parts[11].get());
+		mDT = reinterpret_cast<part::Dial*>(parts[12].get());
+		mDC = reinterpret_cast<part::Dial*>(parts[13].get());
+		mRT = reinterpret_cast<part::Dial*>(parts[14].get());
+		mRC = reinterpret_cast<part::Dial*>(parts[15].get());
 	}
 
 	std::string AHDSR::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>& inputValues) {
-		std::string glsl = "float Volume0_" + std::to_string(index) + "=";
-		uint32_t channelCount = 0;
-		for (const std::vector<part::PartID>& volumeSends = mVolume->getInputs(); const auto [module, part]: volumeSends) {
-			channelCount = std::max(channelCount, reinterpret_cast<part::Send*>(Genbliothinothon::getInstance()->getModuleManager().getModule(module)->getParts()[part].get())->getChannelCount());
-		}
-		for (uint32_t channel = 0; channel < channelCount; channel++) {
+		const std::string indexStr = std::to_string(index);
+		std::string glsl;
+		for (uint32_t channel = 0; channel < 16; channel++) {
 			std::string channelStr = std::to_string(channel);
 			const auto volumeIt = inputValues.find("Volume" + channelStr + "_");
 			const auto noteStartIt = inputValues.find("NoteStart" + channelStr + "_");
@@ -84,9 +84,8 @@ namespace genbliothinothon::module {
 				frequency = frequencyIt->second;
 			}
 			//float AT, float AC, float HT, float DT, float DC, float SP, float RT, float RC
-			glsl += "AHDSR(" + volume + ",sample0-" += noteStart + "AT" + "AC" + "HT" + "DT" + "DC" + "SP" + "RT" + "RC" += noteHeld + frequency +")+";
+			glsl += "vec2 Data" + channelStr + "_" += indexStr + "=AHDSR(" += volume + ",sample0-" += noteStart + "," += AT + "," += AC + "," += HT + "," += DT + "," += DC + "," += SP + "," += RT + "," += RC + "," += noteHeld + "," += frequency +");\nfloat Volume" += channelStr + "_" += indexStr + "=Data" += channelStr + "_" += indexStr + ".x;\nfloat Frequency" += channelStr + "_" += indexStr + "=Data" += channelStr + "_" += indexStr + ".y;\n";
 		}
-		glsl.back() = ';';
 		return glsl;
 	}
 }
