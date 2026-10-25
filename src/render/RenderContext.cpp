@@ -34,13 +34,30 @@ namespace genbliothinothon::render {
 			auto* renderContext = static_cast<RenderContext*>(glfwGetWindowUserPointer(window));
 			glViewport(0, 0, width, height);
 			renderContext->mWindowSize = glm::uvec2(width, height);
+			Genbliothinothon::getInstance()->getUIContainer().setSize({width, height});
 		});
 		glfwSetCursorPosCallback(mWindow, [](GLFWwindow* window, const double x, const double y) {
 			auto* renderContext = static_cast<RenderContext*>(glfwGetWindowUserPointer(window));
 			static glm::vec2 lastPos = {0.0f, 0.0f};
 			const glm::vec2 pos = {x, y};
 			renderContext->mMouseMovement += pos - lastPos;
+			ui::Container& container = Genbliothinothon::getInstance()->getUIContainer();
+			container.onMouseMove(pos);
 			lastPos = pos;
+		});
+		glfwSetMouseButtonCallback(mWindow, [](GLFWwindow* window, const int button, const int action, int) {
+			if (button == GLFW_MOUSE_BUTTON_LEFT) {
+				ui::Container& container = Genbliothinothon::getInstance()->getUIContainer();
+				if (action == GLFW_PRESS) {
+					double x;
+					double y;
+					glfwGetCursorPos(window, &x, &y);
+					container.onPress({x, y});
+				}
+				else if (action == GLFW_RELEASE) {
+					container.onRelease();
+				}
+			}
 		});
 		glfwSetCharCallback(mWindow, [](GLFWwindow*, const unsigned int c) {
 			for (Genbliothinothon* genbliothinothon = Genbliothinothon::getInstance(); const std::unique_ptr<module::Module>& module : genbliothinothon->getModuleManager().getModules() | std::views::values) {

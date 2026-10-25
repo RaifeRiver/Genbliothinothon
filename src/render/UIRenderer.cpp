@@ -67,9 +67,16 @@ namespace genbliothinothon::render {
 		}
 	}
 
-	float UIRenderer::getTextWidth(const float size, const std::string& text) {
+	glm::vec2 UIRenderer::getTextSize(const float size, const std::string& text) {
+		glm::vec2 textSize = {0.0f, mFontAscent * size};
 		float width = 0.0f;
 		for (const char c : text) {
+			if (c == '\n') {
+				textSize.y += mFontAscent * size * 1.2f;
+				textSize.x = std::max(textSize.x, width);
+				width = 0.0f;
+				continue;
+			}
 			auto it = mFontGlyphs.find(c);
 			if (it == mFontGlyphs.end()) {
 				it = mFontGlyphs.find('?');
@@ -79,14 +86,21 @@ namespace genbliothinothon::render {
 			}
 			width += it->second.advance * size;
 		}
-		return width;
+		textSize.x = std::max(textSize.x, width);
+		return textSize;
 	}
 
-	void UIRenderer::text(const glm::vec2 pos, const float size, const std::string& text, const glm::vec4 colour, int32_t maxWidth) {
+	void UIRenderer::text(const glm::vec2 pos, const float size, const std::string& text, const glm::vec4 colour, const float maxWidth) {
 		glm::vec2 cursor = pos;
 		cursor.y += mFontAscent * size;
 		const glm::vec2 atlasSize = mFontAtlas->getSize();
 		for (const char c : text) {
+			if (c == '\n') {
+				cursor.x = pos.x;
+				cursor.y += mFontAscent * size * 1.2f;
+				continue;
+			}
+
 			auto it = mFontGlyphs.find(c);
 			if (it == mFontGlyphs.end()) {
 				it = mFontGlyphs.find('?');
@@ -124,7 +138,7 @@ namespace genbliothinothon::render {
 	}
 
 	void UIRenderer::centredText(glm::vec2 pos, const float size, const std::string& t, const glm::vec4 colour) {
-		pos.x -= getTextWidth(size, t) * 0.5f;
+		pos.x -= getTextSize(size, t).x * 0.5f;
 		text(pos, size, t, colour);
 	}
 

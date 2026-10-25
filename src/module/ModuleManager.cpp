@@ -27,6 +27,12 @@ namespace genbliothinothon::module {
 		mModules.erase(id);
 	}
 
+	void ModuleManager::resetModules() {
+		mModules.clear();
+		mNextID = 0;
+		mModules[mNextID++] = Module::createModule("Output", glm::vec2{500.0f, 100.0f});
+	}
+
 	void ModuleManager::update(Genbliothinothon& genbliothinothon) {
 		static bool lastPressed = false;
 
@@ -99,16 +105,20 @@ namespace genbliothinothon::module {
 		}
 
 		glm::vec2 windowSize = renderContext.getWindowSize();
-		renderContext.getUIRenderer().rect({0, 0}, {150, windowSize.y}, {0.08f, 0.08f, 0.14f, 1.0f});
+		renderContext.getUIRenderer().rect({0, 18}, {150, windowSize.y}, {0.08f, 0.08f, 0.14f, 1.0f});
 		std::vector<std::tuple<std::string, std::function<std::unique_ptr<Module>(glm::vec2)>, std::function<std::unique_ptr<Module>(uint32_t, util::FileIStream&)>>>& moduleTypes = Module::getModules();
-		for (size_t i = 0; i < moduleTypes.size(); i++) {
-			auto& [name, constructor, _] = moduleTypes[i];
-			uiRenderer.text({4, 4 + i * 20}, 16.0f, name, {1.0f, 1.0f, 1.0f, 1.0f});
-			if (mousePos.x >= 4 && mousePos.x <= 150 && static_cast<size_t>(mousePos.y) >= 4 + i * 20 && static_cast<size_t>(mousePos.y) <= 20 + i * 20 && pressed && !lastPressed) {
+		float y = 22.0f;
+		for (const auto& [name, constructor, _] : moduleTypes) {
+			if (name == "Output") {
+				continue;
+			}
+			uiRenderer.text({4, y}, 16.0f, name, {1.0f, 1.0f, 1.0f, 1.0f});
+			if (mousePos.x >= 4 && mousePos.x <= 150 && mousePos.y >= y && mousePos.y <= y + 20 && pressed && !lastPressed) {
 				std::unique_ptr<Module> module = constructor(glm::vec2{200.0f, 200.0f} - cameraPos);
 				module->setID(mNextID);
 				mModules[mNextID++] = std::move(module);
 			}
+			y += 20.0f;
 		}
 
 		if (dirty) {

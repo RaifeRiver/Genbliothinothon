@@ -3,6 +3,7 @@
 #include "audio/AudioPlayer.h"
 #include "module/ModuleManager.h"
 #include "render/RenderContext.h"
+#include "ui/Container.h"
 
 namespace genbliothinothon {
 	class Genbliothinothon {
@@ -23,6 +24,10 @@ namespace genbliothinothon {
 			return mModuleManager;
 		}
 
+		[[nodiscard]] ui::Container& getUIContainer() {
+			return mUIContainer;
+		}
+
 		[[nodiscard]] glm::vec2& getCameraPos() {
 			return mCameraPos;
 		}
@@ -39,6 +44,8 @@ namespace genbliothinothon {
 		render::RenderContext mRenderContext;
 		audio::AudioPlayer mAudioPlayer;
 		module::ModuleManager mModuleManager;
+		ui::Container mUIContainer;
 		glm::vec2 mCameraPos = {0.0f, 0.0f};
+		bool mRunning = true;
 	};
 }

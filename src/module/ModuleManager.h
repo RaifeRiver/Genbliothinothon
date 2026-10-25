@@ -25,6 +25,8 @@ namespace genbliothinothon::module {
 			return mModules;
 		}
 
+		void resetModules();
+
 		void update(Genbliothinothon& genbliothinothon);
 
 		void save(util::FileOStream& stream) const;

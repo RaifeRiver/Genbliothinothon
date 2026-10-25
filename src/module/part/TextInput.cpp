@@ -58,7 +58,7 @@ namespace genbliothinothon::module::part {
 		renderer.text(pos + glm::vec2{2.0f, textHeight}, 14.0f, mText, glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}, size.x);
 		if (mSelected) {
 			if (const std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now(); std::chrono::duration<float>(now - mCursorTime).count() < 0.5f) {
-				renderer.rect(pos + glm::vec2{renderer.getTextWidth(14.0f, mText) + 2.0f, textHeight}, glm::vec2{2.0f, 14.0f}, glm::vec4{1.0f, 1.0f, 1.0f, 1.0f});
+				renderer.rect(pos + glm::vec2{renderer.getTextSize(14.0f, mText).x + 2.0f, textHeight}, glm::vec2{2.0f, 14.0f}, glm::vec4{1.0f, 1.0f, 1.0f, 1.0f});
 			}
 			else if (std::chrono::duration<float>(now - mCursorTime).count() >= 1.0f) {
 				mCursorTime = now;
