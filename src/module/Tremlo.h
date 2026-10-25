@@ -14,7 +14,8 @@ namespace genbliothinothon::module {
 
     private:
         part::Dial* mAmplitude;
-        part::Dial* mDrive;
+        part::Dial* mPeriod;
         part::Dial* mGain;
+        part::Dial* mSmooth;
     };
 }
