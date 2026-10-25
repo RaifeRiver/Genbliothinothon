@@ -145,7 +145,7 @@ float BitCrusher(float Amp, int Bits, float Gain) {
     return ((Bits <= 1 ? (Amp >= 0.0 ? 1.0 : -1.0) : ((floor((Amp * 0.5 + 0.5) * exp2(float(Bits))) / exp2(float(Bits))) * 2.0 - 1.0)) * Gain);
 }// folded
 float OverInvert(float Amp, float Drive, float Gain) {
-    return float(-1*(mod((Amp*Drive),2-1))*Gain);
+    return float(-1.0f*(((mod(Amp*Drive),2.0f)-1.0f))*Gain);
 }
 float SoftDistort(float Amp, float Drive, float Gain) {
     return float((tanh(Amp*Drive))*Gain);
