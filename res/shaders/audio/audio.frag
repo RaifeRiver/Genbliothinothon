@@ -133,9 +133,9 @@ float note(int n, int octave) {
     return 27.5 * pow(2.0, float(n - 1 + octave * 12) / 12.0);
 }
 vec2 Tremlo(uint Samp, float Amp, float Period, float Gain, float Smooth) {
-    float x = tanh(sin((PI*Samp)/(FS*Period)));
-    float left = Gain*((tanh(sin(x*Smooth))/Smooth)*0.5f)+1.0f;
-    float right = Gain*((-1.0f*(tanh(sin(x*Smooth)))/Smooth)*0.5f)+1.0f;
+    float x = tanh(sin((PI * float(Samp)) / (FS * Period)));
+    float left = Gain * ((tanh(sin(x * Smooth)) / Smooth) * 0.5f) + 1.0f;
+    float right = Gain * ((-1.0f * (tanh(sin(x * Smooth))) / Smooth) * 0.5f) + 1.0f;
     return vec2(left, right);
 }
 float XOR(float Amp, float idunno) { // RaifeRiver: "idunno"
