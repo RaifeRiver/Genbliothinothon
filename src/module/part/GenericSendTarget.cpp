@@ -3,7 +3,7 @@
 #include <utility>
 
 namespace genbliothinothon::module::part {
-	GenericSendTarget::GenericSendTarget(Module* parent, const glm::vec2 pos, const glm::vec2 size, const std::string& name, std::string defaultValue, const bool multiChannel) : SendTarget(sType, parent, pos, size, name, multiChannel), mDefaultValue(std::move(defaultValue)) {}
+	GenericSendTarget::GenericSendTarget(Module* parent, const glm::vec2 pos, const glm::vec2 size, const std::string& name, std::string defaultValue) : SendTarget(sType, parent, pos, size, name), mDefaultValue(std::move(defaultValue)) {}
 
 	GenericSendTarget::GenericSendTarget(const uint32_t version, util::FileIStream& stream) : SendTarget(version, stream) {
 		stream >> mDefaultValue;

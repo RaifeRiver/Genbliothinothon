@@ -245,7 +245,7 @@ void applyBiquad(inout float Buffer[AUDIO_BUF_SIZE], int type, float hz, float q
 { \
     float _buf[AUDIO_BUF_SIZE]; \
     for (int _i = 0; _i < AUDIO_BUF_SIZE; _i++) { \
-        uint sampleI = sample0 + uint(_i); \
+        uint sampleI = s + uint(_i); \
         _buf[_i] = (wavExpr); \
     }
 
@@ -260,6 +260,15 @@ void applyBiquad(inout float Buffer[AUDIO_BUF_SIZE], int type, float hz, float q
     VOICE_BEGIN(wavExpr) \
     VOICE_FILTER(type, hz, q, gain) \
     VOICE_END(outVar)
+
+float noise(uint s, float volume, float lowPass, float highPass) {
+    float amplitude;
+    VOICE_BEGIN(white(sampleI,volume))
+    VOICE_FILTER(FILTER_LOWPASS,lowPass,0.0f,1.0f)
+    VOICE_FILTER(FILTER_HIGHPASS,highPass,0.0f,1.0f)
+    VOICE_END(amplitude)
+    return amplitude;
+}
 
 // insert functions here
 

@@ -12,8 +12,8 @@ namespace genbliothinothon::module {
 		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 93.0f}, "CSV Sequencer"));
 		addPart(std::make_unique<part::RemoveButton>(this));
 		mTextInput = &addPart(std::make_unique<part::TextInput>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}));
-		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 47.0f}, glm::vec2{194.0f, 20.0f}, "Frequency"));
-		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 70.0f}, glm::vec2{194.0f, 20.0f}, "Volume"));
+		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 47.0f}, glm::vec2{194.0f, 20.0f}, "Frequency", "float"));
+		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 70.0f}, glm::vec2{194.0f, 20.0f}, "Volume", "float"));
 	}
 
 	CSVSequencer::CSVSequencer(const uint32_t version, util::FileIStream& stream) : Module(version, stream) {
@@ -83,8 +83,7 @@ namespace genbliothinothon::module {
 		return functions;
 	}
 
-	std::string CSVSequencer::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>&) {
-		const std::string indexStr = std::to_string(index);
-		return "vec2 Data0_" + indexStr + "=csvSequencerGetNote" + indexStr + "(sample0%" + std::to_string(static_cast<uint32_t>(mLength)) + "u);\nfloat Frequency0_" + indexStr + "=Data0_" + indexStr + "[0];\nfloat Volume0_" + indexStr + "=Data0_" + indexStr + "[1];";
+	std::string CSVSequencer::generateGLSL(const std::string send) {
+		return std::string("csvSequencerGetNote$index($Sample%") + std::to_string(static_cast<uint32_t>(mLength)) + "u)." + (send == "Frequency" ? "x" : "y");
 	}
 }

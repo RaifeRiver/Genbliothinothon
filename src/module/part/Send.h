@@ -7,7 +7,7 @@
 namespace genbliothinothon::module::part {
 	class Send : public Part {
 	public:
-		Send(Module* parent, const glm::vec2& pos, const glm::vec2& size, std::string name, uint32_t channelCount = 1);
+		Send(Module* parent, const glm::vec2& pos, const glm::vec2& size, std::string name, std::string type, uint32_t channelCount = 1);
 
 		Send(uint32_t version, util::FileIStream& stream);
 
@@ -19,6 +19,10 @@ namespace genbliothinothon::module::part {
 
 		[[nodiscard]] std::string getName() const {
 			return mName;
+		}
+
+		[[nodiscard]] std::string getDataType() const {
+			return mType;
 		}
 
 		[[nodiscard]] uint32_t getChannelCount() const {
@@ -47,6 +51,7 @@ namespace genbliothinothon::module::part {
 		std::optional<PartID> mSendTarget;
 		bool mSelecting = false;
 		std::string mName;
+		std::string mType;
 		uint32_t mChannelCount = 1;
 	};
 }

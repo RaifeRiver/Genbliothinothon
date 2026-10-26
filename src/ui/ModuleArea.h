@@ -13,7 +13,7 @@ namespace genbliothinothon::ui {
 
 		void setSize(glm::vec2 size);
 
-		void onPress(glm::vec2 pos) override;
+		void onPress(glm::vec2 p) override;
 
 		void onRelease() override;
 

@@ -3,7 +3,6 @@
 #include "Genbliothinothon.h"
 #include "ModuleManager.h"
 #include "part/Background.h"
-#include "part/Send.h"
 
 namespace genbliothinothon::module {
 	Output::Output(const glm::vec2& pos) : Module(pos, glm::vec2{130.0f, 80.0f}) {
@@ -20,39 +19,10 @@ namespace genbliothinothon::module {
 		right = reinterpret_cast<part::Output*>(parts[2].get());
 	}
 
-	std::string Output::generateGLSL(uint32_t, std::unordered_map<std::string, std::string>& inputValues) {
-		uint32_t channelCount = 0;
-		ModuleManager& moduleManager = Genbliothinothon::getInstance()->getModuleManager();
-		for (const auto [module, part]: left->getInputs()) {
-			channelCount = std::max(channelCount, reinterpret_cast<part::Send*>(moduleManager.getModule(module)->getParts()[part].get())->getChannelCount());
+	std::string Output::generateGLSL(const std::string send) {
+		if (send == "Left") {
+			return "$Left";
 		}
-		for (const auto [module, part]: right->getInputs()) {
-			channelCount = std::max(channelCount, reinterpret_cast<part::Send*>(moduleManager.getModule(module)->getParts()[part].get())->getChannelCount());
-		}
-		std::string leftGLSL;
-		std::string rightGLSL;
-		for (uint32_t channel = 0; channel < channelCount; channel++) {
-			const auto leftIt = inputValues.find("Left" + std::to_string(channel) + "_");
-			const auto rightIt = inputValues.find("Right" + std::to_string(channel) + "_");
-			if (leftIt != inputValues.end()) {
-				leftGLSL += leftIt->second + "+";
-			}
-			if (rightIt != inputValues.end()) {
-				rightGLSL += rightIt->second + "+";
-			}
-		}
-		if (leftGLSL.empty()) {
-			leftGLSL = "0.0f";
-		}
-		else {
-			leftGLSL.pop_back();
-		}
-		if (rightGLSL.empty()) {
-			rightGLSL = "0.0f";
-		}
-		else {
-			rightGLSL.pop_back();
-		}
-		return "float leftAudio=" + leftGLSL + ";\nfloat rightAudio=" + rightGLSL + ";\n";
+		return "$Right";
 	}
 }

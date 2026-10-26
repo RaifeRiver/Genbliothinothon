@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include "Part.h"
 
 namespace genbliothinothon::module::part {
@@ -11,27 +13,27 @@ namespace genbliothinothon::module::part {
 
 	class SendTarget : public Part {
 	public:
-		SendTarget(uint32_t type, Module* parent, glm::vec2 pos, const glm::vec2& size, std::string name, bool multiChannel = false);
+		SendTarget(uint32_t type, Module* parent, glm::vec2 pos, const glm::vec2& size, std::string name);
 
 		SendTarget(uint32_t version, util::FileIStream& stream);
 
-		[[nodiscard]] std::vector<PartID>& getInputs() {
-			return mInputs;
+		[[nodiscard]] std::optional<PartID>& getInput() {
+			return mInput;
 		}
 
-		void addInput(PartID input);
-
-		[[nodiscard]] bool isMultiChannel() const {
-			return mMultiChannel;
-		}
-		
-		void setMultiChannel(bool multiChannel);
+		SendTarget& setInput(std::optional<PartID> input);
 
 		[[nodiscard]] CombiningMode getCombiningMode() const {
 			return mCombiningMode;
 		}
 
-		void setCombiningMode(CombiningMode combiningMode);
+		SendTarget& setCombiningMode(CombiningMode combiningMode);
+
+		[[nodiscard]] std::optional<std::function<void()>>& getInputCallback() {
+			return mInputCallback;
+		}
+
+		SendTarget& setInputCallback(const std::optional<std::function<void()>>& callback);
 
 		virtual std::string getDefaultValueString() = 0;
 
@@ -39,12 +41,14 @@ namespace genbliothinothon::module::part {
 			return mName;
 		}
 
+		void updateInputs() const;
+
 		void save(util::FileOStream& stream) override;
 
 	private:
-		std::vector<PartID> mInputs;
+		std::optional<PartID> mInput;
 		std::string mName;
-		bool mMultiChannel = false;
 		CombiningMode mCombiningMode = CombiningMode::AVERAGE;
+		std::optional<std::function<void()>> mInputCallback;
 	};
 }

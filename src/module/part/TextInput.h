@@ -17,6 +17,12 @@ namespace genbliothinothon::module::part {
 
 		void setText(const std::string& text);
 
+		[[nodiscard]] std::optional<std::function<void(std::string)>>& getSetCallback() {
+			return mSetCallback;
+		}
+
+		void setSetCallback(const std::optional<std::function<void(std::string)>>& callback);
+
 		void click(glm::vec2 pos) override;
 
 		void clickOff(glm::vec2 pos, glm::vec2 worldPos) override;
@@ -40,6 +46,7 @@ namespace genbliothinothon::module::part {
 		static inline uint32_t sType;
 		std::string mText;
 		bool mSelected = false;
+		std::optional<std::function<void(std::string)>> mSetCallback;
 		std::chrono::steady_clock::time_point mCursorTime;
 	};
 }

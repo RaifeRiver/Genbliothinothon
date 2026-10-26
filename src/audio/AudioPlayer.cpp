@@ -1,8 +1,11 @@
 #include "AudioPlayer.h"
 
 #include <iostream>
+#include <ranges>
 
+#include "module/Oscillator.h"
 #include "module/Output.h"
+#include "module/part/Background.h"
 #include "module/part/Send.h"
 #include "module/part/SendTarget.h"
 
@@ -46,95 +49,146 @@ namespace genbliothinothon::audio {
 		std::string vertexShader = render::loadShaderSource("../res/shaders/audio/audio.vert");
 		std::string fragmentShader = render::loadShaderSource("../res/shaders/audio/audio.frag");
 
-		std::string generatedCode;
 		std::string generatedFunctions;
 
 		std::unordered_map<uint32_t, std::unique_ptr<module::Module>>& modules = moduleManager.getModules();
 
-		std::unordered_map<uint32_t, bool> generatedModules;
-		std::unordered_map<uint32_t, bool> generatingModules;
-		const std::function<void(uint32_t)> generateModule = [&](const uint32_t module) {
-			if (generatedModules[module]) {
+		std::unordered_map<uint32_t, std::unordered_map<uint32_t, std::vector<std::pair<std::string, std::pair<uint32_t, std::string>>>>> generatedModules;
+		std::unordered_map<uint32_t, std::vector<uint32_t>> generatingModules;
+		std::function<void(uint32_t)> generateModule;
+		auto replaceAll = [](std::string& s, const std::string& replace, const std::string& replacement) {
+			size_t pos = 0;
+			const size_t replaceLength = replace.length();
+			while ((pos = s.find(replace, pos)) != std::string::npos) {
+				s.replace(pos, replaceLength, replacement);
+				pos += replaceLength;
+			}
+		};
+		const std::function<std::pair<uint32_t, std::string>(uint32_t, module::Module*, module::part::Send*, uint32_t)> generateInput = [&](const uint32_t moduleID, module::Module* module, const module::part::Send* send, const uint32_t channel) {
+			generateModule(moduleID);
+
+			if (dynamic_cast<module::Oscillator*>(module)) {
+				std::cout << "Generating input for oscillator" << std::endl;
+			}
+			else {
+				std::cout << "Generating input for non-oscillator" << std::endl;
+			}
+
+			std::string glsl = module->generateGLSL(send->getName());
+			replaceAll(glsl, "$Sample", "sample0");
+			replaceAll(glsl, "$Channel", std::to_string(channel));
+			replaceAll(glsl, "$Index", std::to_string(moduleID));
+			for (const auto& [name, input] : generatedModules[moduleID][channel]) {
+				replaceAll(glsl, "$" + name, input.second);
+				std::cout << "Replacing $" << name << " with " << input.second << " for channel " << channel << std::endl;
+			}
+			return std::pair{send->getChannelCount(), glsl};
+		};
+		auto generateModuleChannel = [&](const uint32_t module, const uint32_t channel) {
+			if (generatedModules.contains(module) && generatedModules[module].contains(channel)) {
 				return;
 			}
-			if (generatingModules[module]) {
-				throw std::runtime_error("Recursive part generation");
+			for (const uint32_t c: generatingModules[module]) {
+				if (c == channel) {
+					throw std::runtime_error("Recursive part generation");
+				}
 			}
-			generatingModules[module] = true;
+			generatingModules[module].push_back(channel);
 
 			const std::vector<std::unique_ptr<module::part::Part>>& parts = modules[module]->getParts();
-			std::unordered_map<std::string, std::string> inputStrings;
+			std::vector<std::pair<std::string, std::pair<uint32_t, std::string>>> inputValues;
+			std::string parameters = "uint sample0,";
+			std::unordered_map<std::string, std::pair<uint32_t, std::string>> outputs;
 			for (const std::unique_ptr<module::part::Part>& part: parts) {
-				if (const auto sendTarget = dynamic_cast<module::part::SendTarget*>(part.get())) {
-					uint32_t channelCount = 0;
-					for (auto [parentID, partIndex] : sendTarget->getInputs()) {
-						channelCount = std::max(channelCount, reinterpret_cast<module::part::Send*>(modules[parentID]->getParts()[partIndex].get())->getChannelCount());
+				if (const auto sendTarget = dynamic_cast<module::part::SendTarget*>(part.get()); sendTarget) {
+					if (sendTarget->getInput().has_value()) {
+						auto [inputModuleID, sendID] = sendTarget->getInput().value();
+						module::Module* inputModule = modules[inputModuleID].get();
+						auto* send = reinterpret_cast<module::part::Send*>(inputModule->getParts()[sendID].get());
+						inputValues.emplace_back(sendTarget->getName(), generateInput(inputModuleID, inputModule, send, channel));
 					}
-					const module::part::CombiningMode combiningMode = sendTarget->getCombiningMode();
-					std::string combiningOperator;
-					switch (combiningMode) {
-						case module::part::CombiningMode::AVERAGE:
-						case module::part::CombiningMode::SUM:
-							combiningOperator = "+";
-							break;
-							break;
-						case module::part::CombiningMode::OR:
-							combiningOperator = "|";
-							break;
+					else {
+						inputValues.emplace_back(sendTarget->getName(), std::pair{1, sendTarget->getDefaultValueString()});
 					}
-					for (uint32_t channel = 0; channel < channelCount; channel++) {
-						std::string channelStr = std::to_string(channel);
-						std::string inputString;
-						if (combiningMode == module::part::CombiningMode::AVERAGE) {
-							inputString = "(";
-						}
-						uint32_t inputCount = 0;
-						for (auto [parentID, partIndex] : sendTarget->getInputs()) {
-							module::Module* parent = modules[parentID].get();
-							for (auto& [parentIndex, p] : modules) {
-								if (parent == p.get()) {
-									generateModule(parentIndex);
-									inputString += reinterpret_cast<module::part::Send*>(parent->getParts()[partIndex].get())->getName() + channelStr + "_" + std::to_string(parentIndex) += combiningOperator;
-									inputCount++;
-								}
-							}
-						}
-						if (inputCount != 0) {
-							inputString.pop_back();
-							if (combiningMode == module::part::CombiningMode::AVERAGE) {
-								inputString += ")*" + std::to_string(1.0f / static_cast<float>(inputCount)) + "f";
-							}
-							inputStrings[sendTarget->getName() + channelStr + "_"] = inputString;
-						}
+				}
+				else if (const auto send = dynamic_cast<module::part::Send*>(part.get())) {
+					for (uint32_t c = 0; c < send->getChannelCount(); c++) {
+						parameters += "out " + send->getDataType() + " " + send->getName() + std::to_string(c) + "_,";
+						outputs[send->getName() + std::to_string(c) + "_"] = {static_cast<uint32_t>(outputs.size()), send->getDataType()};
 					}
 				}
 			}
+			generatedModules[module][channel] = inputValues;
+			generatingModules[module].pop_back();
+		};
+		generateModule = [&](const uint32_t module) {
+			if (generatedModules.contains(module)) {
+				return;
+			}
+			if (generatingModules.contains(module)) {
+				throw std::runtime_error("Recursive part generation");
+			}
+			generatingModules[module] = {};
+
+			uint32_t channelCount = 1;
+			for (const std::unique_ptr<module::part::Part>& part: modules[module]->getParts()) {
+				if (const module::part::Send* send = dynamic_cast<module::part::Send*>(part.get())) {
+					channelCount = std::max(channelCount, send->getChannelCount());
+				}
+			}
+			for (uint32_t c = 0; c < channelCount; c++) {
+				generateModuleChannel(module, c);
+			}
+
 			generatedFunctions += modules[module]->generateFunctions(module);
-
-			generatedCode += modules[module]->generateGLSL(module, inputStrings) + "\n";
-
-			generatedModules[module] = true;
+			generatingModules.erase(module);
 		};
 		bool foundOutput = false;
-		for (auto& [id, module] : modules) {
+		std::string leftString = "float leftAudio=";
+		std::string rightString = "float rightAudio=";
+		for (auto& module: modules | std::views::values) {
 			if (dynamic_cast<module::Output*>(module.get())) {
 				if (foundOutput) {
 					throw std::runtime_error("Multiple outputs found");
 				}
-				generateModule(id);
+				std::optional<module::part::PartID> leftSend = reinterpret_cast<module::part::SendTarget*>(module->getParts()[1].get())->getInput();
+				std::optional<module::part::PartID> rightSend = reinterpret_cast<module::part::SendTarget*>(module->getParts()[2].get())->getInput();
+				uint32_t channelCount = std::max(1u, leftSend.has_value() ? reinterpret_cast<module::part::Send*>(modules[leftSend.value().module]->getParts()[leftSend.value().part].get())->getChannelCount() : 0);
+				channelCount = std::max(channelCount, rightSend.has_value() ? reinterpret_cast<module::part::Send*>(modules[rightSend.value().module]->getParts()[rightSend.value().part].get())->getChannelCount() : 0);
+				for (uint32_t c = 0; c < channelCount; c++) {
+					std::string channelStr = std::to_string(c);
+					generatedFunctions += "float leftAudio" + channelStr + "(uint sample0){return " + (leftSend.has_value() ? generateInput(leftSend.value().module, modules[leftSend.value().module].get(), reinterpret_cast<module::part::Send*>(modules[leftSend.value().module]->getParts()[leftSend.value().part].get()), c).second : "0.0f") + ";}\n";
+					generatedFunctions += "float rightAudio" + channelStr + "(uint sample0){return " + (rightSend.has_value() ? generateInput(rightSend.value().module, modules[rightSend.value().module].get(), reinterpret_cast<module::part::Send*>(modules[rightSend.value().module]->getParts()[rightSend.value().part].get()), c).second : "0.0f") + ";}\n";
+					leftString += "leftAudio" + channelStr + "(sample0)+";
+					rightString += "rightAudio" + channelStr + "(sample0)+";
+				}
+				if (!leftSend.has_value()) {
+					leftString += "0.0f;";
+				}
+				if (!rightSend.has_value()) {
+					rightString += "0.0f;";
+				}
 				foundOutput = true;
 			}
 		}
 
 		if (!foundOutput) {
-			generatedCode += "float leftAudio=0.0f;\nfloat rightAudio=0.0f;\n";
+			leftString = "float leftAudio=0.0f;";
+			rightString = "float rightAudio=0.0f;";
+		}
+		else {
+			leftString.back() = ';';
+			rightString.back() = ';';
 		}
 
 		std::cout << generatedFunctions << std::endl;
-		std::cout << generatedCode << std::endl;
+		std::cout << leftString << std::endl;
+		std::cout << rightString << std::endl;
 
 		fragmentShader.replace(fragmentShader.find("// insert functions here"), 24, generatedFunctions);
-		fragmentShader.replace(fragmentShader.find("// insert audio code here"), 25, generatedCode);
+		fragmentShader.replace(fragmentShader.find("// insert audio code here"), 25, leftString + "\n" + rightString);
+
+		std::cout << fragmentShader << std::endl;
 
 		mShader = std::make_unique<render::Shader>(vertexShader, fragmentShader);
 	}

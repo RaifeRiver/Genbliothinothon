@@ -12,7 +12,7 @@ namespace genbliothinothon::module {
        addPart(std::make_unique<part::RemoveButton>(this));
 
        // Audio Output
-       addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{244.0f, 20.0f}, "Audio"));
+       addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{244.0f, 20.0f}, "Audio", "float"));
 
         mMathsBox = &addPart(std::make_unique<part::TextInput>(this, glm::vec2{3.0f, 47.0f}, glm::vec2{194.0f, 20.0f}));
         mMathsBox->setText("sin(3.1415926535897932384626*t*2*440)");
@@ -22,25 +22,17 @@ namespace genbliothinothon::module {
 	    mMathsBox = reinterpret_cast<part::TextInput*>(getParts()[3].get());
     }
 
-    std::string MathsWave::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>& inputValues) {
+    std::string MathsWave::generateGLSL(std::string) {
        // Grab whatever text the user typed into the box
        std::string userMath = mMathsBox->getText();
 
        // Let's replace the word "samp" in your text box with "sampleI" so the shader understands it.
        size_t pos = 0;
        while ((pos = userMath.find('t', pos)) != std::string::npos) {
-            userMath.replace(pos, 1, "sampleI/96000.0f");
-            pos += 7; // Length of "sampleI" How do i make it t instead. i want to divide sampleI/96000
+            userMath.replace(pos, 1, "$Sample/96000.0f");
+            pos += 16; // Length of "sampleI" How do i make it t instead. i want to divide sampleI/96000
        }
 
-       const std::string indexStr = std::to_string(index);
-
-       // Construct the GLSL shader code
-       // It sets up the audio float, begins the voice with your custom math, and ends it.
-       std::string shaderCode = "float Audio0_" + indexStr + "=0.0f;\n";
-       shaderCode += "VOICE_BEGIN(" + userMath + ")\n";
-       shaderCode += "VOICE_END(Audio0_" + indexStr + ")";
-
-       return shaderCode;
+       return userMath;
     }
 }

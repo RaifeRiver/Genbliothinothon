@@ -16,6 +16,9 @@ namespace genbliothinothon {
 			util::FileIStream stream("../save.bin");
 			uint32_t version;
 			stream >> version;
+			if (version < 2u) {
+				throw std::runtime_error("Unsupported save file version, only version 2 and above is supported");
+			}
 			mModuleManager.load(version, stream);
 			mAudioPlayer.rebuildShader(mModuleManager);
 		}
@@ -62,7 +65,7 @@ namespace genbliothinothon {
 		menuBar->setLayoutManager(std::make_unique<ui::SimpleLayoutManager>(ui::Direction::HORIZONTAL));
 
 		auto fileMenu = std::make_unique<ui::HoverMenu>("File");
-		auto fileMenuContainer = std::make_unique<ui::Container>(glm::vec2{50.0f, 36.0f});
+		auto fileMenuContainer = std::make_unique<ui::Container>(glm::vec2{50.0f, 54.0f});
 		fileMenuContainer->setLayoutManager(std::make_unique<ui::SimpleLayoutManager>(ui::Direction::VERTICAL));
 
 		auto newButton = std::make_unique<ui::Button>("New");
@@ -72,6 +75,14 @@ namespace genbliothinothon {
 			mCameraPos = {0.0f, 0.0f};
 		});
 		fileMenuContainer->addChild(std::move(newButton));
+
+		auto saveButton = std::make_unique<ui::Button>("Save");
+		saveButton->setCallback([this] {
+			util::FileOStream stream("../save.bin");
+			stream << 2u;
+			mModuleManager.save(stream);
+		});
+		fileMenuContainer->addChild(std::move(saveButton));
 
 		auto exitButton = std::make_unique<ui::Button>("Exit");
 		exitButton->setCallback([this] {
@@ -112,7 +123,7 @@ namespace genbliothinothon {
 
 	Genbliothinothon::~Genbliothinothon() {
 		util::FileOStream stream("../save.bin");
-		stream << 1u;
+		stream << 2u;
 		mModuleManager.save(stream);
 	}
 }

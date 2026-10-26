@@ -3,6 +3,7 @@
 #include "part/Dial.h"
 #include "Module.h"
 #include "part/GenericSendTarget.h"
+#include "part/Send.h"
 
 namespace genbliothinothon::module {
 	class AHDSR : public Module {
@@ -11,7 +12,7 @@ namespace genbliothinothon::module {
 
 		AHDSR(uint32_t version, util::FileIStream& stream);
 
-		std::string generateGLSL(uint32_t index, std::unordered_map<std::string, std::string>& inputValues) override;
+		std::string generateGLSL(std::string send) override;
 
 	private:
 		part::GenericSendTarget* mVolume;
@@ -26,6 +27,10 @@ namespace genbliothinothon::module {
 		part::Dial* mDC;
 		part::Dial* mRT;
 		part::Dial* mRC;
+		part::Send* mVolumeOut;
+		part::Send* mFrequencyOut;
+		uint32_t mChannelCount = 0;
 
+		void inputCallback();
 	};
 }

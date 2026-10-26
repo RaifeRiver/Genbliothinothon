@@ -12,7 +12,7 @@ namespace genbliothinothon::module {
 
 		std::string generateFunctions(uint32_t index) override;
 
-		std::string generateGLSL(uint32_t index, std::unordered_map<std::string, std::string>& inputValues) override;
+		std::string generateGLSL(std::string send) override;
 
 		[[nodiscard]] part::TextInput* getTextInput() const {
 			return mTextInput;

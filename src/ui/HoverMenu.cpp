@@ -55,6 +55,7 @@ namespace genbliothinothon::ui {
 		Component::onRelease();
 		if (mOpen && mMenu && mMenu->isPressed()) {
 			mMenu->onRelease();
+			mOpen = false;
 		}
 	}
 

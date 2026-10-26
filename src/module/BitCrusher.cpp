@@ -8,10 +8,10 @@ namespace genbliothinothon::module {
 	BitCrusher::BitCrusher(const glm::vec2& pos) : Module(pos, glm::vec2{200.0f, 118.0f}) {
 		addPart(std::make_unique<part::Background>(this, glm::vec2{0.0f, 0.0f}, glm::vec2{200.0f, 118.0f}, "BitCrusher"));
 		addPart(std::make_unique<part::RemoveButton>(this));
-		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}, "Audio",16));
-		mAmplitude = &addPart(std::make_unique<part::Dial>(this, glm::vec2{10.0f, 52.0f}, glm::vec2{50.0f, 50.0f}, "Amplitude", 0.0f, 1.0f, 1.0f, true));
+		addPart(std::make_unique<part::Send>(this, glm::vec2{3.0f, 24.0f}, glm::vec2{194.0f, 20.0f}, "Audio", "float", 1));
+		mAmplitude = &addPart(std::make_unique<part::Dial>(this, glm::vec2{10.0f, 52.0f}, glm::vec2{50.0f, 50.0f}, "Amplitude", 0.0f, 1.0f, 1.0f));
 		mBits = &addPart(std::make_unique<part::Dial>(this, glm::vec2{75.0f, 52.0f}, glm::vec2{50.0f, 50.0f}, "Bits", 1.0f, 24.0f, 24.0f));
-		mGain = &addPart(std::make_unique<part::Dial>(this, glm::vec2{140.0f, 52.0f}, glm::vec2{50.0f, 50.0f}, "Gain", 0.1f, 10.0f, 1.0f, true));
+		mGain = &addPart(std::make_unique<part::Dial>(this, glm::vec2{140.0f, 52.0f}, glm::vec2{50.0f, 50.0f}, "Gain", 0.1f, 10.0f, 1.0f));
 	}
 
 	BitCrusher::BitCrusher(const uint32_t version, util::FileIStream& stream) : Module(version, stream) {
@@ -20,28 +20,7 @@ namespace genbliothinothon::module {
 		mGain = reinterpret_cast<part::Dial*>(getParts()[5].get());
 	}
 
-	std::string BitCrusher::generateGLSL(const uint32_t index, std::unordered_map<std::string, std::string>& inputValues) {
-		std::string glsl;
-		for (uint32_t channel = 0; channel < 16; channel++) {
-			std::string channelStr = std::to_string(channel);
-			const auto volumeIt = inputValues.find("Amplitude"+channelStr+"_");
-			const auto bitsIt = inputValues.find("Bits"+channelStr+"_");
-			const auto gainIt = inputValues.find("Gain"+channelStr+"_");
-			std::string volume = mAmplitude->getDefaultValueString();
-			std::string drive = mBits->getDefaultValueString();
-			std::string gain = mGain->getDefaultValueString();
-			if (volumeIt != inputValues.end()) {
-				volume += "*(" + volumeIt->second + ")";
-			}
-			if (bitsIt != inputValues.end()) {
-				drive += "*(" + bitsIt->second + ")";
-			}
-			if (gainIt != inputValues.end()) {
-				gain += "*(" + gainIt->second + ")";
-			}
-			const std::string indexStr = std::to_string(index);
-			glsl+= "float Audio" + channelStr + "_" += indexStr + "=BitCrusher(" += volume + ",int(" += drive + ")," += gain + ");\n";
-		}
-		return glsl;
+	std::string BitCrusher::generateGLSL(std::string) {
+		return "BitCrusher($Amplitude,int($Bits),$Gain)";
 	}
 }

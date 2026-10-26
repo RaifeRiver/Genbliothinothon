@@ -5,7 +5,7 @@
 namespace genbliothinothon::module::part {
 	class NoteDial : public Dial {
 	public:
-		NoteDial(Module* parent, const glm::vec2& pos, const glm::vec2& size, const std::string& name, bool multiChannel = false);
+		NoteDial(Module* parent, const glm::vec2& pos, const glm::vec2& size, const std::string& name);
 
 		NoteDial(uint32_t version, util::FileIStream& stream);
 

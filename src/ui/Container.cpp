@@ -46,7 +46,7 @@ namespace genbliothinothon::ui {
 		Component::onPress(pos);
 		render::UIRenderer& renderer = Genbliothinothon::getInstance()->getRenderContext().getUIRenderer();
 		const std::vector<glm::vec2> childPositions = mLayoutManager->getPositions(calculateSize(renderer) - glm::vec2{mPadding.x + mPadding.z, mPadding.y + mPadding.w}, mComponentPadding, mChildren, renderer);
-		for (uint32_t i = 0; i < mChildren.size(); i++) {
+		for (auto i = static_cast<int32_t>(mChildren.size() - 1); i >= 0; i--) {
 			Component* child = mChildren[i].first.get();
 			const glm::vec2 childPos = pos - childPositions[i] - glm::vec2{mPadding.x, mPadding.y};
 			if (const glm::vec4 childSize = child->calculateInteractionSize(renderer); childPos.x >= childSize.x && childPos.x <= childSize.z && childPos.y >= childSize.y && childPos.y <= childSize.w) {
@@ -55,19 +55,21 @@ namespace genbliothinothon::ui {
 					mChildren.erase(mChildren.begin() + i);
 					i--;
 				}
+				break;
 			}
 		}
 	}
 
 	void Container::onRelease() {
 		Component::onRelease();
-		for (uint32_t i = 0; i < mChildren.size(); i++) {
+		for (auto i = static_cast<int32_t>(mChildren.size() - 1); i >= 0; i--) {
 			if (Component* child = mChildren[i].first.get(); child->isPressed()) {
 				child->onRelease();
 				if (child->shouldRemove()) {
 					mChildren.erase(mChildren.begin() + i);
 					i--;
 				}
+				break;
 			}
 		}
 	}
@@ -75,12 +77,14 @@ namespace genbliothinothon::ui {
 	void Container::onMouseMove(const glm::vec2 pos) {
 		render::UIRenderer& renderer = Genbliothinothon::getInstance()->getRenderContext().getUIRenderer();
 		const std::vector<glm::vec2> childPositions = mLayoutManager->getPositions(calculateSize(renderer) - glm::vec2{mPadding.x + mPadding.z, mPadding.y + mPadding.w}, mComponentPadding, mChildren, renderer);
-		for (uint32_t i = 0; i < mChildren.size(); i++) {
+		bool found = false;
+		for (auto i = static_cast<int32_t>(mChildren.size() - 1); i >= 0; i--) {
 			Component* child = mChildren[i].first.get();
 			const glm::vec2 childPos = pos - childPositions[i] - glm::vec2{mPadding.x, mPadding.y};
-			if (const glm::vec4 childSize = child->calculateInteractionSize(renderer); childPos.x >= childSize.x && childPos.x <= childSize.z && childPos.y >= childSize.y && childPos.y <= childSize.w) {
+			if (const glm::vec4 childSize = child->calculateInteractionSize(renderer); childPos.x >= childSize.x && childPos.x <= childSize.z && childPos.y >= childSize.y && childPos.y <= childSize.w && !found) {
 				child->setHovered(true);
 				child->onMouseMove(childPos);
+				found = true;
 			}
 			else if (child->isHovered()) {
 				child->setHovered(false);

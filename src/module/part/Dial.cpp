@@ -4,9 +4,9 @@
 #include <format>
 
 namespace genbliothinothon::module::part {
-	Dial::Dial(Module* parent, const glm::vec2 pos, const glm::vec2 size, const std::string& name, const float min, const float max, const bool multiChannel) : Dial(parent, pos, size, name, min, max, min, multiChannel) {}
+	Dial::Dial(Module* parent, const glm::vec2 pos, const glm::vec2 size, const std::string& name, const float min, const float max) : Dial(parent, pos, size, name, min, max, min) {}
 
-	Dial::Dial(Module* parent, const glm::vec2 pos, const glm::vec2 size, const std::string& name, const float min, const float max, const float initial, const bool multiChannel) : SendTarget(sType, parent, pos, size, name, multiChannel), mMin(min), mMax(max), mValue(initial) {}
+	Dial::Dial(Module* parent, const glm::vec2 pos, const glm::vec2 size, const std::string& name, const float min, const float max, const float initial) : SendTarget(sType, parent, pos, size, name), mMin(min), mMax(max), mValue(initial) {}
 
 	Dial::Dial(const uint32_t version, util::FileIStream& stream) : SendTarget(version, stream) {
 		stream >> mMin;

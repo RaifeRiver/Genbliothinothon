@@ -13,12 +13,15 @@ namespace genbliothinothon::module {
 
 		Oscillator(uint32_t version, util::FileIStream& stream);
 
-		std::string generateGLSL(uint32_t index, std::unordered_map<std::string, std::string>& inputValues) override;
+		std::string generateGLSL(std::string send) override;
 
 	private:
 		part::Send* mAudio;
 		part::Dropdown* mWaveType;
 		part::NoteDial* mFrequency;
 		part::Dial* mVolume;
+		uint32_t mChannelCount = 1;
+
+		void inputCallback();
 	};
 }

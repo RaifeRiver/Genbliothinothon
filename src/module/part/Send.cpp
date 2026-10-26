@@ -8,10 +8,11 @@
 #include "SendTarget.h"
 
 namespace genbliothinothon::module::part {
-	Send::Send(Module* parent, const glm::vec2 &pos, const glm::vec2& size, std::string name, const uint32_t channelCount): Part(sType, parent, pos, size), mName(std::move(name)), mChannelCount(channelCount) {}
+	Send::Send(Module* parent, const glm::vec2 &pos, const glm::vec2& size, std::string name, std::string type, const uint32_t channelCount): Part(sType, parent, pos, size), mName(std::move(name)), mType(std::move(type)), mChannelCount(channelCount) {}
 
 	Send::Send(const uint32_t version, util::FileIStream& stream) : Part(version, stream) {
 		stream >> mName;
+		stream >> mType;
 		stream >> mChannelCount;
 		bool hasSendTarget;
 		stream >> hasSendTarget;
@@ -28,22 +29,15 @@ namespace genbliothinothon::module::part {
 
 	void Send::setChannelCount(const uint32_t channelCount) {
 		mChannelCount = channelCount;
+		if (mSendTarget.has_value()) {
+			reinterpret_cast<SendTarget*>(Genbliothinothon::getInstance()->getModuleManager().getModule(mSendTarget->module)->getParts()[mSendTarget->part].get())->updateInputs();
+		}
 	}
 
 	void Send::click(glm::vec2) {
 		mSelecting = !mSelecting;
 		if (mSendTarget) {
-			std::vector<PartID>& sends = reinterpret_cast<SendTarget*>(Genbliothinothon::getInstance()->getModuleManager().getModule(mSendTarget->module)->getParts()[mSendTarget->part].get())->getInputs();
-			Module* parent = getParent();
-			uint32_t index = 0;
-			const std::vector<std::unique_ptr<Part>>& parts = parent->getParts();
-			for (uint32_t i = 0; i < parts.size(); i++) {
-				if (parts[i].get() == this) {
-					index = i;
-					break;
-				}
-			}
-			sends.erase(std::ranges::find(sends, PartID{.module = parent->getID(), .part = index}));
+			reinterpret_cast<SendTarget*>(Genbliothinothon::getInstance()->getModuleManager().getModule(mSendTarget->module)->getParts()[mSendTarget->part].get())->setInput({});
 			mSendTarget = {};
 		}
 		setDirty(true);
@@ -64,9 +58,6 @@ namespace genbliothinothon::module::part {
 				const glm::vec2 partPos = part->getPos() + modulePos;
 				const glm::vec2 partSize = part->getSize();
 				if (const auto sendTarget = dynamic_cast<SendTarget*>(part.get()); sendTarget && worldPos.x >= partPos.x && worldPos.x < partPos.x + partSize.x && worldPos.y >= partPos.y && worldPos.y < partPos.y + partSize.y) {
-					if (!sendTarget->isMultiChannel() && mChannelCount > 1) {
-						break;
-					}
 					mSendTarget = {.module = module->getID(), .part = i};
 					Module* parent = getParent();
 					uint32_t index = 0;
@@ -77,7 +68,7 @@ namespace genbliothinothon::module::part {
 							break;
 						}
 					}
-					sendTarget->addInput({.module = parent->getID(), .part = index});
+					sendTarget->setInput({{.module = parent->getID(), .part = index}});
 					setDirty(true);
 					break;
 				}
@@ -89,6 +80,7 @@ namespace genbliothinothon::module::part {
 	void Send::save(util::FileOStream& stream) {
 		Part::save(stream);
 		stream << mName;
+		stream << mType;
 		stream << mChannelCount;
 		const bool hasSendTarget = mSendTarget.has_value();
 		stream << hasSendTarget;

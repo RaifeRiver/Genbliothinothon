@@ -10,11 +10,10 @@ namespace genbliothinothon::module {
 
         XOR(uint32_t version, util::FileIStream& stream);
 
-        std::string generateGLSL(uint32_t index, std::unordered_map<std::string, std::string>& inputValues) override;
+        std::string generateGLSL(std::string send) override;
 
     private:
         part::Dial* mAmplitude;
-        part::Dial* mDrive;
-        part::Dial* mGain;
+        part::Dial* mValue;
     };
 }

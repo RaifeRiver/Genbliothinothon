@@ -40,7 +40,7 @@ namespace genbliothinothon::module {
 			return mDragged;
 		}
 
-		void setDragged(const bool dragged);
+		void setDragged(bool dragged);
 
 		[[nodiscard]] bool isDirty() const;
 
@@ -64,7 +64,7 @@ namespace genbliothinothon::module {
 
 		virtual std::string generateFunctions(uint32_t index);
 
-		virtual std::string generateGLSL(uint32_t index, std::unordered_map<std::string, std::string>& inputValues) = 0;
+		virtual std::string generateGLSL(std::string send) = 0;
 
 		virtual void save(util::FileOStream& stream) const;
 

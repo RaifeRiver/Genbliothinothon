@@ -14,9 +14,10 @@ namespace genbliothinothon::ui {
 		mSize = size;
 	}
 
-	void ModuleArea::onPress(const glm::vec2 pos) {
-		Component::onPress(pos);
+	void ModuleArea::onPress(const glm::vec2 p) {
+		Component::onPress(p);
 		Genbliothinothon* genbliothinothon = Genbliothinothon::getInstance();
+		const glm::vec2 pos = genbliothinothon->getRenderContext().getMousePos();
 		const glm::vec2 cameraPos = genbliothinothon->getCameraPos();
 		std::vector<uint32_t> modulesToRemove;
 		module::ModuleManager& moduleManager = genbliothinothon->getModuleManager();
@@ -41,7 +42,7 @@ namespace genbliothinothon::ui {
 			else {
 				for (const std::unique_ptr<module::part::Part>& part : parts) {
 					const glm::vec2 partPos = part->getPos() + modulePos;
-					part->clickOff(pos - partPos, pos);
+					part->clickOff(pos - partPos, pos - cameraPos);
 				}
 			}
 		}
@@ -61,12 +62,13 @@ namespace genbliothinothon::ui {
 		}
 	}
 
-	void ModuleArea::onMouseMove(const glm::vec2 pos) {
+	void ModuleArea::onMouseMove(const glm::vec2) {
+		Genbliothinothon* genbliothinothon = Genbliothinothon::getInstance();
+		const glm::vec2 pos = genbliothinothon->getRenderContext().getMousePos();
 		static glm::vec2 lastPos = pos;
 		const glm::vec2 movement = pos - lastPos;
 		lastPos = pos;
 		if (isPressed()) {
-			Genbliothinothon* genbliothinothon = Genbliothinothon::getInstance();
 			const glm::vec2 cameraPos = genbliothinothon->getCameraPos();
 			for (std::unordered_map<uint32_t, std::unique_ptr<module::Module>>& modules = genbliothinothon->getModuleManager().getModules(); const std::unique_ptr<module::Module>& module: modules | std::views::values) {
 				if (module->isDragged()) {
@@ -86,7 +88,7 @@ namespace genbliothinothon::ui {
 		std::unordered_map<uint32_t, std::unique_ptr<module::Module>>& modules = moduleManager.getModules();
 		const glm::vec2 cameraPos = genbliothinothon->getCameraPos();
 		for (const std::unique_ptr<module::Module>& module: modules | std::views::values) {
-			module->render(cameraPos + pos, renderContext);
+			module->render(cameraPos, renderContext);
 		}
 	}
 

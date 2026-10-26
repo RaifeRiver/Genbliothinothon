@@ -5,7 +5,7 @@
 namespace genbliothinothon::module::part {
 	class GenericSendTarget : public SendTarget {
 	public:
-		GenericSendTarget(Module* parent, glm::vec2 pos, glm::vec2 size, const std::string& name, std::string defaultValue, bool multiChannel = false);
+		GenericSendTarget(Module* parent, glm::vec2 pos, glm::vec2 size, const std::string& name, std::string defaultValue);
 
 		GenericSendTarget(uint32_t version, util::FileIStream& stream);
 

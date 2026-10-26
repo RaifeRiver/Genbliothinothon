@@ -9,6 +9,13 @@ namespace genbliothinothon::module::part {
 
 	void TextInput::setText(const std::string& text) {
 		mText = text;
+		if (mSetCallback.has_value()) {
+			mSetCallback.value()(mText);
+		}
+	}
+
+	void TextInput::setSetCallback(const std::optional<std::function<void(std::string)>>& callback) {
+		mSetCallback = callback;
 	}
 
 	void TextInput::click(glm::vec2) {
@@ -19,6 +26,9 @@ namespace genbliothinothon::module::part {
 	void TextInput::clickOff(glm::vec2, glm::vec2) {
 		if (mSelected) {
 			setDirty(true);
+			if (mSetCallback.has_value()) {
+				mSetCallback.value()(mText);
+			}
 		}
 		mSelected = false;
 	}
@@ -37,6 +47,9 @@ namespace genbliothinothon::module::part {
 			else if (key == GLFW_KEY_ENTER) {
 				mSelected = false;
 				setDirty(true);
+				if (mSetCallback.has_value()) {
+					mSetCallback.value()(mText);
+				}
 			}
 		}
 	}
