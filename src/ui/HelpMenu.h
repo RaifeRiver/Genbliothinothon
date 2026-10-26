@@ -6,7 +6,6 @@ namespace genbliothinothon::ui {
 	class HelpMenu : public Container {
 	public:
 		HelpMenu();
-
 	private:
 		Container* mHelpContainer;
 
@@ -15,5 +14,9 @@ namespace genbliothinothon::ui {
 		void loadBasics() const;
 
 		void loadOscillator() const;
+
+		void loadModules() const;
+
+		void loadModules_Two() const;
 	};
 }
