@@ -70,8 +70,7 @@ namespace genbliothinothon::module {
 
 	void MidiSequencer::setChannelCounts() const {
 		std::cout << "Setting midi channel counts to " << mChannelCount << std::endl;
-		uint32_t channelCount = std::max(mChannelCount, 1u);
-		channelCount = 1;
+		const uint32_t channelCount = std::max(mChannelCount, 1u);
 		mFrequency->setChannelCount(channelCount);
 		mVolume->setChannelCount(channelCount);
 		mNoteStart->setChannelCount(channelCount);
@@ -129,7 +128,7 @@ namespace genbliothinothon::module {
 		uint32_t trackEndPos = pos + length;
 		uint8_t runningStatus = 0;
 		std::deque<uint32_t> freeChannels = {};
-		std::deque<std::pair<uint32_t, float>> cooldownChannels = {};
+		std::vector<std::pair<uint32_t, float>> cooldownChannels = {};
 		uint32_t nextChannel = 0;
 		while (pos < trackEndPos) {
 			uint32_t deltaTime = parseVariableInt(pos, buffer.data());
@@ -160,15 +159,16 @@ namespace genbliothinothon::module {
 					}
 				}
 				else {
+					std::erase_if(cooldownChannels, [&](const std::pair<uint32_t, float>& a) {
+						if (a.second <= static_cast<float>(previousTime) * timeScale) {
+							freeChannels.push_back(a.first);
+							return true;
+						}
+						return false;
+					});
 					if (freeChannels.empty()) {
-						if (!cooldownChannels.empty() && cooldownChannels.front().second < static_cast<float>(previousTime) * timeScale) {
-							freeChannels.push_back(cooldownChannels.front().first);
-							cooldownChannels.pop_front();
-						}
-						else {
-							functions.emplace_back("vec4 midiSequencerGetNote" + std::to_string(nextChannel) +"_$index(uint s) {\n");
-							freeChannels.push_back(nextChannel++);
-						}
+						functions.emplace_back("vec4 midiSequencerGetNote" + std::to_string(nextChannel) +"_$index(uint s) {\n");
+						freeChannels.push_back(nextChannel++);
 					}
 					playingNotes[channel][note] = {previousTime, static_cast<float>(velocity) / 127.0f, freeChannels.front()};
 					freeChannels.pop_front();

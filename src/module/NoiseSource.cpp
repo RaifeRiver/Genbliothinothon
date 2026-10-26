@@ -21,6 +21,6 @@ namespace genbliothinothon::module {
 	}
 
 	std::string NoiseSource::generateGLSL(std::string send) {
-		return "noise($Volume,$Low Pass,$High Pass)";
+		return "noise($Sample,$Volume,$Low Pass,$High Pass)";
 	}
 }
