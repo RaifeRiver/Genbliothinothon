@@ -109,19 +109,23 @@ namespace genbliothinothon::ui {
           " - Sine: this wave generates a consistent and smooth form,\n"
           " it has one harmonic(itself) and you literally cannot have\n"
           " a smoother wave at the same amplitude, that is the definition.\n\n"
+
           "Saw: this wave type ramps up and then instantly drops down to -1 again.\n"
           " it is called saw because it looks like a saw.\n"
           " it has many harmonics and is great for bass, sounds like a\n"
+
           " buzzy and annoying but really loud and harsh fly\n\n"
           "Inv Saw: This is simply the opposite of a sawtooth wave,\n"
           " it is slightly different sound but interchangeable\n"
           " and can sound more this and that depending on configuration.\n\n"
+
           "Triangle: this sounds like a sine wave but it has some more harmonics.\n"
           " I would use it if you want a sin sound but need a bit more tang,\n"
           " it is a pretty nice and not too harsh wave form.\n"
           " But of course has infinite harmonics technically like the others,\n"
           " on this one the higher harmonics decrease in volume faster so\n"
           " generally it is just a slightly less plain sine wave\n\n"
+
           "Square: This one is rich, it is amazing for anything that needs tons\n"
           " of overtones. All quite loud. But if you want to use it a lot i\n"
           " recommend to cut out the high frequencies. This one is fun but i\n"
@@ -166,22 +170,27 @@ namespace genbliothinothon::ui {
           "S, R correspond to the 5 letters in the acronym in order I stated\n"
           "earlier. It is just a amplitude multiplier and can only be used\n"
           "with midi players I believe.\n\n"
+
           "CSV sequencer takes in a csv file and outputs audio as if it\n"
           "were midi, you must manually convert audio to csv so I do not\n"
           "recommend using this, also It is not perfectly implemented with\n"
           "all other features. ../res/songs/<the song file> is the file\n"
           "selection, you have only got song_1_voice1.csv and\n"
           "song_1_voice2.csv which are the same song just different parts.\n\n"
+
           "Maths wave, is slightly buggy but usually takes in a GLSL maths\n"
           "equation, (one line only for now) and outputs audio based on that,\n"
           "the example uses correct values. Base you equations on that if\n"
           "you wish to use this.\n\n"
+
           "MIDI sequencer: you must select a file by typing in\n"
           "../res/songs/<the song file> and at the moment there is only\n"
           "song_1.mid or song_2.mid but they should work nicely. The output\n"
           "and variables should explain themselves.\n\n"
+
           "Noise source: this generates random white noise with a low and\n"
           "high pass filter. Simple.\n\n"
+
           "Oscillator: this generates a wave type. Already explained in the\n"
           "help section. Well that says which waves there are and what they\n"
           "are like. Basically you just select a wave type and send midi into\n"
@@ -208,21 +217,25 @@ namespace genbliothinothon::ui {
           "Literally; it removes the negative half of the wave only leaving\n"
           "the positive half. This generates a clip distortion and a lot\n"
           "of overtones.\n\n"
+
           "BitCrusher: this one is well known, it just takes the input\n"
           "amplitude and reduces the precision of it. If set to 1 bit it\n"
           "will make anything into a variable square wave. You can see this\n"
           "if you connect it to something that measures frequencies. The\n"
           "overtones match up. I personally like this one but it has its\n"
           "limits and is slightly niche in most types of music.\n\n"
+
           "Depresser: this is a pun on the AntiDepressant pun. It does\n"
           "the opposite, only the bottom half of the wave.\n\n"
           "FullRectifier: this one rectifies the signal, the bottom half\n"
           "is flipped upside down and smacked over the top half of the wave.\n"
           "It can make fun sounds and is over all quite interesting.\n\n"
+
           "HardClip: this one clips stuff. It amplifies the signal and\n"
           "cuts off anything above amplitude 1 and below amplitude -1.\n"
           "You can get some crazy distortion with this one but it also can\n"
           "be used to make warm tones if done right. I like it.\n\n"
+
           "OverInvert: this one pretty much just inverts the signal.\n"
           "That is it.\n\n"
           "SoftDistort: this is one of my favourites. As a number approaches\n"
@@ -230,10 +243,12 @@ namespace genbliothinothon::ui {
           "get signal above 1 or below -1, but you won't get clipy tons of\n"
           "overtones until you pump the drive way up to like 10. You can\n"
           "get some really warm bass with this.\n\n"
+
           "TapeSaturation: this replicates the saturation from an old tape\n"
           "machine and is a type of distortion. Very very good for warm tones\n"
           "or anything that needs overtones without being crazy like the\n"
           "hard clip.\n\n"
+
           "Tremlo: this is spelt wrong for a smaller name and makes the\n"
           "audio sway from channel to channel of its outputs. Very fun.\n\n"
           "TubeSaturation: this one is super fun. Replicates an old vacuum\n"
